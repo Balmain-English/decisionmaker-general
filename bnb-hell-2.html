@@ -1,0 +1,465 @@
+<!-- bnb-hell-b2.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The BnB From Hell: Superhost Crisis Management</title>
+<style>
+    :root {
+        --primary: #2d3748;
+        --accent: #e53e3e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #1a202c;
+        --success: #38a169;
+        --warning: #dd6b20;
+        --danger: #e53e3e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 2rem; }
+    header { background: var(--primary); color: white; padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+    .header-content { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .dashboard { max-width: 900px; margin: 1.5rem auto 0; padding: 0 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-card { background: var(--card-bg); padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #718096; }
+    .stat-value { font-size: 1.25rem; font-weight: 800; margin: 0.2rem 0; }
+    .bar-bg { background: #edf2f7; height: 8px; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; transition: width 0.4s ease, background-color 0.4s ease; }
+    .container { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem; }
+    .card { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: none; }
+    .card.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; }
+    .badge-std { background: #feebc8; color: #c05621; }
+    .badge-emergency { background: #fed7d7; color: #9b2c2c; }
+    h1, h2 { color: var(--primary); margin-bottom: 1rem; }
+    .choices-grid { display: grid; gap: 0.8rem; margin: 1.5rem 0; }
+    .btn { background: #f7fafc; border: 2px solid #cbd5e0; padding: 1rem; border-radius: 8px; text-align: left; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; color: var(--text); width: 100%; }
+    .btn:hover:not(:disabled) { border-color: var(--accent); background: #fff5f5; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+    .btn-action { background: var(--primary); color: white; border: none; text-align: center; padding: 0.9rem; margin-top: 1rem; font-size: 1rem; display: none; }
+    .btn-action:hover { background: #1a202c; }
+    .feedback-box { padding: 1.2rem; border-radius: 8px; margin-top: 1rem; display: none; border-left: 6px solid; }
+    .fb-excel { background: #f0fff4; border-color: var(--success); color: #22543d; }
+    .fb-good { background: #ebf8ff; border-color: #3182ce; color: #2b6cb0; }
+    .fb-avg { background: #fffaf0; border-color: var(--warning); color: #9c4221; }
+    .fb-poor { background: #fff5f5; border-color: var(--danger); color: #9b2c2c; }
+    .debrief-band { margin-top: 1rem; padding: 1.2rem; border-radius: 8px; background: #edf2f7; border: 1px solid #cbd5e0; }
+    .early-win { background: #f0fff4; border: 2px solid var(--success); padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div>
+            <h2 style="color:white; margin:0; font-size:1.3rem;">The BnB From Hell</h2>
+            <p style="font-size:0.8rem; color:#fc8181; margin:0;">B2 Upper-Intermediate • Superhost Crisis Management</p>
+        </div>
+        <div id="step-indicator" style="font-weight:bold; font-size:0.9rem;">Scenario 1 / 12</div>
+    </div>
+</header>
+
+<div class="dashboard">
+    <div class="stat-card">
+        <div class="stat-label">Reputation</div>
+        <div class="stat-value" id="val-rep">80%</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-rep" style="width:80%; background-color:var(--success);"></div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Stress Level</div>
+        <div class="stat-value" id="val-stress">20%</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-stress" style="width:20%; background-color:var(--success);"></div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Reserve Fund</div>
+        <div class="stat-value" id="val-fund">$2,500</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-fund" style="width:100%; background-color:var(--success);"></div></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card active" id="screen-start">
+        <h1>Superhost Crisis Management: B2 Level</h1>
+        <p><strong>CEFR Level:</strong> B2 (Upper-Intermediate Professional English)</p>
+        <p><strong>Goal:</strong> Manage high-conflict short-term rental disputes, illegal guest activities, and property crises across 12 steps without depleting reserves or exceeding stress limits.</p>
+        <p><strong>Initial Resources:</strong> Reputation: 80% | Stress Level: 20% | Reserve Fund: $2,500</p>
+        <button class="btn btn-action" style="display:block;" onclick="startGame()">Start Shift</button>
+    </div>
+
+    <div class="card" id="screen-game">
+        <span class="badge badge-std" id="step-badge">Standard Conflict</span>
+        <h2 id="step-title">Scenario Title</h2>
+        <p id="step-desc">Scenario Description</p>
+
+        <div class="choices-grid" id="choices-container"></div>
+
+        <div class="feedback-box" id="feedback-box">
+            <strong id="fb-title">Outcome</strong>
+            <p id="fb-text" style="margin-top:0.3rem; font-size:0.95rem;"></p>
+        </div>
+
+        <button class="btn btn-action" id="btn-next" onclick="nextStep()">Proceed to Next Scenario</button>
+    </div>
+
+    <div class="card" id="screen-debrief">
+        <h1>Performance Debriefing</h1>
+        <div id="early-win-container"></div>
+        <div id="debrief-summary"></div>
+        <div class="debrief-band" id="debrief-details"></div>
+        <button class="btn btn-action" style="display:block;" onclick="location.reload()">Restart Simulation</button>
+    </div>
+</div>
+
+<script>
+const scenarios = [
+    {
+        isEmergency: false,
+        title: "Scenario 1: HOA Neighbor Dispute",
+        desc: "At 2:00 AM, an angry HOA neighbor calls threatening legal action over alleged guest noise: 'Your rental is ruining our quiet residential neighborhood!'",
+        choices: [
+            { type: "excellent", text: "De-escalate professionally: 'I understand your frustration. I am contacting the guests immediately to enforce quiet hours.'", rep: 2, stress: 5, fund: 0, fb: "Assertive de-escalation and professional accountability neutralize legal threats while maintaining clear HOA boundaries." },
+            { type: "good", text: "Send a firm automated notification to the guests reminding them of mandatory noise restrictions.", rep: 1, stress: 8, fund: 0, fb: "Automated policy enforcement is helpful, but direct verbal assurance to the neighbor provides better crisis containment." },
+            { type: "average", text: "Apologize profusely and offer to pay the HOA neighbor a $100 goodwill inconvenience credit.", rep: 0, stress: 10, fund: -100, fb: "Financial concessions without underlying dispute resolution set bad precedents and drain operating capital needlessly." },
+            { type: "poor", text: "Tell the neighbor it is 2:00 AM and accuse them of harassing your legal business operations.", rep: -10, stress: 20, fund: 0, fb: "Confrontational language escalates HOA disputes into formal regulatory fines. Maintain professional restraint." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 2: Influencer Extortion",
+        desc: "A self-proclaimed influencer demands a full refund for a 3-night stay in exchange for 'preventing a damaging public 1-star review'.",
+        choices: [
+            { type: "excellent", text: "State policy firmly: 'We do not trade refunds for reviews. I am documenting this conversation for platform mediation.'", rep: 2, stress: 5, fund: 0, fb: "Firm policy referencing combined with documentation protects your platform listing against extortion strategies." },
+            { type: "good", text: "Offer a standard 10% courtesy discount for minor inconveniences while refusing full refund demands.", rep: 1, stress: 10, fund: -60, fb: "Partial compromise reduces immediate conflict, though firm enforcement of non-extortion policies is safer." },
+            { type: "average", text: "Issue the full refund quietly to avoid potential review damage on your property profile.", rep: -5, stress: 15, fund: -500, fb: "Capitulating to review extortion creates severe financial loss without guaranteeing immunity from bad reviews." },
+            { type: "poor", text: "Insult the guest's social media following and post hostile comments on their public page.", rep: -15, stress: 25, fund: 0, fb: "Public hostility severely damages host professional reputation and violates platform terms of service." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 3: Unsanctioned Party Event",
+        desc: "Security cameras reveal 15 unauthorized visitors bringing sound equipment into your 2-bedroom suite.",
+        choices: [
+            { type: "excellent", text: "Issue an immediate cancellation notice via platform messaging citing guest count violations and request dispatch.", rep: 2, stress: 10, fund: -50, fb: "Using official platform terms ('occupancy limits', 'policy violation') secures swift assistance and protects liability." },
+            { type: "good", text: "Arrive at the property in person accompanied by co-hosting staff to order extra visitors to leave.", rep: 1, stress: 15, fund: 0, fb: "Direct intervention stops parties, though official platform escalation ensures superior legal and financial protection." },
+            { type: "average", text: "Send a polite text asking them to keep music low so neighbors do not file complaints.", rep: -5, stress: 20, fund: 0, fb: "Weak enforcement allows unauthorized gatherings to continue, risking severe property damage and police callouts." },
+            { type: "poor", text: "Ignore the camera alert hoping they will clean up before checkout time tomorrow.", rep: -15, stress: 30, fund: -300, fb: "Neglecting active rule violations leads to severe property destruction and neighbor legal action." }
+        ]
+    },
+    {
+        isEmergency: true,
+        title: "Scenario 4: EMERGENCY - Electrical Fire Hazard",
+        desc: "Guests report smoke and sparks issuing from the main kitchen breaker panel! Smoke alarms are ringing.",
+        choices: [
+            { type: "viable1", text: "Instruct immediate evacuation, dial emergency services, and arrange urgent hotel relocation for guests.", rep: 2, stress: 15, fund: -300, fb: "Prioritizing human safety over property loss reflects legal duty of care and sound emergency management." },
+            { type: "viable2", text: "Guide guests to safety outdoors, switch off main external power toggle, and call emergency fire services.", rep: 1, stress: 20, fund: -250, fb: "Decisive hazard mitigation reduces fire escalation while securing guest safety effectively." },
+            { type: "critical", text: "Tell guests to locate a fire extinguisher and inspect the wiring panel themselves.", rep: -50, stress: 50, fund: 0, fb: "Critical Failure: Subcontracting life-safety hazard handling to guests caused catastrophic injury and total loss." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 5: Plumbing Disaster",
+        desc: "At 10:00 PM, a guest reports an overflowing toilet flooding the master bathroom into the hallway.",
+        choices: [
+            { type: "excellent", text: "Guide water shutoff valve steps over phone, dispatch 24/7 plumber, and issue $100 inconvenience credit.", rep: 2, stress: 10, fund: -200, fb: "Immediate crisis containment phrasing paired with swift professional remediation protects property assets." },
+            { type: "good", text: "Dispatch an emergency plumber immediately and offer temporary relocation to a vacant partner unit.", rep: 1, stress: 12, fund: -250, fb: "High customer care standard, though guiding immediate shutoff valve control over phone prevents worse damage." },
+            { type: "average", text: "Tell guests to pile bath towels against the leak and promise a technician arrival early morning.", rep: -5, stress: 20, fund: -100, fb: "Delayed maintenance response causes subfloor structural damage and triggers full guest refund claims." },
+            { type: "poor", text: "Blame guests for flushing improper items and demand immediate payment before dispatching aid.", rep: -15, stress: 25, fund: 0, fb: "Accusatory tone during active emergencies destroys guest relations and triggers emergency platform interventions." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 6: Stolen Property Allegation",
+        desc: "After checkout, you notice luxury designer decor missing. The guest claims: 'It was never there when we arrived.'",
+        choices: [
+            { type: "excellent", text: "Submit timestamped inspection photos to platform support and file a formal reimbursement dispute.", rep: 2, stress: 5, fund: 0, fb: "Evidence-based claims using pre-stay inspection documentation represent upper-intermediate administrative management." },
+            { type: "good", text: "Message guest politely inquiring about mispacked items before filing formal platform insurance claims.", rep: 1, stress: 8, fund: 0, fb: "Diplomatic inquiry provides a peaceful recovery opportunity before initiating formal legal/platform claims." },
+            { type: "average", text: "Deduct the missing item value directly from their deposit without providing photo proof.", rep: -5, stress: 15, fund: 150, fb: "Unsubstantiated claims result in disputed chargebacks and negative arbitration outcomes." },
+            { type: "poor", text: "Send threatening text messages accusing the guest of grand larceny and police reports.", rep: -15, stress: 25, fund: 0, fb: "Aggressive harassment causes listing suspension. Always handle financial recovery through legal platform channels." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 7: Pest Infestation Discovery",
+        desc: "A guest sends video evidence of silverfish near bedroom furniture, demanding immediate full cancellation.",
+        choices: [
+            { type: "excellent", text: "Apologize sincerely, approve full refund for unspent nights, and schedule immediate extermination treatment.", rep: 2, stress: 10, fund: -300, fb: "Accepting responsibility swiftly and initiating professional pest eradication mitigates long-term brand damage." },
+            { type: "good", text: "Offer immediate room transfer to a premium suite and complimentary professional cleaning services.", rep: 1, stress: 12, fund: -150, fb: "Good service recovery attempt, though refund requests for pest concerns should be honored gracefully." },
+            { type: "average", text: "Provide bug spray canisters to guests and discount their nightly stay rate by 20%.", rep: -5, stress: 20, fund: -60, fb: "Inadequate remediation for health concerns leads to severe platform safety suspensions." },
+            { type: "poor", text: "Claim insects are natural in urban environments and refuse refund or relocation requests.", rep: -15, stress: 25, fund: 0, fb: "Dismissing hygiene complaints leads to viral bad publicity and official health department citations." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 8: Smart Lock Outage",
+        desc: "An international guest is locked outside at midnight due to smart lock battery failure and dead cell signal.",
+        choices: [
+            { type: "excellent", text: "Provide physical lockbox backup code immediately and dispatch local co-host for on-site verification.", rep: 2, stress: 5, fund: -30, fb: "Failsafe redundancy systems paired with concise instruction delivery ensure rapid midnight access." },
+            { type: "good", text: "Travel to the property personally to unlock the entrance door and install fresh lock batteries.", rep: 1, stress: 15, fund: -10, fb: "Resolves guest access issue reliably, though maintaining remote lockbox overrides saves host energy." },
+            { type: "average", text: "Talk them through complex technical lock reset steps over an unstable international phone call.", rep: 0, stress: 20, fund: 0, fb: "Complex instructions during stressful late-night lockouts increase guest frustration." },
+            { type: "poor", text: "Tell them to book a hotel room nearby and deal with the lock issue during business hours.", rep: -15, stress: 30, fund: -150, fb: "Abandoning guests at night guarantees platform penalties, severe negative reviews, and full refund mandates." }
+        ]
+    },
+    {
+        isEmergency: true,
+        title: "Scenario 9: EMERGENCY - Gas Leak Suspicion",
+        desc: "Guests report a distinct sulfur gas smell near the water heater closet!",
+        choices: [
+            { type: "viable1", text: "Order immediate outdoor evacuation, notify utility emergency lines, and arrange urgent guest relocation.", rep: 2, stress: 15, fund: -250, fb: "Immediate evacuation protocol for gas hazards mitigates life-threatening risk and establishes sound legal defense." },
+            { type: "viable2", text: "Instruct guests to leave doors open, evacuate to street, and dispatch emergency gas technicians.", rep: 1, stress: 20, fund: -200, fb: "Proper hazard management prioritized human life effectively during life-safety threats." },
+            { type: "critical", text: "Tell guests to light a candle to test ventilation air movement near heater.", rep: -50, stress: 50, fund: 0, fb: "Critical Failure: Extremely dangerous recommendation caused catastrophic explosion and legal criminal prosecution." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 10: Unauthorized Pet Damage",
+        desc: "Cleaners report deep carpet stains and scratch damage caused by an unapproved large dog.",
+        choices: [
+            { type: "excellent", text: "Document damage meticulously with high-res photos and submit pet fee recovery request via resolution center.", rep: 2, stress: 5, fund: 100, fb: "Objective damage documentation combined with formal platform claims ensures successful recovery." },
+            { type: "good", text: "Contact guest to request reimbursement for specialized steam cleaning invoices directly.", rep: 1, stress: 10, fund: 50, fb: "Direct resolution attempt is reasonable, though formal resolution center tracking guarantees enforcement." },
+            { type: "average", text: "Absorb cleaning costs quietly from operating funds to avoid receiving retaliatory reviews.", rep: -5, stress: 12, fund: -200, fb: "Absorbing clear guest property damage erodes profit margins unnecessarily." },
+            { type: "poor", text: "Post public insult comments on guest profile accusing them of property destruction.", rep: -15, stress: 25, fund: 0, fb: "Unprofessional public retaliatory comments violate platform host guidelines and ruin reputation." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 11: Service Amenity Failure",
+        desc: "High-speed Wi-Fi network drops completely during a remote worker's critical video conference day.",
+        choices: [
+            { type: "excellent", text: "Provide immediate cellular hotspot backup device and issue 20% nightly rate compensation credit.", rep: 2, stress: 5, fund: -50, fb: "Providing cellular backup hardware resolves productivity emergencies while proactive compensation maintains goodwill." },
+            { type: "good", text: "Contact internet service provider to reboot line remotely and refund daily connectivity fee.", rep: 1, stress: 10, fund: -30, fb: "Effective technical escalation, though providing immediate cellular hardware backup is superior." },
+            { type: "average", text: "Suggest the guest locate a nearby commercial cafe space to complete work assignments.", rep: -5, stress: 15, fund: 0, fb: "Failing to deliver key advertised business amenities leads to partial refund dispute arbitrations." },
+            { type: "poor", text: "State that internet connectivity is an un-guaranteed courtesy amenity and refuse assistance.", rep: -15, stress: 20, fund: 0, fb: "Dismissive handling of crucial amenities causes severe rating drops among business travelers." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Scenario 12: Retaliatory Review Threat",
+        desc: "A guest demands waiver of legitimate late-checkout penalties, threatening a 1-star review if charged.",
+        choices: [
+            { type: "excellent", text: "Enforce policy calmly: 'Fee applies per agreement. I am flagging review extortion threats to support.'", rep: 2, stress: 5, fund: 50, fb: "Referencing policy and reporting extortion attempts protects business integrity under B2 dispute standards." },
+            { type: "good", text: "Waive 50% of late fee as a settlement while documenting late checkout timestamps in messaging.", rep: 1, stress: 8, fund: 25, fb: "Pragmatic compromise resolves immediate conflict, though standing firm against extortion is optimal." },
+            { type: "average", text: "Waive all late fees entirely to avoid negative review exposure on profile.", rep: -5, stress: 15, fund: 0, fb: "Capitulating to review threats undermines host operational guidelines and encourages abusive guest behavior." },
+            { type: "poor", text: "Engage in heated argument threatening to blacklist guest across host networks.", rep: -15, stress: 25, fund: 0, fb: "Emotional retaliatory threats damage professional host credibility severely." }
+        ]
+    }
+];
+
+let state = {
+    stepIdx: 0,
+    rep: 80,
+    stress: 20,
+    fund: 2500,
+    excellentCount: 0,
+    gameOver: false
+};
+
+function startGame() {
+    state = { stepIdx: 0, rep: 80, stress: 20, fund: 2500, excellentCount: 0, gameOver: false };
+    showScreen("game");
+    renderStep();
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+}
+
+function updateDashboard() {
+    state.rep = Math.max(0, Math.min(100, state.rep));
+    state.stress = Math.max(0, Math.min(100, state.stress));
+    state.fund = Math.max(0, state.fund);
+
+    document.getElementById('val-rep').innerText = state.rep + "%";
+    document.getElementById('val-stress').innerText = state.stress + "%";
+    document.getElementById('val-fund').innerText = "$" + state.fund;
+
+    const rBar = document.getElementById('bar-rep');
+    rBar.style.width = state.rep + "%";
+    rBar.style.backgroundColor = state.rep >= 70 ? "var(--success)" : state.rep >= 40 ? "var(--warning)" : "var(--danger)";
+
+    const sBar = document.getElementById('bar-stress');
+    sBar.style.width = state.stress + "%";
+    sBar.style.backgroundColor = state.stress <= 40 ? "var(--success)" : state.stress <= 70 ? "var(--warning)" : "var(--danger)";
+
+    const fBar = document.getElementById('bar-fund');
+    fBar.style.width = Math.min(100, (state.fund / 2500 * 100)) + "%";
+    fBar.style.backgroundColor = state.fund >= 1000 ? "var(--success)" : state.fund >= 400 ? "var(--warning)" : "var(--danger)";
+
+    document.getElementById('step-indicator').innerText = `Scenario ${state.stepIdx + 1} / 12`;
+}
+
+function shuffle(array) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function renderStep() {
+    updateDashboard();
+    const data = scenarios[state.stepIdx];
+
+    const badge = document.getElementById('step-badge');
+    if (data.isEmergency) {
+        badge.className = "badge badge-emergency";
+        badge.innerText = "🚨 Emergency Crisis Event";
+    } else {
+        badge.className = "badge badge-std";
+        badge.innerText = "Standard Dispute Scenario";
+    }
+
+    document.getElementById('step-title').innerText = data.title;
+    document.getElementById('step-desc').innerText = data.desc;
+
+    const container = document.getElementById('choices-container');
+    container.innerHTML = "";
+
+    document.getElementById('feedback-box').style.display = "none";
+    document.getElementById('btn-next').style.display = "none";
+
+    const shuffledChoices = shuffle(data.choices);
+
+    shuffledChoices.forEach((choice) => {
+        const btn = document.createElement('button');
+        btn.className = "btn";
+        btn.innerText = choice.text;
+        btn.onclick = () => handleChoice(choice, btn);
+        container.appendChild(btn);
+    });
+}
+
+function handleChoice(choice, btnElement) {
+    const fbBox = document.getElementById('feedback-box');
+    const fbTitle = document.getElementById('fb-title');
+    const fbText = document.getElementById('fb-text');
+
+    if (choice.type === "poor") {
+        state.rep += choice.rep;
+        state.stress += choice.stress;
+        state.fund += choice.fund;
+        updateDashboard();
+
+        btnElement.disabled = true;
+        fbBox.className = "feedback-box fb-poor";
+        fbBox.style.display = "block";
+        fbTitle.innerText = "Flawed Action (-15% Reputation) - Re-evaluating Options Required!";
+        fbText.innerText = choice.fb;
+
+        if (state.rep <= 20 || state.stress >= 90) {
+            triggerGameOver("Operational Burnout: Reputation destroyed or host stress limits exceeded!");
+        }
+        return;
+    }
+
+    if (choice.type === "critical") {
+        state.rep = 0;
+        updateDashboard();
+        triggerGameOver(choice.fb);
+        return;
+    }
+
+    // Process valid options
+    if (choice.type === "excellent") state.excellentCount++;
+    state.rep += choice.rep;
+    state.stress += choice.stress;
+    state.fund += choice.fund;
+    updateDashboard();
+
+    document.querySelectorAll('.choices-grid .btn').forEach(b => b.disabled = true);
+
+    fbBox.style.display = "block";
+    if (choice.type === "excellent") {
+        fbBox.className = "feedback-box fb-excel";
+        fbTitle.innerText = "Optimal Dispute Resolution! (+2% Reputation)";
+    } else if (choice.type === "good" || choice.type === "viable1" || choice.type === "viable2") {
+        fbBox.className = "feedback-box fb-good";
+        fbTitle.innerText = "Reasonable Action Taken";
+    } else {
+        fbBox.className = "feedback-box fb-avg";
+        fbTitle.innerText = "Mediocre Choice (Resource Cost Penalty)";
+    }
+    fbText.innerText = choice.fb;
+
+    // Check early victory
+    if (state.excellentCount >= 8 && state.stepIdx < 11) {
+        document.getElementById('btn-next').innerText = "Claim Early Victory!";
+    } else {
+        document.getElementById('btn-next').innerText = state.stepIdx === 11 ? "View Debriefing Summary" : "Proceed to Next Scenario";
+    }
+    document.getElementById('btn-next').style.display = "block";
+}
+
+function triggerGameOver(reason) {
+    state.gameOver = true;
+    showScreen("debrief");
+    document.getElementById('early-win-container').innerHTML = "";
+    document.getElementById('debrief-summary').innerHTML = `<h2 style="color:var(--danger)">Simulation Terminated - Critical Incident</h2><p>${reason}</p>`;
+    document.getElementById('debrief-details').innerHTML = `
+        <h3>Band 4: Unsuccessful Host</h3>
+        <p>Your property operations failed due to legal liability, critical hazard missteps, or extreme stress overload. Review B2 professional conflict resolution terminology, formal policy enforcement phrasing, and risk mitigation strategies to operate short-term rentals safely.</p>
+    `;
+}
+
+function nextStep() {
+    if (state.excellentCount >= 8 && state.stepIdx < 11) {
+        showDebrief(true);
+        return;
+    }
+
+    state.stepIdx++;
+    if (state.stepIdx >= scenarios.length) {
+        showDebrief(false);
+    } else {
+        renderStep();
+    }
+}
+
+function showDebrief(isEarlyWin) {
+    showScreen("debrief");
+    const winContainer = document.getElementById('early-win-container');
+    const summary = document.getElementById('debrief-summary');
+    const details = document.getElementById('debrief-details');
+
+    if (isEarlyWin) {
+        winContainer.innerHTML = `
+            <div class="early-win">
+                <h2>🏆 Early Victory Unlocked!</h2>
+                <p>You made 8 Excellent professional decisions before scenario 12! Masterful crisis management.</p>
+            </div>
+        `;
+    } else {
+        winContainer.innerHTML = "";
+    }
+
+    summary.innerHTML = `
+        <h2>Final Superhost Assessment</h2>
+        <p><strong>Final Reputation:</strong> ${state.rep}% | <strong>Stress Level:</strong> ${state.stress}% | <strong>Reserve Fund:</strong> $${state.fund}</p>
+        <p><strong>Optimal Crisis Choices:</strong> ${state.excellentCount} / 10</p>
+    `;
+
+    let bandTitle = "";
+    let bandFeedback = "";
+
+    if (state.rep >= 85 && state.stress <= 40) {
+        bandTitle = "Band 1: Master Superhost";
+        bandFeedback = "Exemplary performance! You navigated high-stress guest extortion, HOA disputes, and property emergencies with sophisticated B2 professional language. Your use of formal policy references, objective documentation, and calm de-escalation protected property capital and listing reputation impeccably.";
+    } else if (state.rep >= 70 && state.stress <= 60) {
+        bandTitle = "Band 2: Competent Operator";
+        bandFeedback = "Strong dispute resolution across complex hosting scenarios. You maintained property stability and solid guest communication. To reach Master status, refine your stance on review extortion and rely more on official platform arbitration channels rather than minor concessions.";
+    } else if (state.rep >= 50) {
+        bandTitle = "Band 3: Survivor Host";
+        bandFeedback = "You survived the operational week, but high stress levels and financial losses eroded your margins. Work on assertive boundary phrasing, immediate hazard containment protocols, and evidence gathering to prevent unneeded payouts during guest conflicts.";
+    } else {
+        bandTitle = "Band 4: Unsuccessful Host";
+        bandFeedback = "Your listing reputation suffered severe damage under crisis conditions. Re-evaluate legal hazard duties, platform terms of service regarding extortion, and professional dispute phrasing to handle high-stakes customer conflicts effectively.";
+    }
+
+    details.innerHTML = `<h3>${bandTitle}</h3><p>${bandFeedback}</p>`;
+}
+</script>
+</body>
+</html>

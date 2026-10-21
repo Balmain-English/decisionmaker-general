@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Great USA Holiday Maze - A2 English Game</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
+
+        .title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-badge {
+            background-color: #eff6ff;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border: 1px solid #bfdbfe;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .scenario-box {
+            margin-bottom: 24px;
+        }
+
+        .step-tag {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .emergency-tag {
+            color: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .scenario-text {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #e2e8f0;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+        }
+
+        .option-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Modal Overlay for Feedback */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 23, 42, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-card.blue { border-top: 6px solid var(--primary); }
+        .modal-card.green { border-top: 6px solid var(--success); }
+        .modal-card.orange { border-top: 6px solid var(--warning); }
+        .modal-card.red { border-top: 6px solid var(--danger); }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #334155;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+
+        .action-btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            text-align: center;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .screen h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .screen p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            padding: 8px 18px;
+            background-color: #fef3c7;
+            color: #b45309;
+            font-weight: bold;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .icon-svg {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="title">
+                <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                The Great USA Holiday Maze
+            </div>
+            <div class="score-badge" id="scoreDisplay">Score: 0 pts</div>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- PLAYING SCREEN -->
+        <div id="gameScreen" class="screen active">
+            <div class="scenario-box">
+                <span class="step-tag" id="stepTag">Scenario 1 of 14</span>
+                <div class="scenario-text" id="scenarioText">Loading scenario...</div>
+            </div>
+
+            <div class="options-grid" id="optionsContainer">
+                <!-- Dynamic Buttons -->
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN -->
+        <div id="gameOverScreen" class="screen">
+            <h2 style="color: var(--danger); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg class="icon-svg" style="width: 32px; height: 32px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                GAME OVER!
+            </h2>
+            <p id="gameOverReason">You made a dangerous choice during an emergency situation!</p>
+            <button class="action-btn" onclick="restartGame()">
+                <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Try Again
+            </button>
+        </div>
+
+        <!-- DEBRIEFING SCREEN -->
+        <div id="debriefScreen" class="screen">
+            <h2 style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--success);">
+                <svg class="icon-svg" style="width: 32px; height: 32px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                Holiday Completed!
+            </h2>
+            <div class="rank-badge" id="rankBadge">Rank: Loading...</div>
+            <p id="debriefFeedback">Loading your final debriefing...</p>
+            <button class="action-btn" onclick="restartGame()">
+                <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Play Again
+            </button>
+        </div>
+
+        <!-- FEEDBACK MODAL -->
+        <div class="modal-overlay" id="feedbackModal">
+            <div class="modal-card" id="modalCard">
+                <div class="modal-title" id="modalTitle">Feedback</div>
+                <div class="modal-text" id="modalText">Feedback message goes here.</div>
+                <button class="action-btn" id="modalBtn" onclick="closeModal()">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gameData = [
+            // 1. Travel Season
+            {
+                type: 'standard',
+                title: 'Scenario 1: Travel Season',
+                text: 'When do you plan to travel across the USA for your holiday?',
+                choices: [
+                    { text: "May – June", scoreType: 'excellent', points: 3, feedback: "Excellent choice! Warm sunshine, mild temperatures, and reasonable prices make late spring perfect for sightseeing across American regions." },
+                    { text: "July – August", scoreType: 'good', points: 2, feedback: "Good choice! Very popular for summer road trips, though national parks and famous beaches get crowded and more expensive." },
+                    { text: "September", scoreType: 'acceptable', points: 1, feedback: "Acceptable choice! Beautiful autumn leaves appear, but coastal southern states carry a risk of sudden tropical storms and hurricanes." },
+                    { text: "December", scoreType: 'poor', points: -1, feedback: "Oh no! Heavy snowstorms can freeze highways and cancel flights across northern states. Please pick a milder season to travel!" }
+                ]
+            },
+            // 2. Booking Flights
+            {
+                type: 'standard',
+                title: 'Scenario 2: Plane Tickets',
+                text: 'When will you purchase your flight tickets to America?',
+                choices: [
+                    { text: "6 months before travel", scoreType: 'excellent', points: 3, feedback: "Top choice! Booking early secures the lowest flight fares and best seating options. Airlines reward early planning with great deals!" },
+                    { text: "2 months before travel", scoreType: 'good', points: 2, feedback: "Good timing! You get reasonable ticket prices and good flight choices without stressing too far in advance for your trip." },
+                    { text: "2 weeks before travel", scoreType: 'acceptable', points: 1, feedback: "Acceptable, but risky! Ticket prices rise sharply close to departure. You will pay much more for the exact same seat." },
+                    { text: "At the airport on the day", scoreType: 'poor', points: -1, feedback: "Yikes! Flights are usually full or insanely expensive at airport desks. You cannot travel efficiently like this; try booking earlier!" }
+                ]
+            },
+            // 3. Destination Choice (No point penalties)
+            {
+                type: 'destination',
+                title: 'Scenario 3: Starting Point',
+                text: 'Where will you start your grand US adventure?',
+                choices: [
+                    { text: "New York City!", scoreType: 'neutral', feedback: "Awesome choice! The Big Apple features Central Park and Times Square. Did you know over 800 languages are spoken in New York?" },
+                    { text: "Los Angeles!", scoreType: 'neutral', feedback: "Fantastic! Famous for Hollywood and sunny beaches. Fun fact: The famous Hollywood sign originally said 'Hollywoodland' back in 1923!" },
+                    { text: "Miami!", scoreType: 'neutral', feedback: "Great pick! Enjoy warm ocean water and vibrant nightlife. Surprise: Miami is the only major US city founded by a woman!" },
+                    { text: "Chicago!", scoreType: 'neutral', feedback: "Cool destination! Known for iconic skyscrapers and deep-dish pizza. Did you know Chicago created the world's very first ferris wheel?" }
+                ]
+            },
+            // 4. Transport Inside USA
+            {
+                type: 'standard',
+                title: 'Scenario 4: Getting Around',
+                text: 'How will you travel between cities inside the United States?',
+                choices: [
+                    { text: "Rent a car", scoreType: 'excellent', points: 3, feedback: "Perfect decision! American highways like famous Route 66 offer total freedom. Cars are ideal for exploring scenic national parks." },
+                    { text: "Domestic flights", scoreType: 'good', points: 2, feedback: "Good choice! Fast for crossing massive distances, though airport security checks take up a couple of hours each time." },
+                    { text: "Train (Amtrak)", scoreType: 'acceptable', points: 1, feedback: "Acceptable option! Train travel offers big comfortable seats and lovely scenery, but US passenger trains move quite slowly." },
+                    { text: "Hitchhiking", scoreType: 'poor', points: -1, feedback: "Dangerous move! Hitchhiking on major US highways is illegal and unsafe. Please choose a safe, reliable mode of transport!" }
+                ]
+            },
+            // 5. Accommodation
+            {
+                type: 'standard',
+                title: 'Scenario 5: Lodging',
+                text: 'Where do you plan to sleep during your travel nights?',
+                choices: [
+                    { text: "Airbnb apartments", scoreType: 'excellent', points: 3, feedback: "Excellent pick! Kitchen access saves food money, and staying in local neighborhoods gives you an authentic slice of daily life." },
+                    { text: "4-star hotels", scoreType: 'good', points: 2, feedback: "Very comfortable choice! Enjoy daily maid service and free swimming pools, although costs accumulate quickly over two weeks." },
+                    { text: "Budget roadside motels", scoreType: 'acceptable', points: 1, feedback: "Acceptable choice! Classic roadside motels save money, though basic rooms near highways can occasionally get loud at night." },
+                    { text: "No booking in advance", scoreType: 'poor', points: -1, feedback: "Oh dear! Popular tourist cities sell out completely. You risk sleeping in your rental car! Pick a real place to stay." }
+                ]
+            },
+            // 6. Daily Budget
+            {
+                type: 'standard',
+                title: 'Scenario 6: Daily Budget',
+                text: 'How much daily spending budget per person will you set?',
+                choices: [
+                    { text: "$150 per day", scoreType: 'excellent', points: 3, feedback: "Smart financial planning! Covers delicious restaurant meals, attraction entry tickets, tax, and tipping without any financial stress." },
+                    { text: "$100 per day", scoreType: 'good', points: 2, feedback: "Good budget! Manageable if you mix fast food with cafe dining and carefully monitor daily museum admission costs." },
+                    { text: "$50 per day", scoreType: 'acceptable', points: 1, feedback: "Tight budget! You will rely on grocery store meals and free sights. Note that US sales tax is added at checkout!" },
+                    { text: "No budget at all", scoreType: 'poor', points: -1, feedback: "Danger! Uncontrolled spending drains bank accounts fast. You will run out of money mid-trip! Please choose a realistic budget." }
+                ]
+            },
+            // EMERGENCY 1
+            {
+                type: 'emergency',
+                title: 'EMERGENCY SITUATION 1!',
+                text: 'While driving on a remote desert highway in Utah, your rental car tire suddenly pops!',
+                choices: [
+                    { text: "Pull safely onto the emergency shoulder, turn on hazard lights, and call roadside assistance.", scoreType: 'excellent', points: 2, feedback: "Smart, safe action! The repair truck arrived within an hour and replaced your tire smoothly. (+2 points gained)" },
+                    { text: "Step out into fast highway traffic and try waving down large freight trucks with your hands!", scoreType: 'gameover', points: 0, feedback: "Standing on busy highway lanes is extremely dangerous! Always stay safely behind road barriers during breakdowns!" }
+                ]
+            },
+            // 7. Holiday Focus
+            {
+                type: 'standard',
+                title: 'Scenario 7: Main Activities',
+                text: 'What will be the primary activity focus of your vacation?',
+                choices: [
+                    { text: "National Parks", scoreType: 'excellent', points: 3, feedback: "Breathtaking choice! The US has 63 protected parks with giant trees, canyons, and geysers. Yellowstone was the world's first national park!" },
+                    { text: "Theme Parks", scoreType: 'good', points: 2, feedback: "Super fun choice! World-famous rollercoasters in Orlando or California deliver pure excitement, despite long line waits in hot weather." },
+                    { text: "Big Cities", scoreType: 'acceptable', points: 1, feedback: "Enjoyable option! World-class museums, Broadway shows, and iconic landmarks await, though city noise and crowds can tire you out." },
+                    { text: "Only Outlet Shopping", scoreType: 'poor', points: -1, feedback: "What a waste! Spending your entire holiday inside shopping malls misses out on amazing American nature and cultural sights. Choose again!" }
+                ]
+            },
+            // 8. Travel Insurance
+            {
+                type: 'standard',
+                title: 'Scenario 8: Travel Insurance',
+                text: 'Which travel insurance policy will you purchase before leaving?',
+                choices: [
+                    { text: "Full comprehensive insurance", scoreType: 'excellent', points: 3, feedback: "Wise decision! Covers medical emergencies, cancelled flights, and lost luggage. US healthcare costs are among the highest in the world!" },
+                    { text: "Basic travel insurance", scoreType: 'good', points: 2, feedback: "Good protection! Covers major medical issues and emergency transport, giving decent peace of mind while exploring foreign cities." },
+                    { text: "Medical protection only", scoreType: 'acceptable', points: 1, feedback: "Acceptable safety net! Protects your physical health, but stolen cameras or delayed bags won't be refunded by insurance." },
+                    { text: "No insurance at all", scoreType: 'poor', points: -1, feedback: "Extreme risk! An ambulance ride in America can cost over $2,000 out of pocket! Never travel uninsured here; choose protection!" }
+                ]
+            },
+            // 9. Duration per Location
+            {
+                type: 'standard',
+                title: 'Scenario 9: Pace of Travel',
+                text: 'How long do you plan to stay in each destination stop?',
+                choices: [
+                    { text: "1 week per region", scoreType: 'excellent', points: 3, feedback: "Wonderful relaxed pace! Allows deep exploration of local culture without exhaustion. You will make real local memories this way!" },
+                    { text: "3 – 4 days per region", scoreType: 'good', points: 2, feedback: "Balanced schedule! Enough time to see top attractions without spending your whole vacation packing and unpacking bags." },
+                    { text: "1 – 2 days per region", scoreType: 'acceptable', points: 1, feedback: "Very rushed! You will spend more time driving between stops than enjoying sights. Prepare for tired mornings and quick photo stops!" },
+                    { text: "No schedule plan", scoreType: 'poor', points: -1, feedback: "Total chaos! Without a schedule, hotel rooms book up and you waste hours deciding what to do. Plan better!" }
+                ]
+            },
+            // 10. Managing Money
+            {
+                type: 'standard',
+                title: 'Scenario 10: Payment Methods',
+                text: 'How will you pay for goods and services across the US?',
+                choices: [
+                    { text: "Credit card + backup card", scoreType: 'excellent', points: 3, feedback: "Ideal combination! The US is largely cashless today. Having a secondary card safeguards you against unexpected bank blocks." },
+                    { text: "One credit card only", scoreType: 'good', points: 2, feedback: "Convenient method! Accepted everywhere from taxi cabs to food trucks, but protect it carefully against loss or fraud." },
+                    { text: "Cash only", scoreType: 'acceptable', points: 1, feedback: "Inconvenient choice! Many US hotels, car rental desks, and sports stadiums no longer accept paper cash payments at all." },
+                    { text: "Let your friend pay all", scoreType: 'poor', points: -1, feedback: "Unfair strategy! Relying entirely on someone else creates awkward arguments and financial stress. Manage your own money properly!" }
+                ]
+            },
+            // 11. Packing Strategy
+            {
+                type: 'standard',
+                title: 'Scenario 11: Packing Bags',
+                text: 'What packing strategy will you choose for your trip?',
+                choices: [
+                    { text: "One medium suitcase each", scoreType: 'excellent', points: 3, feedback: "Practical decision! Fits easily inside trunk cars, wheels smoothly through airports, and leaves room for American souvenirs." },
+                    { text: "Light backpack only", scoreType: 'good', points: 2, feedback: "Super agile travel! You zip through airport security fast, though you must stop at laundromats every few days." },
+                    { text: "Buy all clothes in the US", scoreType: 'acceptable', points: 1, feedback: "Fun shopping idea, but wastes precious sightseeing time searching for clothing stores right after landing! Pack some basics." },
+                    { text: "Two giant heavy suitcases each", scoreType: 'poor', points: -1, feedback: "Heavy burden! Oversized luggage will not fit into standard taxi trunks and incurs heavy airline baggage fees. Pack lighter!" }
+                ]
+            },
+            // 12. Flight Cancellation
+            {
+                type: 'standard',
+                title: 'Scenario 12: Cancelled Flight',
+                text: 'Oh no! The airline cancels your connecting flight due to bad weather. What do you do?',
+                choices: [
+                    { text: "Contact the airline service desk immediately", scoreType: 'excellent', points: 3, feedback: "Responsible action! Helpful airline agents will rebook you onto the next available flight free of charge with meal vouchers." },
+                    { text: "Buy expensive new tickets online yourself", scoreType: 'good', points: 2, feedback: "Fast solution, but costly! Airlines are required to rebook you for free during weather cancellations; don't waste extra money!" },
+                    { text: "Wait silently near the gate", scoreType: 'acceptable', points: 1, feedback: "Passive response! While you wait quietly, other travelers line up and claim the remaining seats on tomorrow's flights." },
+                    { text: "Cancel the whole vacation and go home", scoreType: 'poor', points: -1, feedback: "Major overreaction! Minor travel delays happen on holiday; stay calm and let customer service fix your flight routing!" }
+                ]
+            },
+            // EMERGENCY 2
+            {
+                type: 'emergency',
+                title: 'EMERGENCY SITUATION 2!',
+                text: 'A sudden severe weather tornado siren sounds while you are inside a highway gas station!',
+                choices: [
+                    { text: "Follow gas station staff quickly into an interior basement room away from glass windows.", scoreType: 'excellent', points: 2, feedback: "Excellent survival choice! The tornado passed safely two miles away while you stayed protected indoors. (+2 points gained)" },
+                    { text: "Climb up a tall metal light pole outside to film a dramatic video for social media!", scoreType: 'gameover', points: 0, feedback: "Severe storm winds carry flying debris at 100 mph! Never climb outdoor structures during tornado warnings!" }
+                ]
+            }
+        ];
+
+        let currentStep = 0;
+        let score = 0;
+        let isWaitingForNext = false;
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function initGame() {
+            currentStep = 0;
+            score = 0;
+            updateScoreDisplay();
+            showScreen('gameScreen');
+            loadScenario();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('scoreDisplay').innerText = `Score: ${score} pts`;
+        }
+
+        function loadScenario() {
+            isWaitingForNext = false;
+            const scenario = gameData[currentStep];
+
+            const progress = ((currentStep) / gameData.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            const stepTag = document.getElementById('stepTag');
+            if (scenario.type === 'emergency') {
+                stepTag.className = 'step-tag emergency-tag';
+                stepTag.innerText = scenario.title;
+            } else {
+                stepTag.className = 'step-tag';
+                stepTag.innerText = `Step ${currentStep + 1} of 14: ${scenario.title}`;
+            }
+
+            document.getElementById('scenarioText').innerText = scenario.text;
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            let optionsToDisplay = scenario.choices.map((c, index) => ({ ...c, originalIndex: index }));
+            if (scenario.type !== 'emergency') {
+                optionsToDisplay = shuffleArray(optionsToDisplay);
+            }
+
+            optionsToDisplay.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = choice.text;
+                btn.onclick = () => handleChoice(choice, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleChoice(choice, btnElement) {
+            if (choice.scoreType === 'gameover') {
+                document.getElementById('gameOverReason').innerText = choice.feedback;
+                showScreen('gameOverScreen');
+                return;
+            }
+
+            if (choice.scoreType === 'poor') {
+                score = Math.max(0, score + choice.points);
+                updateScoreDisplay();
+                btnElement.disabled = true;
+                showModal("poor", "Try Again!", choice.feedback, "Choose Again");
+                return;
+            }
+
+            if (choice.points) {
+                score += choice.points;
+                updateScoreDisplay();
+            }
+
+            isWaitingForNext = true;
+
+            let modalColor = "blue";
+            let modalTitleText = "Excellent Choice!";
+
+            if (choice.scoreType === 'good') {
+                modalColor = "green";
+                modalTitleText = "Good Choice!";
+            } else if (choice.scoreType === 'acceptable') {
+                modalColor = "orange";
+                modalTitleText = "Acceptable Choice!";
+            } else if (choice.scoreType === 'neutral') {
+                modalColor = "blue";
+                modalTitleText = "Destination Selected!";
+            }
+
+            showModal(modalColor, modalTitleText, choice.feedback, "Continue");
+        }
+
+        function showModal(color, title, text, btnText) {
+            const card = document.getElementById('modalCard');
+            card.className = `modal-card ${color}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalText').innerText = text;
+            document.getElementById('modalBtn').innerText = btnText;
+
+            document.getElementById('feedbackModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('feedbackModal').classList.remove('active');
+
+            if (isWaitingForNext) {
+                currentStep++;
+                if (currentStep >= gameData.length) {
+                    showDebriefing();
+                } else {
+                    loadScenario();
+                }
+            }
+        }
+
+        function showDebriefing() {
+            document.getElementById('progressBar').style.width = `100%`;
+            showScreen('debriefScreen');
+
+            const rankBadge = document.getElementById('rankBadge');
+            const debriefFeedback = document.getElementById('debriefFeedback');
+
+            if (score >= 30) {
+                rankBadge.innerText = `Gold Rank: Ultimate USA Road Tripper (${score} pts)`;
+                debriefFeedback.innerText = "Incredible job! You planned a flawless American holiday with top-tier choices. From smart budgeting and proper insurance to relaxed pacing, you handled every situation like a seasoned traveler. Did you know the USA has over 4 million miles of public roads? You are completely ready for a real US adventure!";
+            } else if (score >= 20) {
+                rankBadge.innerText = `Silver Rank: Smart USA Explorer (${score} pts)`;
+                debriefFeedback.innerText = "Great work! You made very solid decisions throughout your journey across America. A few minor choices were a bit rushed or pricey, but you successfully navigated emergency situations and managed your itinerary well. Fun fact: The US has six different time zones! Keep practicing your English travel skills!";
+            } else if (score >= 10) {
+                rankBadge.innerText = `Bronze Rank: Rookie Traveler (${score} pts)`;
+                debriefFeedback.innerText = "Nice effort! You completed your trip, though some choices caused extra stress or unexpected costs. Planning ahead with travel insurance and realistic daily budgets makes US trips much smoother. Surprise fact: Route 66 crosses eight different states! Try playing again to optimize your itinerary and boost your score!";
+            } else {
+                rankBadge.innerText = `Starter Rank: Lost Tourist (${score} pts)`;
+                debriefFeedback.innerText = "Oops! Your trip encountered lots of unexpected bumps, high costs, and schedule chaos! Don't worry at all—learning from travel mistakes is part of the fun. Did you know mistakes actually help your brain remember new language words faster? Play again, choose wisely, and master your USA holiday planning!";
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function restartGame() {
+            initGame();
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>

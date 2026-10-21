@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cold Snap!: Extreme Winter Survival Game</title>
+    <style>
+        :root {
+            --primary-color: #0288d1;
+            --primary-hover: #01579b;
+            --secondary-color: #e0f7fa;
+            --dark-color: #0f172a;
+            --light-color: #ffffff;
+            --success-color: #2e7d32;
+            --success-bg: #e8f5e9;
+            --danger-color: #c62828;
+            --danger-bg: #ffebee;
+            --warning-bg: #fff8e1;
+            --warning-color: #f57f17;
+            --card-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: var(--dark-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 720px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-badge {
+            background: linear-gradient(45deg, var(--primary-color), #29b6f6);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(2, 136, 209, 0.3);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .intro-screen h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            text-align: center;
+        }
+
+        .intro-screen p {
+            margin-bottom: 14px;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            color: #334155;
+            text-align: center;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 15px;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(2, 136, 209, 0.25);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(2, 136, 209, 0.35);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 22px;
+            line-height: 1.5;
+            color: #1e293b;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #fff;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary-color);
+            background-color: #f0f9ff;
+            transform: translateX(4px);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback-box {
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback-box.correct {
+            background-color: var(--success-bg);
+            color: var(--success-color);
+            border: 1px solid #a5d6a7;
+        }
+
+        .feedback-box.incorrect {
+            background-color: var(--danger-bg);
+            color: var(--danger-color);
+            border: 1px solid #ef9a9a;
+        }
+
+        .feedback-box.warning {
+            background-color: var(--warning-bg);
+            color: var(--warning-color);
+            border: 1px solid #ffe082;
+        }
+
+        .life-or-death {
+            border: 2px solid var(--danger-color) !important;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(198, 40, 40, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0); }
+        }
+
+        .danger-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            margin-bottom: 22px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #29b6f6, var(--primary-color));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .result-band {
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        .result-band h3 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+
+        .game-over-screen {
+            text-align: center;
+        }
+
+        .game-over-screen h2 {
+            color: var(--danger-color);
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="header">
+        <h1>❄️ Cold Snap!</h1>
+        <div class="score-badge">Score: <span id="score-display">0</span>/50</div>
+    </div>
+
+    <!-- BRIEF INTRO SCREEN -->
+    <div id="intro-screen" class="screen active">
+        <h2>Survive the Cold Snap!</h2>
+        <p>A polar vortex has brought severe freezing temperatures and blizzards to your city. Test your winter survival knowledge and navigate extreme cold scenarios to protect yourself and others.</p>
+        <p style="font-size: 1.2rem; font-weight: bold; color: var(--primary-color); margin: 20px 0;">
+            🏆 Maximum Total Score: 50 Points
+        </p>
+        <button class="btn" onclick="startGame()">Start Game</button>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen" class="screen">
+        <div class="progress-bar">
+            <div id="quiz-progress" class="progress-fill"></div>
+        </div>
+        <div id="quiz-type-tag" class="danger-badge">Part 1: Knowledge Quiz</div>
+        <div class="question-text" id="quiz-question">Question text goes here...</div>
+        
+        <div id="quiz-options" class="options-grid"></div>
+
+        <div id="quiz-feedback" class="feedback-box"></div>
+        <button id="quiz-next-btn" class="btn" style="display: none;" onclick="nextQuizQuestion()">Next Question</button>
+    </div>
+
+    <!-- MAZE SCREEN -->
+    <div id="maze-screen" class="screen">
+        <div class="progress-bar">
+            <div id="maze-progress" class="progress-fill"></div>
+        </div>
+        <div id="maze-badge-container"></div>
+        <div class="question-text" id="scenario-title" style="color: var(--primary-color); font-size: 1.1rem; margin-bottom: 6px;"></div>
+        <div class="question-text" id="scenario-text">Scenario text goes here...</div>
+        
+        <div id="scenario-options" class="options-grid"></div>
+
+        <div id="maze-feedback" class="feedback-box"></div>
+        <button id="maze-next-btn" class="btn" style="display: none;" onclick="nextMazeScenario()">Continue Story</button>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="game-over-screen" class="screen game-over-screen">
+        <h2>⚠️ GAME OVER</h2>
+        <p id="game-over-reason" style="margin-bottom: 20px; font-size: 1.15rem; line-height: 1.6; color: #333;"></p>
+        <p style="color: #666; font-size: 0.95rem;">In extreme cold, critical mistakes can be fatal. Always prioritize warmth, safety, and proper survival protocols!</p>
+        <button class="btn" onclick="restartGame()">Try Again</button>
+    </div>
+
+    <!-- FINAL RESULT SCREEN -->
+    <div id="result-screen" class="screen">
+        <h2 style="text-align: center; margin-bottom: 15px; color: var(--primary-color);">Cold Snap Challenge Complete!</h2>
+        <div style="text-align: center; font-size: 2.2rem; font-weight: bold; margin-bottom: 20px;">
+            Final Score: <span id="final-score">0</span> / 50
+        </div>
+        
+        <div id="result-band" class="result-band"></div>
+
+        <button class="btn" onclick="restartGame()">Play Again</button>
+    </div>
+</div>
+
+<script>
+    // GAME STATE
+    let score = 0;
+    let currentQuizIndex = 0;
+    let currentMazeIndex = 0;
+
+    // PART 1: 12 Questions total (6 T/F @ 1pt + 6 MC @ 2pts = 18 pts max)
+    const quizData = [
+        // 6 True / False Questions (1 Point Each)
+        {
+            type: "tf",
+            question: "True or False: Shivering is your body's automatic reflex to generate heat through rapid muscle movement.",
+            correct: "True",
+            explanation: "True! Shivering produces heat through quick involuntary muscle contractions."
+        },
+        {
+            type: "tf",
+            question: "True or False: Drinking alcohol keeps your body warm in freezing weather.",
+            correct: "False",
+            explanation: "False! Alcohol dilates blood vessels near the skin, making you feel warm initially but actually causing rapid loss of core body heat."
+        },
+        {
+            type: "tf",
+            question: "True or False: Wearing multiple thin layers keeps you warmer than wearing one single heavy layer.",
+            correct: "True",
+            explanation: "True! Multiple layers trap insulating pockets of still air between them, holding in core heat far better."
+        },
+        {
+            type: "tf",
+            question: "True or False: You should rub frostbitten skin vigorously with snow to restore circulation.",
+            correct: "False",
+            explanation: "False! Never rub frostbitten skin or use snow! Frozen tissue has ice crystals that cause severe internal damage if rubbed."
+        },
+        {
+            type: "tf",
+            question: "True or False: Wet clothing loses up to 90% of its insulating properties in cold weather.",
+            correct: "True",
+            explanation: "True! Water conducts heat away from the body 25 times faster than air, rapidly risking hypothermia."
+        },
+        {
+            type: "tf",
+            question: "True or False: Eating snow directly is a great, safe way to stay hydrated in extreme cold.",
+            correct: "False",
+            explanation: "False! Eating solid snow lowers core body temperature rapidly. Always melt and warm snow before drinking it."
+        },
+        // 6 Multiple Choice Questions (2 Points Each)
+        {
+            type: "mc",
+            question: "What is the most dangerous early warning sign of severe hypothermia?",
+            options: [
+                "Violent shivering stops completely while confusion sets in",
+                "Extreme sweating and red skin",
+                "Increased energy and racing thoughts",
+                "Excessive thirst and sneezing"
+            ],
+            correct: 0,
+            explanation: "When shivering stops and confusion/slurred speech begins, the body's heating mechanisms are failing—a severe emergency!"
+        },
+        {
+            type: "mc",
+            question: "Which material is best for base layer clothing in extreme cold?",
+            options: [
+                "Merino wool or synthetic polyester",
+                "100% heavy cotton",
+                "Denim jeans material",
+                "Thin silk ribbons"
+            ],
+            correct: 0,
+            explanation: "Wool and synthetics wick moisture away from skin. Cotton holds moisture, which chills you rapidly ('cotton kills')."
+        },
+        {
+            type: "mc",
+            question: "What is the safest way to warm up frostbitten fingers?",
+            options: [
+                "Soak in lukewarm water (around 37-39°C / 98-102°F) or use body heat",
+                "Hold them directly over an open fire or hot heater",
+                "Rub them together vigorously",
+                "Blow hot air from a hairdryer on high heat"
+            ],
+            correct: 0,
+            explanation: "Warm frostbite gradually using lukewarm water or body heat (like armpits). Direct intense heat causes burns on numb tissue."
+        },
+        {
+            type: "mc",
+            question: "Why is 'wind chill' dangerous during a winter cold snap?",
+            options: [
+                "It strips away the micro-layer of warm air trapped around your body",
+                "It lowers the actual thermometer temperature of the air",
+                "It freezes the oxygen molecules in the atmosphere",
+                "It makes ice melt faster on roads"
+            ],
+            correct: 0,
+            explanation: "Wind strips away the warm boundary layer of air surrounding your skin, speeding up heat loss significantly."
+        },
+        {
+            type: "mc",
+            question: "If trapped in your car during a blizzard, how often should you run the engine for heat?",
+            options: [
+                "About 10 minutes every hour, checking that the exhaust pipe is clear of snow",
+                "Continuously until the fuel tank runs completely empty",
+                "Never run the engine under any circumstances",
+                "Run it continuously with all windows open wide"
+            ],
+            correct: 0,
+            explanation: "Running the engine 10 mins/hour conserves fuel while keeping you safe. Always clear snow from the exhaust to prevent deadly carbon monoxide poisoning!"
+        },
+        {
+            type: "mc",
+            question: "Which body parts are most vulnerable to frostbite in extreme cold?",
+            options: [
+                "Extremities: fingers, toes, nose, ears, and cheeks",
+                "Chest, back, and shoulders",
+                "Stomach and waistline",
+                "Upper thighs and knees"
+            ],
+            correct: 0,
+            explanation: "Your body restricts blood flow to extremities during cold stress to protect core organs, leaving fingers, toes, nose, and ears vulnerable."
+        }
+    ];
+
+    // PART 2: MAZE DATA
+    // 10 Standard Scenarios (3, 2, 1, or -1 pt) -> Max 30 pts
+    // 2 Life or Death Scenarios (1 pt or Game Over) -> Max 2 pts
+    // Total Part 2 Max = 32 pts (Grand Total = 50 pts)
+    const mazeData = [
+        {
+            time: "7:00 AM",
+            title: "Morning Heating & House Prep",
+            text: "You wake up to an extreme cold warning: -20°C (-4°F) with high winds. How do you prepare your home before starting your day?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Keep thermostat stable, let faucets drip slightly to prevent pipe freezing, and seal drafty doors.", pts: 3, feedback: "Great! Preventing frozen pipes and blocking drafts keeps your home warm and safe." },
+                { text: "Set the thermostat to maximum heat and open all interior doors.", pts: 2, feedback: "Keeps you warm, but doesn't protect pipes or block window drafts effectively." },
+                { text: "Leave heat low to save energy and wear heavy blankets indoors.", pts: 1, feedback: "Risky choice. Low indoor heat can lead to burst pipes during severe freezes." },
+                { text: "Place portable space heaters right next to heavy window curtains unattended.", pts: -1, feedback: "Dangerous fire risk! Space heaters near fabrics are a leading cause of home fires." }
+            ]
+        },
+        {
+            time: "8:30 AM",
+            title: "Dressing for the Freeze",
+            text: "You need to step outside to complete necessary morning errands. How do you dress?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Layered clothing: moisture-wicking base, insulating fleece mid-layer, windproof jacket, warm hat, gloves, and boots.", pts: 3, feedback: "Perfect! Three proper layers protect against wind, moisture, and extreme cold." },
+                { text: "A heavy winter parka over a cotton T-shirt, jeans, and regular sneakers.", pts: 2, feedback: "Decent outer coat, but uninsulated footwear and single layers leave you vulnerable." },
+                { text: "Multiple heavy cotton hoodies without a windproof outer shell.", pts: 1, feedback: "Cotton traps moisture, and lack of windproofing allows bitter wind to cut right through." },
+                { text: "Thin denim jeans, fashion leather shoes without socks, and no gloves.", pts: -1, feedback: "Terrible outfit! Exposed skin and thin footwear risk frostbite within minutes." }
+            ]
+        },
+        {
+            time: "10:00 AM",
+            title: "Commute in Ice & Snow",
+            text: "You have to travel across town. Heavy snow and ice cover the roads. How do you travel?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Take public transit, or drive slowly with an emergency winter kit in your trunk.", pts: 3, feedback: "Smart move! Preparedness and cautious travel prevent winter road strandings." },
+                { text: "Drive your car normally, carrying a warm thermos of tea.", pts: 2, feedback: "Thermos helps, but driving normally on ice without emergency gear is risky." },
+                { text: "Walk across town taking a shortcut across a frozen lake/pond.", pts: 1, feedback: "Very dangerous! Ice thickness on open water is unpredictable and can collapse." },
+                { text: "Drive fast on icy roads to reach your destination before snow gets deeper.", pts: -1, feedback: "Extremely reckless! Speeding on ice leads to dangerous skids and severe crashes." }
+            ]
+        },
+        {
+            time: "11:30 AM",
+            title: "LIFE OR DEATH: The Stranded Car in a Blizzard",
+            text: "Your car slides off a rural road into a snowdrift during a blinding whiteout blizzard. Help is hours away. What do you do?",
+            isLifeDeath: true,
+            choices: [
+                { text: "Stay inside the car, clear snow from the exhaust pipe, run heater 10 mins/hr, and tie a bright cloth to the antenna.", pts: 1, fatal: false, feedback: "LIFE SAVER! Staying with your car provides shelter. Clearing the exhaust prevents deadly carbon monoxide buildup!" },
+                { text: "Leave the car immediately and try to walk 5 miles through the blinding blizzard toward town.", pts: 0, fatal: true, feedback: "FATAL ERROR! Walking into a blizzard whiteout leads to rapid disorientation, hypothermia, and freezing to death." }
+            ]
+        },
+        {
+            time: "1:00 PM",
+            title: "Lunchtime Warm-Up",
+            text: "It is midday (-22°C wind chill). You stop at a diner to warm up and eat. What do you order?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Hot vegetable/meat soup, warm tea or water, and a carbohydrate-rich meal.", pts: 3, feedback: "Excellent! Hot soups and calories give your body fuel to generate heat." },
+                { text: "Hot herbal tea and a light sandwich.", pts: 2, feedback: "Good warm drink, though more hearty calories would help generate internal body heat." },
+                { text: "An ice-cold soda and cold salad.", pts: 1, feedback: "Cold food and drinks force your body to expend extra energy warming them up inside." },
+                { text: "Two shots of strong whiskey to 'warm up your bones'.", pts: -1, feedback: "Dangerous myth! Alcohol lowers your core body temperature rapidly despite feeling warm." }
+            ]
+        },
+        {
+            time: "2:30 PM",
+            title: "Snow Clearing Duty",
+            text: "Heavy snow has blocked your driveway. You need to shovel it clear. How do you approach this task?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Shovel in short intervals, take warm indoor breaks, and avoid sweating heavily.", pts: 3, feedback: "Wise approach! Overexertion causes sweat, which cools skin and raises hypothermia risk." },
+                { text: "Shovel as fast as possible without stopping so you can finish quickly.", pts: 2, feedback: "Gets it done, but heavy sweating in sub-zero weather is risky." },
+                { text: "Shovel without wearing gloves so you can grip the shovel better.", pts: 1, feedback: "Risky! Bare hands on cold tool handles can cause frostbite in minutes." },
+                { text: "Work until drenched in sweat, then sit on the porch in the wind to cool down.", pts: -1, feedback: "Terrible idea! Rapid cooling of sweat-soaked clothes leads straight to hypothermia." }
+            ]
+        },
+        {
+            time: "4:00 PM",
+            title: "Recognizing Hypothermia",
+            text: "Your companion has been outdoors with you. They begin shivering violently, stumbling, and slurring their words. What do you do?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Bring them indoors immediately, replace cold/damp clothes with dry warm blankets, and offer a warm sweet drink.", pts: 3, feedback: "Perfect response! These are clear signs of hypothermia. Gentle indoor warming is critical." },
+                { text: "Bring them indoors and stand them directly next to a roaring fireplace with wet clothes on.", pts: 2, feedback: "Gets them inside, but wet clothes must be removed, and extreme direct heat can cause shock." },
+                { text: "Tell them to do jumping jacks outside in the snow to warm up their muscles.", pts: 1, feedback: "Forcing physical exertion during hypothermia exhausts their remaining energy reserves." },
+                { text: "Put them into a scalding hot bath full of hot water right away.", pts: -1, feedback: "Dangerous! Rapid heating of severe hypothermia causes sudden drop in blood pressure and cardiac arrest." }
+            ]
+        },
+        {
+            time: "5:30 PM",
+            title: "Handling Frozen Pipes",
+            text: "You return home and notice water isn't flowing from the kitchen faucet due to frozen pipes. How do you thaw it safely?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Open cabinet doors, use a hairdryer or warm towels wrapped around the pipe, and keep faucet open.", pts: 3, feedback: "Best method! Gentle, controlled heat thaws pipes safely without bursting or fire risks." },
+                { text: "Wait for spring weather to thaw the pipes naturally.", pts: 2, feedback: "Inaction can cause pipes to burst inside walls when ice expands." },
+                { text: "Pour boiling water directly onto frozen outdoor PVC plastic pipes.", pts: 1, feedback: "Extreme temperature shocks can crack brittle frozen pipes instantly." },
+                { text: "Use an open-flame propane blowtorch directly on the wall pipes.", pts: -1, feedback: "Extremely dangerous! Open flames on pipes cause frequent, catastrophic house fires." }
+            ]
+        },
+        {
+            time: "7:00 PM",
+            title: "Evening Meal & Sustenance",
+            text: "It is dinnertime and the outdoor temperature is dropping further. What kind of meal do you prepare?",
+            isLifeDeath: false,
+            choices: [
+                { text: "A hot, hearty stew with complex carbohydrates, healthy fats, and warm tea.", pts: 3, feedback: "Ideal! Fats and complex carbs burn slowly, keeping your internal metabolic furnace stoked overnight." },
+                { text: "A warm bowl of canned soup and toast.", pts: 2, feedback: "Good warm meal, though a bit light on long-lasting calories." },
+                { text: "A cold green salad and ice water.", pts: 1, feedback: "Low calorie and cold foods force your body to work harder to maintain core temperature." },
+                { text: "Ice cream and cold beer.", pts: -1, feedback: "Bad choice! Cold food combined with alcohol drops core body heat significantly." }
+            ]
+        },
+        {
+            time: "8:30 PM",
+            title: "LIFE OR DEATH: Frostbite Emergency",
+            text: "An elderly neighbor comes over. Their fingers are hard, waxy white, and completely numb from searching for their lost cat outside. What do you do?",
+            isLifeDeath: true,
+            choices: [
+                { text: "Call emergency services, warm fingers gently in lukewarm water (around 38°C), and avoid rubbing the skin.", pts: 1, fatal: false, feedback: "LIFE SAVER! Gentle rewarming in lukewarm water saves frostbitten tissue without causing permanent damage." },
+                { text: "Rub their frozen fingers vigorously with hard packed snow and hold them directly on a red-hot stove burner.", pts: 0, fatal: true, feedback: "FATAL ERROR! Rubbing frozen skin breaks fragile tissue, and stove heat burns numb flesh, causing severe necrosis." }
+            ]
+        },
+        {
+            time: "9:30 PM",
+            title: "Nighttime Draft Control",
+            text: "Outside temperatures plunge to -25°C. Your house is losing heat. How do you retain heat overnight?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Close interior doors of unused rooms, block door thresholds with towels, and close thermal curtains.", pts: 3, feedback: "Smart move! Concentrating heat in living areas and blocking drafts keeps bedrooms warm." },
+                { text: "Crank up central heating to maximum and leave all room doors open wide.", pts: 2, feedback: "Keeps house warm but wastes heat on empty rooms and drafts." },
+                { text: "Crack a window open slightly to prevent room air from getting too dry.", pts: 1, feedback: "Unnecessary heat loss! Open windows let freezing air drain your indoor heat." },
+                { text: "Bring an outdoor charcoal grill inside your bedroom to burn overnight for heat.", pts: -1, feedback: "Deadly mistake! Burning charcoal indoors creates odorless, lethal carbon monoxide gas." }
+            ]
+        },
+        {
+            time: "10:30 PM",
+            title: "Sleeping Warmly",
+            text: "You are preparing for bed, but the room feels chilly. How do you set up for a warm, restful night?",
+            isLifeDeath: false,
+            choices: [
+                { text: "Thermal pajamas, wool socks, layered blankets, and a hot water bottle wrapped in cloth near your feet.", pts: 3, feedback: "Excellent! Layered bedding and a hot water bottle keep you safe and comfortable all night." },
+                { text: "Sleep in a heavy winter parka and boots inside your bed.", pts: 2, feedback: "Warm, but bulky outdoor boots and coats make sleeping uncomfortable and damp from minor sweating." },
+                { text: "Drink a large glass of brandy right before sleeping to stay warm overnight.", pts: 1, feedback: "Alcohol disrupts sleep cycle and causes rapid heat loss during the night." },
+                { text: "Leave an unvented portable gas heater running unattended right next to your bed sheets.", pts: -1, feedback: "Extremely hazardous! Fire hazard and dangerous carbon monoxide risks while sleeping." }
+            ]
+        }
+    ];
+
+    function updateScoreDisplay() {
+        document.getElementById("score-display").innerText = score;
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+        document.getElementById(screenId).classList.add("active");
+    }
+
+    function startGame() {
+        score = 0;
+        currentQuizIndex = 0;
+        currentMazeIndex = 0;
+        updateScoreDisplay();
+        showQuizQuestion();
+        showScreen("quiz-screen");
+    }
+
+    function restartGame() {
+        startGame();
+    }
+
+    // QUIZ LOGIC
+    function showQuizQuestion() {
+        const q = quizData[currentQuizIndex];
+        const progressPct = ((currentQuizIndex) / quizData.length) * 100;
+        document.getElementById("quiz-progress").style.width = progressPct + "%";
+        
+        document.getElementById("quiz-feedback").style.display = "none";
+        document.getElementById("quiz-next-btn").style.display = "none";
+
+        const qTextEl = document.getElementById("quiz-question");
+        const optionsEl = document.getElementById("quiz-options");
+        optionsEl.innerHTML = "";
+
+        if (q.type === "tf") {
+            document.getElementById("quiz-type-tag").innerText = `Part 1: True or False (${currentQuizIndex + 1}/12) - 1 Pt`;
+            qTextEl.innerText = q.question;
+
+            ["True", "False"].forEach(opt => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = opt;
+                btn.onclick = () => handleQuizAnswer(opt);
+                optionsEl.appendChild(btn);
+            });
+        } else {
+            document.getElementById("quiz-type-tag").innerText = `Part 1: Multiple Choice (${currentQuizIndex + 1}/12) - 2 Pts`;
+            qTextEl.innerText = q.question;
+
+            let opts = q.options.map((text, idx) => ({ text, isCorrect: idx === q.correct }));
+            opts.sort(() => Math.random() - 0.5);
+
+            opts.forEach(opt => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = opt.text;
+                btn.onclick = () => handleQuizAnswer(opt.isCorrect);
+                optionsEl.appendChild(btn);
+            });
+        }
+    }
+
+    function handleQuizAnswer(userSelection) {
+        const q = quizData[currentQuizIndex];
+        let isCorrect = (q.type === "tf") ? (userSelection === q.correct) : userSelection;
+
+        const feedbackEl = document.getElementById("quiz-feedback");
+        feedbackEl.style.display = "block";
+
+        const btns = document.querySelectorAll("#quiz-options .option-btn");
+        btns.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            const earnedPts = (q.type === "tf") ? 1 : 2;
+            score += earnedPts;
+            updateScoreDisplay();
+            feedbackEl.className = "feedback-box correct";
+            feedbackEl.innerHTML = `<strong>Correct! (+${earnedPts} pt${earnedPts > 1 ? 's' : ''})</strong><br>${q.explanation}`;
+        } else {
+            feedbackEl.className = "feedback-box incorrect";
+            feedbackEl.innerHTML = `<strong>Not quite (+0 pts).</strong><br>${q.explanation}`;
+        }
+
+        document.getElementById("quiz-next-btn").style.display = "block";
+    }
+
+    function nextQuizQuestion() {
+        currentQuizIndex++;
+        if (currentQuizIndex < quizData.length) {
+            showQuizQuestion();
+        } else {
+            showScreen("maze-screen");
+            showMazeScenario();
+        }
+    }
+
+    // MAZE LOGIC
+    function showMazeScenario() {
+        const m = mazeData[currentMazeIndex];
+        const progressPct = ((currentMazeIndex) / mazeData.length) * 100;
+        document.getElementById("maze-progress").style.width = progressPct + "%";
+
+        document.getElementById("maze-feedback").style.display = "none";
+        document.getElementById("maze-next-btn").style.display = "none";
+
+        const badgeContainer = document.getElementById("maze-badge-container");
+        badgeContainer.innerHTML = "";
+        
+        if (m.isLifeDeath) {
+            badgeContainer.innerHTML = `<span class="danger-badge" style="background-color: var(--danger-color);">⚠️ LIFE OR DEATH CHOICE</span>`;
+        } else {
+            badgeContainer.innerHTML = `<span class="danger-badge">Part 2: Scenario (${currentMazeIndex + 1}/12)</span>`;
+        }
+
+        document.getElementById("scenario-title").innerText = `🕒 ${m.time} - ${m.title}`;
+        document.getElementById("scenario-text").innerText = m.text;
+
+        const optionsEl = document.getElementById("scenario-options");
+        optionsEl.innerHTML = "";
+
+        let shuffledChoices = [...m.choices];
+        shuffledChoices.sort(() => Math.random() - 0.5);
+
+        shuffledChoices.forEach(choice => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            if (m.isLifeDeath) btn.classList.add("life-or-death");
+            btn.innerText = choice.text;
+            btn.onclick = () => handleMazeChoice(choice, m.isLifeDeath, btn);
+            optionsEl.appendChild(btn);
+        });
+    }
+
+    function handleMazeChoice(choice, isLifeDeath, clickedBtn) {
+        const feedbackEl = document.getElementById("maze-feedback");
+        feedbackEl.style.display = "block";
+
+        if (isLifeDeath) {
+            const btns = document.querySelectorAll("#scenario-options .option-btn");
+            btns.forEach(b => b.disabled = true);
+
+            if (choice.fatal) {
+                document.getElementById("game-over-reason").innerText = choice.feedback;
+                showScreen("game-over-screen");
+                return;
+            }
+
+            score += 1;
+            updateScoreDisplay();
+            feedbackEl.className = "feedback-box correct";
+            feedbackEl.innerHTML = `<strong>LIFE SAVER! (+1 pt)</strong><br>${choice.feedback}`;
+            document.getElementById("maze-next-btn").style.display = "block";
+            return;
+        }
+
+        // Standard Scenarios Handling (-1 forces choose again)
+        if (choice.pts === -1) {
+            score -= 1;
+            updateScoreDisplay();
+
+            clickedBtn.disabled = true;
+            clickedBtn.style.opacity = "0.5";
+            clickedBtn.style.textDecoration = "line-through";
+
+            feedbackEl.className = "feedback-box incorrect";
+            feedbackEl.innerHTML = `<strong>❌ Dangerous Choice (-1 pt)!</strong><br>${choice.feedback}<br><em>Select another option to continue.</em>`;
+            
+            document.getElementById("maze-next-btn").style.display = "none";
+        } else {
+            score += choice.pts;
+            updateScoreDisplay();
+
+            const btns = document.querySelectorAll("#scenario-options .option-btn");
+            btns.forEach(b => b.disabled = true);
+
+            if (choice.pts === 3) {
+                feedbackEl.className = "feedback-box correct";
+                feedbackEl.innerHTML = `<strong>Great Choice! (+3 pts)</strong><br>${choice.feedback}`;
+            } else if (choice.pts === 2) {
+                feedbackEl.className = "feedback-box warning";
+                feedbackEl.innerHTML = `<strong>Good Choice! (+2 pts)</strong><br>${choice.feedback}`;
+            } else {
+                feedbackEl.className = "feedback-box warning";
+                feedbackEl.style.backgroundColor = "#fff3cd";
+                feedbackEl.style.color = "#856404";
+                feedbackEl.style.borderColor = "#ffeeba";
+                feedbackEl.innerHTML = `<strong>Fair Choice (+1 pt)</strong><br>${choice.feedback}`;
+            }
+
+            document.getElementById("maze-next-btn").style.display = "block";
+        }
+    }
+
+    function nextMazeScenario() {
+        currentMazeIndex++;
+        if (currentMazeIndex < mazeData.length) {
+            showMazeScenario();
+        } else {
+            showFinalResults();
+        }
+    }
+
+    // FINAL RESULTS (Scored out of 50 Max Points)
+    function showFinalResults() {
+        document.getElementById("final-score").innerText = score;
+        const resultBandEl = document.getElementById("result-band");
+
+        let title = "";
+        let desc = "";
+        let bgColor = "";
+        let textColor = "";
+
+        if (score >= 43) {
+            title = "🏆 Polar Master!";
+            desc = "Outstanding job! You possess master-level winter survival skills. You know precisely how to manage freezing temps, protect your home, and keep others safe in extreme cold!";
+            bgColor = "var(--success-bg)";
+            textColor = "var(--success-color)";
+        } else if (score >= 32) {
+            title = "🧊 Winter Survivor";
+            desc = "Great work! You made mostly smart survival decisions and proved you can handle a severe cold snap. Review a few tips to become a true winter expert!";
+            bgColor = "#e0f7fa";
+            textColor = "#006064";
+        } else if (score >= 20) {
+            title = "🌤️ Frosty Novice";
+            desc = "Good effort! You survived the winter storm, but made some risky choices that cost penalty points or comfort. Play again to master your cold weather response!";
+            bgColor = "var(--warning-bg)";
+            textColor = "var(--warning-color)";
+        } else {
+            title = "⚠️ Frostbite Risk!";
+            desc = "Sub-zero temperatures caught you off guard today. You fell for common winter myths and lost points on risky choices. Review winter safety rules and try again!";
+            bgColor = "var(--danger-bg)";
+            textColor = "var(--danger-color)";
+        }
+
+        resultBandEl.style.backgroundColor = bgColor;
+        resultBandEl.style.color = textColor;
+        resultBandEl.innerHTML = `<h3>${title}</h3><p>${desc}</p>`;
+
+        showScreen("result-screen");
+    }
+</script>
+
+</body>
+</html>

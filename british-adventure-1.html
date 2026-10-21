@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Max's Great British Adventure - A2 English Game</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
+
+        .title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-badge {
+            background-color: #eff6ff;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border: 1px solid #bfdbfe;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .scenario-box {
+            margin-bottom: 24px;
+        }
+
+        .step-tag {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .emergency-tag {
+            color: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .scenario-text {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #e2e8f0;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+        }
+
+        .option-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Modal Overlay for Feedback */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 23, 42, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-card.blue { border-top: 6px solid var(--primary); }
+        .modal-card.green { border-top: 6px solid var(--success); }
+        .modal-card.orange { border-top: 6px solid var(--warning); }
+        .modal-card.red { border-top: 6px solid var(--danger); }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #334155;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+
+        .action-btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* Game Over & Debriefing Screens */
+        .screen {
+            display: none;
+            text-align: center;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .screen h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .screen p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            padding: 8px 18px;
+            background-color: #fef3c7;
+            color: #b45309;
+            font-weight: bold;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .icon-svg {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="title">
+                <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 002.5-2.5V7a2 2 0 00-2-2h-1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Max's UK Adventure
+            </div>
+            <div class="score-badge" id="scoreDisplay">Score: 0 pts</div>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- PLAYING SCREEN -->
+        <div id="gameScreen" class="screen active">
+            <div class="scenario-box">
+                <span class="step-tag" id="stepTag">Scenario 1 of 14</span>
+                <div class="scenario-text" id="scenarioText">Loading scenario...</div>
+            </div>
+
+            <div class="options-grid" id="optionsContainer">
+                <!-- Buttons will be injected here -->
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN -->
+        <div id="gameOverScreen" class="screen">
+            <h2 style="color: var(--danger); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg class="icon-svg" style="width: 32px; height: 32px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                GAME OVER!
+            </h2>
+            <p id="gameOverReason">You made a dangerous choice during an emergency situation!</p>
+            <button class="action-btn" onclick="restartGame()">
+                <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Try Again
+            </button>
+        </div>
+
+        <!-- DEBRIEFING SCREEN -->
+        <div id="debriefScreen" class="screen">
+            <h2 style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--success);">
+                <svg class="icon-svg" style="width: 32px; height: 32px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                Adventure Completed!
+            </h2>
+            <div class="rank-badge" id="rankBadge">Rank: Loading...</div>
+            <p id="debriefFeedback">Loading your final debriefing...</p>
+            <button class="action-btn" onclick="restartGame()">
+                <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Play Again
+            </button>
+        </div>
+
+        <!-- FEEDBACK MODAL -->
+        <div class="modal-overlay" id="feedbackModal">
+            <div class="modal-card" id="modalCard">
+                <div class="modal-title" id="modalTitle">Feedback</div>
+                <div class="modal-text" id="modalText">Feedback message goes here.</div>
+                <button class="action-btn" id="modalBtn" onclick="closeModal()">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure for Scenarios
+        const gameData = [
+            // 1. Destination Choice (No scoring)
+            {
+                type: 'destination',
+                title: 'Scenario 1: Choose Your Destination',
+                text: 'Welcome to your UK adventure! Where do you want to travel first?',
+                choices: [
+                    { text: "London!", scoreType: 'neutral', feedback: "Great choice! London has over 170 museums and double-decker buses. Did you know big raven birds legally guard the Tower of London?" },
+                    { text: "Edinburgh!", scoreType: 'neutral', feedback: "Awesome! Edinburgh is built on extinct volcanoes. Did you know J.K. Rowling wrote Harry Potter in a charming local cafe here?" },
+                    { text: "Manchester!", scoreType: 'neutral', feedback: "Fantastic! Manchester is famous for football and music. Fun fact: The first computer with saved programs was built here in 1948!" },
+                    { text: "Cornwall!", scoreType: 'neutral', feedback: "Lovely! Cornwall has beautiful beaches and yummy pasties. Surprise: Queen Elizabeth II used to officially own all UK dolphins!" }
+                ]
+            },
+            // 2. Packing
+            {
+                type: 'standard',
+                title: 'Scenario 2: Packing Your Bag',
+                text: 'You are packing your bag at home. What is the most important thing to pack for British weather?',
+                choices: [
+                    { text: "A waterproof raincoat and umbrella.", scoreType: 'excellent', points: 3, feedback: "Excellent pick! It rains around 156 days a year in the UK. Being dry keeps you happy and warm on tour." },
+                    { text: "Warm sweaters and sunglasses.", scoreType: 'good', points: 2, feedback: "Good thinking! British weather changes fast. You can experience sunny skies, cold wind, and rain all in one single morning!" },
+                    { text: "Summer t-shirts and shorts.", scoreType: 'acceptable', points: 1, feedback: "Okay, but risky! Even in summer, British afternoons can get chilly. Did you know sudden rain showers happen without warning here?" },
+                    { text: "Only a swimsuit and flip-flops.", scoreType: 'poor', points: -1, feedback: "Oh no! You will freeze! British sea temperatures rarely exceed 16°C. Please select a warmer, more practical option now!" }
+                ]
+            },
+            // 3. Train Ticket
+            {
+                type: 'standard',
+                title: 'Scenario 3: Buying a Train Ticket',
+                text: 'You arrive at the train station. How do you ask the ticket seller politely?',
+                choices: [
+                    { text: "Hello! Could I please have a return ticket to Manchester?", scoreType: 'excellent', points: 3, feedback: "Perfect polite English! British people love using 'please' and 'could'. Surprise: The UK has over 2,500 active train stations daily!" },
+                    { text: "Hi, I would like one ticket to Manchester, please.", scoreType: 'good', points: 2, feedback: "Good job! Simple, clear, and polite. Did you know the world's oldest underground railway opened in London back in 1863?" },
+                    { text: "One ticket to Manchester, thank you.", scoreType: 'acceptable', points: 1, feedback: "Acceptable! It is clear enough, though adding 'please' before buying makes locals much friendlier. Keep learning great manners!" },
+                    { text: "Give me ticket now!", scoreType: 'poor', points: -1, feedback: "Yikes! That sounds rude in English. Train staff might ignore you! Try again using polite words like 'please' or 'could'." }
+                ]
+            },
+            // 4. Cafe Breakfast
+            {
+                type: 'standard',
+                title: 'Scenario 4: Ordering Breakfast',
+                text: 'You sit down hungry at a traditional café. How do you order your breakfast?',
+                choices: [
+                    { text: "Hello, may I have a full English breakfast with tea, please?", scoreType: 'excellent', points: 3, feedback: "Spot on! A full English includes eggs, bacon, sausages, beans, and toast. British people drink 100 million cups of tea daily!" },
+                    { text: "I would like scrambled eggs on toast and coffee, please.", scoreType: 'good', points: 2, feedback: "Delicious choice! Toast with eggs is a classic, healthy breakfast choice. Fun fact: Espresso was only introduced to Britain in 1950!" },
+                    { text: "Just bring me sausage and water.", scoreType: 'acceptable', points: 1, feedback: "Understandable, but adding 'please' makes your order sweeter. Sausages in Britain are humorously nicknamed 'bangers' because they can explode!" },
+                    { text: "Food! Bring eat stuff quick!", scoreType: 'poor', points: -1, feedback: "Oops! The waiter looks very confused and sad. Speak in proper sentences and try ordering politely once more now!" }
+                ]
+            },
+            // 5. Asking Directions
+            {
+                type: 'standard',
+                title: 'Scenario 5: Asking Directions',
+                text: 'You are lost in the busy city center. How do you ask someone for help?',
+                choices: [
+                    { text: "Excuse me, could you tell me how to get to the museum?", scoreType: 'excellent', points: 3, feedback: "Excellent! Starting with 'Excuse me' is standard British etiquette. Fun fact: Asking directions is the best way to practice speaking!" },
+                    { text: "Hello, where is the nearest museum, please?", scoreType: 'good', points: 2, feedback: "Very good! Direct and polite. Did you know that most national museums in the UK are completely free to enter?" },
+                    { text: "Where museum? I am lost.", scoreType: 'acceptable', points: 1, feedback: "Okay, people will understand you, but full sentences sound much nicer. Don't worry, helpful locals will point you right!" },
+                    { text: "Hey you! Take me museum right now!", scoreType: 'poor', points: -1, feedback: "Oh dear! The passerby looks frightened and walks away fast. Please try again with a friendly, polite greeting!" }
+                ]
+            },
+            // 6. Hotel Check-in
+            {
+                type: 'standard',
+                title: 'Scenario 6: Hotel Check-In',
+                text: 'You arrive at your hotel reception desk. What do you say to the receptionist?',
+                choices: [
+                    { text: "Good afternoon, I have a reservation under the name Max.", scoreType: 'excellent', points: 3, feedback: "Perfect! Expressing your reservation clearly helps receptionist staff find keys quickly. Hotel keys used to be massive iron keys!" },
+                    { text: "Hello! I booked a room for two nights online.", scoreType: 'good', points: 2, feedback: "Good sentence! It gives all key information right away. Fun fact: The oldest hotel in the UK was built in 947 AD!" },
+                    { text: "Hi, I need room. Name is Max.", scoreType: 'acceptable', points: 1, feedback: "Clear enough! The receptionist understands, but complete sentences sound much more professional. Good effort on communicating clearly!" },
+                    { text: "Give key, I sleep now!", scoreType: 'poor', points: -1, feedback: "Whoops! The receptionist is alarmed by your demand. Remember your manners and try checking in again politely!" }
+                ]
+            },
+            // EMERGENCY 1
+            {
+                type: 'emergency',
+                title: 'EMERGENCY SITUATION 1!',
+                text: 'It is midnight. Suddenly, the loud hotel fire alarm starts ringing beep-beep-beep!',
+                choices: [
+                    { text: "Walk quickly down the stairs to the emergency exit outside.", scoreType: 'excellent', points: 2, feedback: "Great reaction! You safely reached the street outside. Turns out someone burnt toast in room 201! (+2 points gained)" },
+                    { text: "Open the window and jump into the garden bushes!", scoreType: 'gameover', points: 0, feedback: "You jumped onto a prickly rose bush and broke your ankle! Always use stairs during fire emergencies!" }
+                ]
+            },
+            // 7. Taking the Bus
+            {
+                type: 'standard',
+                title: 'Scenario 7: Boarding the Bus',
+                text: 'You board a famous red double-decker bus. What do you say to the driver?',
+                choices: [
+                    { text: "Hello, single ticket to the city park, please.", scoreType: 'excellent', points: 3, feedback: "Brilliantly said! Bus drivers appreciate exact phrases. Surprise: London buses were originally painted red so they were easily seen!" },
+                    { text: "Hi, how much is it to go to the park?", scoreType: 'good', points: 2, feedback: "Great question! Friendly and practical. Did you know that London has over 8,600 red buses driving every single day?" },
+                    { text: "Park ticket, please.", scoreType: 'acceptable', points: 1, feedback: "Short but usable! The driver gets your point. Pro tip: In the UK, people always say 'Thank you' when leaving buses!" },
+                    { text: "Drive me park fast!", scoreType: 'poor', points: -1, feedback: "Oh no! The bus driver points to the door. You cannot command drivers! Try again with a polite ticket request." }
+                ]
+            },
+            // 8. Museum Visit
+            {
+                type: 'standard',
+                title: 'Scenario 8: At the Museum',
+                text: 'Inside the history museum, a sign next to an ancient crown says "Do Not Touch". What do you do?',
+                choices: [
+                    { text: "Look with your eyes and read the display descriptions carefully.", scoreType: 'excellent', points: 3, feedback: "Top choice! Respecting museum rules preserves ancient objects. Fact: The British Museum contains over 8 million historical artifacts!" },
+                    { text: "Take photos without flash and enjoy the exhibition.", scoreType: 'good', points: 2, feedback: "Nice choice! No-flash photography protects old artwork from light damage. Keep exploring and discovering cool historical facts!" },
+                    { text: "Gently tap the display glass frame with your fingernail.", scoreType: 'acceptable', points: 1, feedback: "Hmm, acceptable if soft, but security guards might watch you! It is always better not to touch museum displays at all." },
+                    { text: "Pick up the crown to take a cool selfie!", scoreType: 'poor', points: -1, feedback: "ALERT! Alarms sound and security runs toward you! Put the crown down and pick a safer, respectful action now!" }
+                ]
+            },
+            // 9. Shopping
+            {
+                type: 'standard',
+                title: 'Scenario 9: Souvenir Shopping',
+                text: 'You buy a fridge magnet for £4, but you only have a £20 banknote.',
+                choices: [
+                    { text: "Could I pay with this £20 note, please?", scoreType: 'excellent', points: 3, feedback: "Perfect! Shopkeepers handle big notes daily. Fun fact: UK plastic banknotes can actually survive accidentally going through a washing machine!" },
+                    { text: "Is it okay if I pay with cash?", scoreType: 'good', points: 2, feedback: "Good sentence! Cash is widely accepted, though card payments are super popular now across the UK. Nice communication skills!" },
+                    { text: "Take 20 pounds, give change.", scoreType: 'acceptable', points: 1, feedback: "Understandable, but sounds slightly harsh. Adding 'please' keeps conversations warm and friendly with local shop staff." },
+                    { text: "Keep change, magnet is free now!", scoreType: 'poor', points: -1, feedback: "Wait! That is not how paying works! You cannot just steal items. Please choose a real way to pay the seller!" }
+                ]
+            },
+            // 10. Meeting a Local
+            {
+                type: 'standard',
+                title: 'Scenario 10: Chatting in the Park',
+                text: 'A friendly local sitting on a park bench says: "Lovely weather today, isn\'t it?"',
+                choices: [
+                    { text: "Yes, it really is! It is nice and sunny today.", scoreType: 'excellent', points: 3, feedback: "Fantastic! Talking about weather is the ultimate British icebreaker. UK citizens spend around 6 months of life chatting weather!" },
+                    { text: "Yes, I am enjoying my walk in the park very much!", scoreType: 'good', points: 2, feedback: "Lovely reply! Positive responses make friendly park connections easy. Surprise: London is 47% green space with thousands of parks!" },
+                    { text: "Yes, sunny good.", scoreType: 'acceptable', points: 1, feedback: "Simple and clear! You communicated agreement. Practicing longer sentences will boost your English confidence fast!" },
+                    { text: "Why are you talking to me? Go away!", scoreType: 'poor', points: -1, feedback: "Ouch! That was a bit mean! Weather small-talk is normal and friendly here. Try replying with a pleasant answer instead!" }
+                ]
+            },
+            // 11. Restaurant Dinner
+            {
+                type: 'standard',
+                title: 'Scenario 11: Dinner Time',
+                text: 'You sit down at a traditional British restaurant. What do you order for dinner?',
+                choices: [
+                    { text: "Could I please order Fish and Chips with tartar sauce?", scoreType: 'excellent', points: 3, feedback: "Classic choice! Fish and chips has been popular since 1860. The UK consumes around 380 million portions of it yearly!" },
+                    { text: "I would like the shepherd's pie with vegetables, please.", scoreType: 'good', points: 2, feedback: "Delicious! Shepherd's pie is a hearty traditional dish made with minced meat and mashed potato topping. Great English selection!" },
+                    { text: "I want a burger and fries.", scoreType: 'acceptable', points: 1, feedback: "Tasty, but not very traditional British! Next time try ordering fish and chips for a true local culinary experience!" },
+                    { text: "Bring all kitchen food to my table!", scoreType: 'poor', points: -1, feedback: "Oh dear! The waiter laughs nervously thinking you are joking. Pick a realistic meal off the menu to order properly!" }
+                ]
+            },
+            // 12. Rainstorm
+            {
+                type: 'standard',
+                title: 'Scenario 12: Sudden Rainstorm',
+                text: 'Oh no! It starts pouring rain while you are walking outside! What do you do?',
+                choices: [
+                    { text: "Open your umbrella and step into a nearby cafe for shelter.", scoreType: 'excellent', points: 3, feedback: "Smart move! Staying dry while enjoying warm tea is peak British culture. Rain showers often stop as quickly as they begin!" },
+                    { text: "Put on your raincoat hood and keep walking to your hotel.", scoreType: 'good', points: 2, feedback: "Good decision! Being prepared keeps your trip fun regardless of wet weather. British people rarely let rain cancel plans!" },
+                    { text: "Run fast under a tree and wait until it stops.", scoreType: 'acceptable', points: 1, feedback: "Okay option during light rain, but heavy rain still gets you soaked under trees! At least you stayed active!" },
+                    { text: "Lie down on the wet street and cry!", scoreType: 'poor', points: -1, feedback: "Oh no! You are getting soaked and people are staring! Get up and choose a practical way to stay dry!" }
+                ]
+            },
+            // EMERGENCY 2
+            {
+                type: 'emergency',
+                title: 'EMERGENCY SITUATION 2!',
+                text: 'You dropped your passport on the train platform right as the train doors are closing!',
+                choices: [
+                    { text: "Gently block the door with your bag and notify the train conductor right away.", scoreType: 'excellent', points: 2, feedback: "Well done! The conductor saw you, re-opened the doors, and retrieved your passport safely! (+2 points gained)" },
+                    { text: "Pull the high-voltage emergency lever while screaming 'MY PASSPORT IS FREE!'", scoreType: 'gameover', points: 0, feedback: "Pulling high-voltage levers caused a station lockdown and heavy fines! Always ask train staff for help!" }
+                ]
+            }
+        ];
+
+        // Game State Variables
+        let currentStep = 0;
+        let score = 0;
+        let selectedOptionsThisStep = [];
+        let isWaitingForNext = false;
+
+        // Helper: Shuffle array for random button presentation
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Initialize Game
+        function initGame() {
+            currentStep = 0;
+            score = 0;
+            updateScoreDisplay();
+            showScreen('gameScreen');
+            loadScenario();
+        }
+
+        // Update Score Text
+        function updateScoreDisplay() {
+            document.getElementById('scoreDisplay').innerText = `Score: ${score} pts`;
+        }
+
+        // Load Scenario Content
+        function loadScenario() {
+            isWaitingForNext = false;
+            selectedOptionsThisStep = [];
+            const scenario = gameData[currentStep];
+
+            // Progress Bar (14 total steps)
+            const progress = ((currentStep) / gameData.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            // Title & Tag
+            const stepTag = document.getElementById('stepTag');
+            if (scenario.type === 'emergency') {
+                stepTag.className = 'step-tag emergency-tag';
+                stepTag.innerText = scenario.title;
+            } else {
+                stepTag.className = 'step-tag';
+                stepTag.innerText = `Step ${currentStep + 1} of 14: ${scenario.title}`;
+            }
+
+            document.getElementById('scenarioText').innerText = scenario.text;
+
+            // Prepare Options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            // Randomize options for standard/destination, keep direct for emergency
+            let optionsToDisplay = scenario.choices.map((c, index) => ({ ...c, originalIndex: index }));
+            if (scenario.type !== 'emergency') {
+                optionsToDisplay = shuffleArray(optionsToDisplay);
+            }
+
+            optionsToDisplay.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = choice.text;
+                btn.onclick = () => handleChoice(choice, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        // Handle Player Choice
+        function handleChoice(choice, btnElement) {
+            const scenario = gameData[currentStep];
+
+            // 1. GAME OVER condition (Emergency)
+            if (choice.scoreType === 'gameover') {
+                document.getElementById('gameOverReason').innerText = choice.feedback;
+                showScreen('gameOverScreen');
+                return;
+            }
+
+            // 2. POOR CHOICE condition (Force Retry & Deduct point)
+            if (choice.scoreType === 'poor') {
+                score = Math.max(0, score + choice.points); // Apply -1 point penalty (min score 0)
+                updateScoreDisplay();
+                btnElement.disabled = true; // Disable this bad option
+                showModal("poor", "Try Again!", choice.feedback, "Choose Again");
+                return;
+            }
+
+            // 3. SUCCESS / ACCEPTABLE / NEUTRAL CHOICE
+            if (choice.points) {
+                score += choice.points;
+                updateScoreDisplay();
+            }
+
+            isWaitingForNext = true;
+
+            // Determine modal style and title
+            let modalColor = "blue";
+            let modalTitleText = "Excellent Choice!";
+
+            if (choice.scoreType === 'good') {
+                modalColor = "green";
+                modalTitleText = "Good Choice!";
+            } else if (choice.scoreType === 'acceptable') {
+                modalColor = "orange";
+                modalTitleText = "Acceptable Choice!";
+            } else if (choice.scoreType === 'neutral') {
+                modalColor = "blue";
+                modalTitleText = "Destination Selected!";
+            }
+
+            showModal(modalColor, modalTitleText, choice.feedback, "Continue");
+        }
+
+        // Display Modal
+        function showModal(color, title, text, btnText) {
+            const card = document.getElementById('modalCard');
+            card.className = `modal-card ${color}`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalText').innerText = text;
+            document.getElementById('modalBtn').innerText = btnText;
+
+            document.getElementById('feedbackModal').classList.add('active');
+        }
+
+        // Close Modal & Advance if needed
+        function closeModal() {
+            document.getElementById('feedbackModal').classList.remove('active');
+
+            if (isWaitingForNext) {
+                currentStep++;
+                if (currentStep >= gameData.length) {
+                    showDebriefing();
+                } else {
+                    loadScenario();
+                }
+            }
+        }
+
+        // Show Debriefing Page with 4 Bands
+        function showDebriefing() {
+            document.getElementById('progressBar').style.width = `100%`;
+            showScreen('debriefScreen');
+
+            const rankBadge = document.getElementById('rankBadge');
+            const debriefFeedback = document.getElementById('debriefFeedback');
+
+            // Max possible score: 37 points
+            if (score >= 30) {
+                // Band 1
+                rankBadge.innerText = `Gold Rank: UK Travel Master (${score} pts)`;
+                debriefFeedback.innerText = "Splendid job! Your English skills and polite manners are top-tier. You navigated British transportation, meals, emergencies, and weather like a local expert. Did you know Queen Elizabeth II traveled without a passport? You are ready to travel anywhere with confidence and ease! Cheerio!";
+            } else if (score >= 20) {
+                // Band 2
+                rankBadge.innerText = `Silver Rank: Savvy Tourist (${score} pts)`;
+                debriefFeedback.innerText = "Great work! You communicated effectively and handled everyday British situations well. A few minor vocabulary tweaks will make you unstoppable. Fun fact: The British say 'sorry' about eight times a day! Keep practicing your polite phrases and enjoy your future adventures abroad!";
+            } else if (score >= 10) {
+                // Band 3
+                rankBadge.innerText = `Bronze Rank: Curious Explorer (${score} pts)`;
+                debriefFeedback.innerText = "Good effort! You made it through the trip, though you encountered a few tricky spots along the way. Remember to use 'please', 'thank you', and 'excuse me' often. Surprise: Practice makes perfect in English! Replay to polish your skills even more!";
+            } else {
+                // Band 4
+                rankBadge.innerText = `Starter Rank: Lost Wanderer (${score} pts)`;
+                debriefFeedback.innerText = "Oops! Your trip had plenty of wild turns and confusing moments! Don't worry, learning a language is an exciting journey full of practice. Surprise fact: Mistakes help your brain learn faster! Try playing again to improve your score and master basic travel English!";
+            }
+        }
+
+        // Switch visible screens
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Restart
+        function restartGame() {
+            initGame();
+        }
+
+        // Start game on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>

@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Festival Manager: Scenario Exercise & Warm-Up</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .touch-shrink:active { transform: scale(0.98); }
+  </style>
+</head>
+<body class="font-sans text-slate-800 bg-slate-50 min-h-full flex flex-col antialiased selection:bg-brand-100 selection:text-brand-700">
+
+  <!-- TOP APP HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('screen-warmup')">
+        <span class="text-2xl" role="img" aria-label="Festival Icon">🎪</span>
+        <div>
+          <h1 class="font-extrabold text-slate-900 text-lg leading-tight">Festival Manager</h1>
+          <p class="text-xs text-slate-500 font-medium">ESL B1/B2 Scenario & Resource Management Simulation</p>
+        </div>
+      </div>
+      <button id="top-skip-btn" onclick="showScreen('screen-theme')" class="text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 touch-shrink shadow-xs">
+        <span>Skip Warm-Up</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: WARM-UP & PREPARATION PAGE -->
+    <!-- ========================================== -->
+    <section id="screen-warmup" class="space-y-8 fade-in">
+
+      <div class="bg-gradient-to-r from-brand-600 to-indigo-800 rounded-2xl p-6 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <span class="bg-white/20 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full inline-block mb-2">Stage 1: Trainee Warm-Up</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold">Festival Manager Warm-Up</h2>
+          <p class="text-indigo-100 text-sm mt-1 max-w-2xl leading-relaxed">
+            Prepare for your role as Event Director! Review discussion topics, match 20 core event terms, and complete the true/false logic check.
+          </p>
+        </div>
+        <button onclick="showScreen('screen-theme')" class="bg-white text-brand-700 hover:bg-slate-100 font-extrabold px-5 py-3 rounded-xl shadow-sm text-sm transition-all whitespace-nowrap touch-shrink flex items-center gap-2">
+          <span>Go to Theme Selection</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+      <!-- PART 1: CLASSROOM DISCUSSION PROMPTS -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center gap-2">
+          <span class="bg-amber-100 text-amber-900 font-bold text-xs px-2.5 py-1 rounded-md">Part 1</span>
+          <h3 class="text-lg font-bold text-slate-900">Festival Speaking & Group Discussion Prompts</h3>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-600">Discuss these three prompts in pairs or write notes in the provided response boxes:</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="bg-amber-50/60 border border-amber-200 rounded-xl p-4 flex flex-col justify-between space-y-3">
+            <div>
+              <div class="text-2xl mb-1">🎶</div>
+              <h4 class="font-bold text-slate-900 text-sm mb-1">1. Personal Experiences</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Have you ever attended a music festival, food fair, or major venue? What was the best part, and did anything go wrong?
+              </p>
+            </div>
+            <textarea placeholder="Type speaking notes here..." class="w-full text-xs p-2.5 rounded-lg border border-amber-200 bg-white focus:ring-2 focus:ring-amber-400 focus:outline-none resize-none h-16"></textarea>
+          </div>
+
+          <div class="bg-indigo-50/60 border border-indigo-200 rounded-xl p-4 flex flex-col justify-between space-y-3">
+            <div>
+              <div class="text-2xl mb-1">🌟</div>
+              <h4 class="font-bold text-slate-900 text-sm mb-1">2. Event Success Factors</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                What key factors make major events operate smoothly year after year? How do organizers balance budget and quality?
+              </p>
+            </div>
+            <textarea placeholder="Type speaking notes here..." class="w-full text-xs p-2.5 rounded-lg border border-indigo-200 bg-white focus:ring-2 focus:ring-indigo-400 focus:outline-none resize-none h-16"></textarea>
+          </div>
+
+          <div class="bg-emerald-50/60 border border-emerald-200 rounded-xl p-4 flex flex-col justify-between space-y-3">
+            <div>
+              <div class="text-2xl mb-1">🏙️</div>
+              <h4 class="font-bold text-slate-900 text-sm mb-1">3. Town Benefits & Risks</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                What are the main benefits (local business revenue, tourism) and risks (traffic, noise, budget deficits) for host towns?
+              </p>
+            </div>
+            <textarea placeholder="Type speaking notes here..." class="w-full text-xs p-2.5 rounded-lg border border-emerald-200 bg-white focus:ring-2 focus:ring-emerald-400 focus:outline-none resize-none h-16"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- PART 2: 20-TERM VOCABULARY MATCHING -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-brand-100 text-brand-800 font-bold text-xs px-2.5 py-1 rounded-md">Part 2</span>
+              <h3 class="text-lg font-bold text-slate-900">20-Term Event Vocabulary Match</h3>
+            </div>
+            <p class="text-xs text-slate-600">Match each event term on the left to its correct definition using the dropdown selectors.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="vocab-score-tag" class="text-xs font-bold bg-slate-100 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg">
+              Score: 0 / 20
+            </span>
+            <button onclick="checkVocabAnswers()" class="text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-1.5 rounded-lg transition-colors touch-shrink shadow-xs">
+              Check Answers
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="vocab-grid"></div>
+      </div>
+
+      <!-- PART 3: 12 TRUE / FALSE KNOWLEDGE CHECK -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-indigo-100 text-indigo-900 font-bold text-xs px-2.5 py-1 rounded-md">Part 3</span>
+              <h3 class="text-lg font-bold text-slate-900">12 Event Safety True/False Statements</h3>
+            </div>
+            <p class="text-xs text-slate-600">Test your practical event logic and vocabulary before starting the game.</p>
+          </div>
+          <span id="tf-score-tag" class="text-xs font-bold bg-slate-100 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg self-start sm:self-auto">
+            Score: 0 / 12
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="tf-grid"></div>
+      </div>
+
+      <div class="bg-slate-900 rounded-2xl p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+        <div>
+          <h4 class="font-bold text-base">Finished Warm-Up Activities?</h4>
+          <p class="text-xs text-slate-300 mt-0.5">Proceed to select your festival theme and begin the management simulation.</p>
+        </div>
+        <button onclick="showScreen('screen-theme')" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white font-extrabold px-6 py-3 rounded-xl transition-all shadow-md touch-shrink flex items-center justify-center gap-2 text-sm">
+          <span>Choose Festival Theme</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: THEME SELECTION PAGE (12 THEMES) -->
+    <!-- ========================================== -->
+    <section id="screen-theme" class="space-y-6 hidden fade-in">
+
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="bg-brand-100 text-brand-800 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full inline-block">Step 2: Theme Selection</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Choose Your Festival Theme</h2>
+        <p class="text-sm text-slate-600">Select any theme below to start your playthrough (12 Scenarios + 2 Emergency Crisis Situations).</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Theme Cards 1 to 12 -->
+        <div onclick="selectTheme('food')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-orange-100 text-orange-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🍔</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Food & Gastronomy Festival</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Gourmet Food Trucks & Chefs</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Artisanal stalls, cooking masterclasses, food safety checks, and high crowd dining management.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Food Fest</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('tech')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-cyan-100 text-cyan-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">💻</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Tech & Gaming Innovation Expo</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Esports & Gadget Showcases</p>
+            <p class="text-xs text-slate-600 leading-relaxed">High power requirements, gaming tournaments, product launches, and heavy Wi-Fi infrastructure.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Tech Expo</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('art')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-violet-100 text-violet-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🎨</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Street Art & Cultural Fair</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Muralists, Performers & Crafts</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Live wall painting, outdoor street theatre, interactive art workshops, and family visitor flow.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Street Art Fair</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('eco')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🌿</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Eco & Green Living Festival</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Sustainable Energy & Zero-Waste</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Solar power stages, strict zero-plastic rules, composting workshops, and organic food vendors.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Eco Festival</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('brew')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🍺</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Local Craft & Microbrew Festival</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Artisan Breweries & Live Bands</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Beverage tasting wristbands, strict age verification, acoustic stages, and evening crowd safety.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Craft Brew Fest</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('indie')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🎬</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">International Film & Indie Fest</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Screenings & Director Q&As</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Theater seating management, director talks, red carpet entries, and quiet indoor audio setup.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Indie Film Fest</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('metal')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-slate-900 text-white text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🤘</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Heavy Metal Festival</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Hellfest Style Open-Air Stage</p>
+            <p class="text-xs text-slate-600 leading-relaxed">High pyrotechnics, heavy audio bass, passionate rock crowds, and strict stage perimeter security.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Heavy Metal</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('classical')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-900 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🎻</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Classical Music & Opera Gala</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Symphony Orchestra & Outdoor Opera</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Acoustic sound balancing, VIP lawn seating, formal performer lounges, and quiet sound zones.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Classical Gala</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('adventure')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-teal-100 text-teal-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🎥</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Adventure & Extreme Film Fest</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Outdoor Mountain Cinema & Athletes</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Giant outdoor screens, athlete guest speakers, extreme sport stalls, and mountain weather prep.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Adventure Fest</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('comic')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-fuchsia-100 text-fuchsia-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">📚</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Comic Book & Pop Culture Con</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Cosplay Contests & Celebrities</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Cosplay costume changing areas, celebrity photo booths, artist tables, and indoor hall crowd control.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Comic Con</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('car')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-red-100 text-red-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🏎️</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Muscle Car & Auto Show</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Classic V8 Cruise Style</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Classic V8 engine displays, parade driving lanes, exhaust decibel safety checks, and food courts.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Auto Show</span><span>➔</span>
+          </div>
+        </div>
+
+        <div onclick="selectTheme('tulip')" class="bg-white border-2 border-slate-200 hover:border-brand-500 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between touch-shrink">
+          <div>
+            <div class="w-11 h-11 rounded-xl bg-pink-100 text-pink-800 text-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">🌷</div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-600 transition-colors">Tulip & Spring Flower Festival</h3>
+            <p class="text-[11px] text-slate-400 font-medium mb-2">Garden Displays & Craft Fair</p>
+            <p class="text-xs text-slate-600 leading-relaxed">Botanical garden walkways, photography photo-ops, gardening workshops, and rain tent shelters.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-600">
+            <span>Select Tulip Fest</span><span>➔</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- SECTION 3: GAMEPLAY SIMULATION -->
+    <!-- ========================================== -->
+    <section id="screen-game" class="space-y-6 hidden fade-in">
+
+      <!-- HUD STATS BAR -->
+      <div class="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-800">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center divide-x divide-slate-800">
+          <div>
+            <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Remaining Budget</span>
+            <div class="text-lg sm:text-2xl font-black text-amber-400 mt-1 flex items-center justify-center gap-1">
+              <span>💰</span>
+              <span id="hud-budget">100</span>
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Points Score</span>
+            <div class="text-lg sm:text-2xl font-black text-emerald-400 mt-1 flex items-center justify-center gap-1">
+              <span>🏆</span>
+              <span id="hud-score">0 / 40</span>
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Warning Strikes</span>
+            <div class="text-lg sm:text-2xl font-black text-rose-400 mt-1 flex items-center justify-center gap-1">
+              <span>⚠️</span>
+              <span id="hud-strikes">0 / 3</span>
+            </div>
+          </div>
+          <div class="col-span-2 sm:col-span-1 border-t sm:border-t-0 border-slate-800 pt-2 sm:pt-0">
+            <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Festival Theme</span>
+            <div id="hud-theme-text" class="text-xs sm:text-sm font-bold text-brand-300 mt-1 truncate px-2">
+              Food & Gastronomy
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS BAR -->
+      <div class="space-y-1.5">
+        <div class="flex justify-between items-center text-xs font-bold text-slate-600">
+          <span id="game-theme-badge" class="text-brand-600 font-extrabold uppercase tracking-wide">Stage 1</span>
+          <span id="progress-text">Step 1 of 14</span>
+        </div>
+        <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+          <div id="progress-fill" class="bg-brand-600 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- SCENARIO CARD -->
+      <div id="scenario-card" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5">
+        <div>
+          <span id="scenario-tag" class="bg-indigo-50 text-brand-700 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full inline-block mb-2">
+            Stage 1: Planning & Setup
+          </span>
+          <h2 id="scenario-title" class="text-xl sm:text-2xl font-bold text-slate-900">Scenario Title</h2>
+        </div>
+
+        <div id="scenario-desc" class="bg-slate-50 border-l-4 border-brand-600 p-4 rounded-r-xl text-slate-700 text-sm leading-relaxed font-medium">
+          Scenario description text...
+        </div>
+
+        <!-- CHOICES CONTAINER -->
+        <div class="space-y-3" id="choices-container"></div>
+
+        <!-- VOCAB HELPER -->
+        <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 text-xs text-amber-950 space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <span>💡</span>
+            <span>Scenario Vocabulary Helper:</span>
+          </div>
+          <div id="vocab-text" class="leading-relaxed text-amber-900">...</div>
+        </div>
+
+        <!-- FEEDBACK AREA -->
+        <div id="feedback-box" class="hidden border-2 rounded-xl p-5 space-y-4 fade-in">
+          <div id="feedback-header" class="flex items-center gap-2 font-bold text-base"></div>
+          <p id="feedback-body" class="text-sm leading-relaxed font-medium"></p>
+          <div class="pt-2">
+            <button id="btn-next" onclick="nextScenario()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm touch-shrink flex items-center justify-center gap-2 text-sm">
+              <span>Continue to Next Stage</span>
+              <span>➔</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- SECTION 4: DEBRIEFING PAGE & SCORE REPORT -->
+    <!-- ========================================== -->
+    <section id="screen-end" class="space-y-8 hidden fade-in">
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm text-center space-y-6">
+        <div>
+          <span class="bg-brand-100 text-brand-800 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full inline-block mb-2">Event Concluded</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Executive Debriefing & Performance Report</h2>
+          <p class="text-sm text-slate-600 mt-1">Here is your official evaluation as Event Director:</p>
+        </div>
+
+        <!-- SCORE & BUDGET DISPLAY -->
+        <div class="max-w-md mx-auto bg-slate-900 text-white p-6 rounded-2xl shadow-md border border-slate-800 space-y-4">
+          <div class="grid grid-cols-2 gap-2 border-b border-slate-800 pb-4">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Final Points Score</span>
+              <div class="text-3xl font-black text-emerald-400 mt-1">
+                <span id="end-score">0</span> <span class="text-xs text-slate-400 font-normal">/ 40</span>
+              </div>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Remaining Budget</span>
+              <div class="text-3xl font-black text-amber-400 mt-1">
+                <span id="end-budget">0</span> <span class="text-xs text-slate-400 font-normal">pts</span>
+              </div>
+            </div>
+          </div>
+          <div id="end-badge" class="inline-block bg-brand-600 text-white font-extrabold text-xs uppercase px-4 py-1.5 rounded-full">
+            Band
+          </div>
+        </div>
+
+        <!-- DEBRIEFING FEEDBACK BAND (60-80 WORDS) -->
+        <div class="max-w-2xl mx-auto bg-slate-50 border-2 border-slate-200 p-6 rounded-xl text-left space-y-2">
+          <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+            <span>📋</span>
+            <span>Director Performance Feedback</span>
+          </h3>
+          <p id="end-debrief-text" class="text-sm text-slate-700 leading-relaxed font-medium">
+            Feedback narrative will load here...
+          </p>
+        </div>
+
+        <!-- CLASSROOM DISCUSSION DASHBOARD -->
+        <div class="max-w-2xl mx-auto bg-indigo-50/60 border border-indigo-200 p-5 rounded-xl text-left space-y-3">
+          <h3 class="font-bold text-indigo-950 text-base flex items-center gap-2">
+            <span>💬</span>
+            <span>Classroom & Group Discussion Dashboard</span>
+          </h3>
+          <ul class="text-xs sm:text-sm text-indigo-900 space-y-2 list-disc list-inside leading-relaxed">
+            <li><strong>Budget Strategy:</strong> Did you choose low-cost clever solutions (3 points, low cost) or expensive premium options?</li>
+            <li><strong>Emergency Response:</strong> How well did you preserve remaining funds while resolving the two crisis situations?</li>
+            <li><strong>Vocabulary in Action:</strong> Which event logistics terms (e.g. <em>contingency, bottleneck, decibels</em>) did you utilize during gameplay?</li>
+            <li><strong>Resource Trade-offs:</strong> How can real festival directors balance attendee satisfaction against strict budget limits?</li>
+          </ul>
+        </div>
+
+        <!-- DOWNLOADABLE PERFORMANCE REPORT ACTION BUTTONS -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button onclick="downloadReport()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3 rounded-xl transition-all shadow-md touch-shrink inline-flex items-center justify-center gap-2 text-sm">
+            <span>📥 Download Official Performance Report (.TXT)</span>
+          </button>
+          <button onclick="showScreen('screen-theme')" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white font-extrabold px-6 py-3 rounded-xl transition-all shadow-md touch-shrink inline-flex items-center justify-center gap-2 text-sm">
+            <span>🔄 Play Again with Another Theme</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // =========================================================================
+    // FISHER-YATES RANDOMIZATION ALGORITHM
+    // =========================================================================
+    function fisherYatesShuffle(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // =========================================================================
+    // WARMUP DATA
+    // =========================================================================
+    const vocabItems = [
+      { id: 1, term: "Venue", def: "The specific place or location where an event happens." },
+      { id: 2, term: "Queue", def: "A line of people waiting for entrance or service." },
+      { id: 3, term: "Merchandise", def: "Official souvenir products like t-shirts sold at the event." },
+      { id: 4, term: "Hydration", def: "Drinking enough clean water to remain healthy and energized." },
+      { id: 5, term: "Volunteer", def: "A person who offers to help work without financial payment." },
+      { id: 6, term: "Pyrotechnics", def: "Controlled stage fireworks or flame visual effects." },
+      { id: 7, term: "Briefing", def: "A short instruction meeting held before a work shift starts." },
+      { id: 8, term: "Shift", def: "A specific period of working hours for staff or crew." },
+      { id: 9, term: "Security", def: "Personnel and safety measures that protect event visitors." },
+      { id: 10, term: "Capacity", def: "The maximum number of people legally allowed in a venue." },
+      { id: 11, term: "Sound Check", def: "Testing audio equipment before artists perform on stage." },
+      { id: 12, term: "Decibels", def: "The units used to measure how loud sound levels are." },
+      { id: 13, term: "Hospitality", def: "Welcoming care, private lounges, and food for guests/artists." },
+      { id: 14, term: "Backstage", def: "The private area behind the stage reserved for performers." },
+      { id: 15, term: "Waste Management", def: "The official system for collecting, sorting, and recycling trash." },
+      { id: 16, term: "Contingency", def: "A backup plan for unexpected delays or emergency situations." },
+      { id: 17, term: "Bottleneck", def: "A narrow route where crowd movement slows down heavily." },
+      { id: 18, term: "Flare", def: "An emergency marine distress signal burning at high heat." },
+      { id: 19, term: "Refund", def: "Money returned to a ticket buyer who cannot attend or enter." },
+      { id: 20, term: "Feedback", def: "Comments and ratings given by visitors to review an event." }
+    ];
+
+    const tfQuestions = [
+      { q: "1. Enforcing capacity limits prevents dangerous overcrowding inside venue gates.", ans: true, exp: "True! Venue capacity limits keep attendee numbers within safe legal limits." },
+      { q: "2. Pouring water on hot electric stage amplifiers is a safe cooling technique.", ans: false, exp: "False! Water on high-voltage electrical gear creates a severe shock hazard!" },
+      { q: "3. A sound curfew is the mandatory legal time when music volume must be lowered.", ans: true, exp: "True! Curfews prevent late-night noise pollution for nearby neighborhoods." },
+      { q: "4. Marine distress flares are safe handheld lighting toys for young children.", ans: false, exp: "False! Distress flares burn at extreme temperatures and cause severe burns." },
+      { q: "5. Sound volume levels are measured using decibels (dB).", ans: true, exp: "True! Audio technicians monitor decibel levels to protect visitor hearing." },
+      { q: "6. Volunteer briefings explain emergency steps and schedule worker rest breaks.", ans: true, exp: "True! Briefings prepare volunteer staff to answer guest questions confidently." },
+      { q: "7. Bottlenecks at exit gates help crowds leave the festival much faster.", ans: false, exp: "False! Bottlenecks restrict crowd movement and cause dangerous exit delays." },
+      { q: "8. Free hydration water stations help prevent visitor heat exhaustion.", ans: true, exp: "True! Hydration points keep guests healthy during long outdoor events." },
+      { q: "9. Contingency plans are backup procedures for sudden bad weather or delays.", ans: true, exp: "True! Good contingency planning prevents chaos when unexpected problems happen." },
+      { q: "10. Waste management should only begin the day after all attendees go home.", ans: false, exp: "False! Cleaning trash during the event prevents overflowing bins and tripping hazards." },
+      { q: "11. Hospitality lounges backstage provide performers with quiet rest areas.", ans: true, exp: "True! Proper artist hospitality ensures performers arrive on stage relaxed." },
+      { q: "12. Deleting negative visitor feedback surveys is the best way to improve next year.", ans: false, exp: "False! Reviewing negative feedback helps organizers fix problems for the next edition." }
+    ];
+
+    // =========================================================================
+    // GAMEPLAY DATA: 12 SCENARIOS + 2 EMERGENCY CRISIS SITUATIONS
+    // Budget Rule: Starting Budget = 100.
+    // The most expensive option in every 12 regular choices ALWAYS costs 12 budget
+    // and is ALWAYS a 1 point or -1 point option.
+    // Selecting 8 most expensive choices = 8 * 12 = 96 spent (Budget remaining: 4 - Survives!).
+    // Selecting 9 most expensive choices = 9 * 12 = 108 spent (> 100 Budget Depleted!).
+    // =========================================================================
+    const gameStepsData = [
+      // 1
+      {
+        id: 1,
+        tag: "Stage 1: Planning & Setup",
+        title: "Entry Queue & Gate Management",
+        desc: "Opening hour has arrived! Hundreds of attendees are waiting outside the entrance gates. How do you welcome visitors to the grounds?",
+        vocab: "<strong>Entry gate</strong> = doorway/entrance; <strong>Queue</strong> = waiting line; <strong>Capacity</strong> = maximum crowd limit.",
+        options: [
+          { text: "Implement QR-code digital ticket scanners with trained volunteer guides.", pts: 3, cost: 3, strike: false, feedback: "Smart, cost-effective management! The queue moved briskly without spending excess funds." },
+          { text: "Hire an elite corporate security firm to set up 10 express entrance corridors.", pts: 3, cost: 7, strike: false, feedback: "Top-quality check-in, though quite costly! Visitors entered smoothly." },
+          { text: "Open 3 standard entry lanes with printed direction signs.", pts: 2, cost: 4, strike: false, feedback: "Solid operations. Queue lines were steady with moderate wait times." },
+          { text: "Rent luxury golden turnstile gates while leaving main entrances unmanned.", pts: -1, cost: 12, strike: true, feedback: "POOR CHOICE & WASTEFUL SPENDING (-1 Pt, +1 Strike, -12 Budget)! Gate chaos ensued!" }
+        ]
+      },
+      // 2
+      {
+        id: 2,
+        tag: "Stage 2: Infrastructure",
+        title: "Main Stage & Technical Equipment Cooling",
+        desc: "High outdoor temperatures threaten to overheat main stage electrical sound amplifiers.",
+        vocab: "<strong>Spot-coolers</strong> = portable AC units; <strong>Overheating</strong> = exceeding safe thermal limits.",
+        options: [
+          { text: "Deploy shaded ventilation canvases and industrial cooling fans around power boxes.", pts: 3, cost: 3, strike: false, feedback: "Ingenious low-cost solution! Equipment remained cool and sound quality was crystal clear." },
+          { text: "Rent high-power military-grade outdoor HVAC refrigeration units.", pts: 3, cost: 8, strike: false, feedback: "Flawless technical cooling, though heavy on your event budget!" },
+          { text: "Place heavy-duty electric fans near power boxes with rear tent flaps opened.", pts: 2, cost: 4, strike: false, feedback: "Effective cooling. Gear operated safely with minor temperature warnings." },
+          { text: "Buy 50 designer home luxury gold desk fans to line the stage perimeter.", pts: 1, cost: 12, strike: false, feedback: "UNIMAGINATIVE & OVERPRICED (1 Pt, -12 Budget)! Excessive cost for weak airflow." }
+        ]
+      },
+      // 3
+      {
+        id: 3,
+        tag: "Stage 3: Commercial Operations",
+        title: "Souvenirs & Merchandise Sales",
+        desc: "Official festival t-shirts, posters, and souvenirs are ready for sale. How do you organize commercial points?",
+        vocab: "<strong>Merchandise</strong> = souvenir products; <strong>Contactless</strong> = electronic payment.",
+        options: [
+          { text: "Launch pre-order pickup kiosks with mobile contactless payment terminals.", pts: 3, cost: 2, strike: false, feedback: "Extremely cost-effective! High transaction speed and high attendee satisfaction." },
+          { text: "Construct 3 large custom timber-framed souvenir retail stores.", pts: 3, cost: 7, strike: false, feedback: "Outstanding visual presentation, though expensive to build!" },
+          { text: "Set up 2 central merchandise tents with standard card readers.", pts: 2, cost: 4, strike: false, feedback: "Good arrangement. Steady sales traffic with brief queue delays." },
+          { text: "Hire elite agency fashion models to walk through crowds carrying limited stock.", pts: 1, cost: 12, strike: false, feedback: "UNIMAGINATIVE & OVERPRICED (1 Pt, -12 Budget)! Very costly and inefficient sales method." }
+        ]
+      },
+      // 4
+      {
+        id: 4,
+        tag: "Stage 4: Catering & Health",
+        title: "Food Vendors & Free Drinking Water",
+        desc: "Attendees will remain on site for over 8 hours in warm weather. How do you plan catering and hydration?",
+        vocab: "<strong>Hydration</strong> = water consumption; <strong>Dietary options</strong> = food variety.",
+        options: [
+          { text: "Partner with local food trucks and install free tap-water refill stations.", pts: 3, cost: 1, strike: false, feedback: "Incredible value! High guest happiness and zero heat exhaustion incidents at minimal cost." },
+          { text: "Build imported luxury dining marquees with organic gourmet chefs.", pts: 3, cost: 8, strike: false, feedback: "Exquisite dining experience! Highly popular but drained significant budget." },
+          { text: "Invite local catering trucks with fixed-price bottled water stalls.", pts: 2, cost: 4, strike: false, feedback: "Very good setup. Hydration needs were satisfied smoothly." },
+          { text: "Purchase uninspected bulk processed snacks and sell overpriced imported bottled water.", pts: -1, cost: 12, strike: true, feedback: "POOR CHOICE & WASTEFUL SPENDING (-1 Pt, +1 Strike, -12 Budget)! Health complaints filed!" }
+        ]
+      },
+      // 5
+      {
+        id: 5,
+        tag: "Stage 5: Staff Management",
+        title: "Volunteer Briefing & Shift Rotation",
+        desc: "A team of 30 new event volunteers has arrived for their morning shift. How do you prepare them?",
+        vocab: "<strong>Briefing</strong> = instruction meeting; <strong>Shift rotation</strong> = scheduled work periods.",
+        options: [
+          { text: "Conduct a 20-minute digital briefing, hand out site maps/radios, and schedule shift rotations.", pts: 3, cost: 1, strike: false, feedback: "Brilliant leadership! Highly effective preparation at almost zero cost." },
+          { text: "Hire corporate team-building facilitators to run an all-day staff immersion seminar.", pts: 3, cost: 7, strike: false, feedback: "Staff felt energetic and motivated, though facilitator fees were high!" },
+          { text: "Hold a standard briefing meeting with printed site guides and fixed shift breaks.", pts: 2, cost: 3, strike: false, feedback: "Good preparation. Staff handled routine duties efficiently." },
+          { text: "Order custom Italian designer volunteer blazers while providing zero operational training.", pts: 1, cost: 12, strike: false, feedback: "UNIMAGINATIVE & OVERPRICED (1 Pt, -12 Budget)! Staff looked stylish but could not answer guest questions." }
+        ]
+      },
+      // 6
+      {
+        id: 6,
+        tag: "Stage 6: Night Visuals",
+        title: "Visual Effects & Night Stage Lighting",
+        desc: "As darkness arrives, you must coordinate visual lighting effects and night stage production.",
+        vocab: "<strong>Pyrotechnics</strong> = stage fireworks; <strong>Licensing</strong> = official legal permits.",
+        options: [
+          { text: "Program intelligent LED stage lights with synchronized automated light shows.", pts: 3, cost: 3, strike: false, feedback: "Stunning visual spectacle! Modern, highly effective, and budget-friendly." },
+          { text: "Hire top international pyrotechnic masters for live synchronized stage fireworks.", pts: 3, cost: 8, strike: false, feedback: "Spectacular fireworks show! Loved by all, though pyrotechnic fees were steep." },
+          { text: "Install high-power LED floodlights and professional stage spotlights.", pts: 2, cost: 4, strike: false, feedback: "Clean, professional lighting setup. Fully safe and visually appealing." },
+          { text: "Purchase illegal high-powered flare cannons without safety permits or fire permits.", pts: -1, cost: 12, strike: true, feedback: "POOR CHOICE & WASTEFUL SPENDING (-1 Pt, +1 Strike, -12 Budget)! Emergency fire scare caused!" }
+        ]
+      },
+
+      // 🚨 EMERGENCY 1 (AFTER CHOICE 6)
+      {
+        isEmergency: true,
+        id: "e1",
+        tag: "🚨 EMERGENCY CRISIS 1",
+        title: "Main Electrical Substation Fire Hazard!",
+        desc: "CRISIS! A sudden electrical surge triggers heavy smoke and sparks at the main power substation near Stage A. Crowds are gathering nearby and audio cuts out!",
+        vocab: "<strong>Power surge</strong> = voltage spike; <strong>Substation</strong> = power transformer unit; <strong>Isolation</strong> = cutting electrical flow.",
+        options: [
+          { text: "Isolate power grid, dispatch CO2 fire marshals, and reroute crowds via emergency PA announcements.", pts: 2, cost: 0, gameOver: false, feedback: "Outstanding emergency command (+2 Pts)! Fire isolated in 3 minutes without panic or extra cost." },
+          { text: "Pause stage performances, call emergency services, and clear a 30-meter perimeter with security teams.", pts: 1, cost: 0, gameOver: false, feedback: "Acceptable crisis response (+1 Pt). Fire brigade resolved the issue safely." },
+          { text: "Force high voltage through burning cables and order security to lock crowds in front of the stage.", pts: 0, cost: 0, gameOver: true, feedback: "CATASTROPHIC FAILURE! Substation explosion! Massive fire and immediate festival cancellation!" }
+        ]
+      },
+
+      // 7
+      {
+        id: 7,
+        tag: "Stage 7: Weather Logistics",
+        title: "Sudden Wind Gusts & Storm Readiness",
+        desc: "Weather radar warns of sudden rain and 50 km/h wind gusts approaching in 30 minutes.",
+        vocab: "<strong>Wind gusts</strong> = sudden strong winds; <strong>Covered shelter</strong> = roofed structure.",
+        options: [
+          { text: "Anchor tents with concrete weights and open existing permanent venue pavilions.", pts: 3, cost: 2, strike: false, feedback: "Resourceful planning! Gear stayed dry and guests sheltered safely at low expense." },
+          { text: "Rent heavy geodesic storm shelters and deploy emergency weather barriers.", pts: 3, cost: 8, strike: false, feedback: "Maximum weather protection, though temporary shelter rental was expensive!" },
+          { text: "Lower high stage banners, secure loose tent pegs, and hand out ponchos.", pts: 2, cost: 3, strike: false, feedback: "Good weather defense. Minor water pooling, but structures held firm." },
+          { text: "Hire emergency weather tracking helicopters while leaving stage signs unanchored.", pts: 1, cost: 12, strike: false, feedback: "UNIMAGINATIVE & OVERPRICED (1 Pt, -12 Budget)! Collapsing signs caused minor damage." }
+        ]
+      },
+      // 8
+      {
+        id: 8,
+        tag: "Stage 8: Audio Management",
+        title: "Sound Levels & Community Noise Curfew",
+        desc: "Local town council inspectors arrive to monitor evening sound decibels and compliance with local noise laws.",
+        vocab: "<strong>Decibel (dB)</strong> = sound unit; <strong>Curfew</strong> = mandatory closing hour.",
+        options: [
+          { text: "Angle speaker arrays inward and install digital live decibel limiters.", pts: 3, cost: 2, strike: false, feedback: "Perfect acoustic control! Crystal clear stage sound with zero noise complaints at low cost." },
+          { text: "Build acoustic dampening perimeter walls along neighboring town borders.", pts: 3, cost: 7, strike: false, feedback: "Exceptional noise reduction, though building acoustic walls was very costly!" },
+          { text: "Monitor audio with decibel meters and lower low-frequency bass output after 10 PM.", pts: 2, cost: 3, strike: false, feedback: "Responsible audio control. Council inspectors confirmed compliance." },
+          { text: "Install ultra-expensive mega-amplifiers and blast music past midnight.", pts: -1, cost: 12, strike: true, feedback: "POOR CHOICE & WASTEFUL SPENDING (-1 Pt, +1 Strike, -12 Budget)! Heavy municipal noise fines!" }
+        ]
+      },
+      // 9
+      {
+        id: 9,
+        tag: "Stage 9: Environmental Care",
+        title: "Waste Management & Site Cleanliness",
+        desc: "Food containers and beverage cups are accumulating around main walkways and seating zones.",
+        vocab: "<strong>Recycling station</strong> = sorted waste bins; <strong>Cleanup crew</strong> = sanitation staff.",
+        options: [
+          { text: "Organize volunteer-led green teams with color-coded waste sorting stations.", pts: 3, cost: 1, strike: false, feedback: "Eco-friendly genius! Festival grounds remained spotless and green at minimal cost." },
+          { text: "Hire a private industrial sanitation firm with automated motorized street sweepers.", pts: 3, cost: 8, strike: false, feedback: "Immaculate grounds! Extremely clean, but industrial contractor fees were high." },
+          { text: "Place high-capacity waste bins near catering areas with hourly emptying shifts.", pts: 2, cost: 3, strike: false, feedback: "Effective waste control. Bins were emptied regularly." },
+          { text: "Rent luxury designer gold-rimmed trash bins that overflow within 2 hours.", pts: 1, cost: 12, strike: false, feedback: "UNIMAGINATIVE & OVERPRICED (1 Pt, -12 Budget)! Trash overflowed despite high spending." }
+        ]
+      },
+      // 10
+      {
+        id: 10,
+        tag: "Stage 10: Performer Logistics",
+        title: "VIP Performers & Backstage Hospitality",
+        desc: "Headline artists and VIP guest speakers arrive at the backstage area before their performances.",
+        vocab: "<strong>Hospitality</strong> = guest care; <strong>Backstage liaison</strong> = artist assistant.",
+        options: [
+          { text: "Provide a quiet lounge, dedicated volunteer liaisons, fresh local food, and punctual escorts.", pts: 3, cost: 2, strike: false, feedback: "First-class hospitality! Performers felt valued and delivered top shows at low cost." },
+          { text: "Rent luxury five-star motorhomes and private gourmet chefs for headline artists.", pts: 3, cost: 8, strike: false, feedback: "VIP treatment loved by artists, but heavily consumed your event budget!" },
+          { text: "Set up air-conditioned artist trailers with refreshments and schedule boards.", pts: 2, cost: 4, strike: false, feedback: "Professional care. Performers were relaxed and ready on time." },
+          { text: "Pay exorbitant VIP luxury limo fees while leaving artists without security credentials.", pts: -1, cost: 12, strike: true, feedback: "POOR CHOICE & WASTEFUL SPENDING (-1 Pt, +1 Strike, -12 Budget)! Show delayed by 45 minutes!" }
+        ]
+      },
+
+      // 🚨 EMERGENCY 2 (AFTER CHOICE 10)
+      {
+        isEmergency: true,
+        id: "e2",
+        tag: "🚨 EMERGENCY CRISIS 2",
+        title: "Crowd Surge & Gate Pressure Crisis!",
+        desc: "CRISIS! A viral celebrity post causes 2,000 unticketed people to rush Gate B simultaneously. Security reports heavy crowd pressure against safety barriers!",
+        vocab: "<strong>Crowd surge</strong> = sudden rush of people; <strong>Perimeter barrier</strong> = safety fence; <strong>Diverting</strong> = rerouting crowd movement.",
+        options: [
+          { text: "Deploy secondary perimeter fences, redirect crowd flow to overflow zones, and broadcast calm PA guidance.", pts: 2, cost: 0, gameOver: false, feedback: "Brilliant crowd control (+2 Pts)! Barrier pressure relieved immediately without injuries or cost." },
+          { text: "Reinforce Gate B security teams, temporarily halt entry, and open Gate C to divert incoming crowds.", pts: 1, cost: 0, gameOver: false, feedback: "Effective emergency action (+1 Pt). Order restored, though minor delays occurred." },
+          { text: "Order security to padlock Gate B shut while pushing crowds backward with force.", pts: 0, cost: 0, gameOver: true, feedback: "CATASTROPHIC FAILURE! Dangerous crowd collapse occurred at Gate B! Mass panic and police shutdown!" }
+        ]
+      },
+
+      // 11
+      {
+        id: 11,
+        tag: "Stage 11: Crowd Departure",
+        title: "End-of-Night Exit Routes & Bottlenecks",
+        desc: "The final show has ended. Thousands of attendees head toward the exits at the same time.",
+        vocab: "<strong>Bottleneck</strong> = crowded narrow point; <strong>Illuminated exit</strong> = lit pathway out.",
+        options: [
+          { text: "Open 4 wide floodlit exit gates with clear LED directional arrows and steward guidance.", pts: 3, cost: 2, strike: false, feedback: "Masterful exit flow! Departure was completed safely and quickly at low expense." },
+          { text: "Construct temporary multi-lane exit overpasses and hire traffic directors.", pts: 3, cost: 8, strike: false, feedback: "Flawless crowd exit, though building temporary overpasses was very costly!" },
+          { text: "Open 2 extra exit gates with steward guidance and illuminated pathways.", pts: 2, cost: 3, strike: false, feedback: "Good crowd exit flow. Total departure completed safely." },
+          { text: "Build high-end turnstile exit gates that jam under heavy crowd pressure.", pts: -1, cost: 12, strike: true, feedback: "POOR CHOICE & WASTEFUL SPENDING (-1 Pt, +1 Strike, -12 Budget)! Emergency security intervention required!" }
+        ]
+      },
+      // 12
+      {
+        id: 12,
+        tag: "Stage 12: Post-Event Analysis",
+        title: "Post-Event Feedback & Debriefing",
+        desc: "The festival has concluded! How do you gather visitor opinions and evaluate management results?",
+        vocab: "<strong>Feedback survey</strong> = review questionnaire; <strong>Analytics</strong> = data analysis.",
+        options: [
+          { text: "Launch a 3-question QR-code digital survey with a ticket draw incentive.", pts: 3, cost: 1, strike: false, feedback: "Incredible response rate! Gathered vital insights for next year at almost zero cost." },
+          { text: "Hire an international market research agency to conduct post-event phone interviews.", pts: 3, cost: 7, strike: false, feedback: "Comprehensive research analytics, though agency fees were high!" },
+          { text: "Send an email questionnaire to registered ticket holders with discount vouchers.", pts: 2, cost: 2, strike: false, feedback: "Very good survey return. Useful attendee data gathered." },
+          { text: "Print 10,000 glossy feedback booklets that nobody fills out or reads.", pts: 1, cost: 12, strike: false, feedback: "UNIMAGINATIVE & OVERPRICED (1 Pt, -12 Budget)! Glossy booklets were discarded." }
+        ]
+      }
+    ];
+
+    const themeNames = {
+      food: "Food & Gastronomy Festival",
+      tech: "Tech & Gaming Innovation Expo",
+      art: "Street Art & Cultural Fair",
+      eco: "Eco & Green Living Festival",
+      brew: "Local Craft & Microbrew Festival",
+      indie: "International Film & Indie Fest",
+      metal: "Heavy Metal Festival",
+      classical: "Classical Music & Opera Gala",
+      adventure: "Adventure & Extreme Film Fest",
+      comic: "Comic Book & Pop Culture Con",
+      car: "Muscle Car & Auto Show",
+      tulip: "Tulip & Spring Flower Festival"
+    };
+
+    // Global Game State
+    let gameState = {
+      theme: 'food',
+      currentStepIndex: 0,
+      score: 0,
+      budget: 100,
+      strikes: 0,
+      isGameOver: false,
+      isBudgetDepleted: false,
+      currentShuffledOptions: [],
+      tfAnswers: {},
+      tfScore: 0
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderWarmupPart2();
+      renderWarmupPart3();
+    });
+
+    function showScreen(screenId) {
+      ['screen-warmup', 'screen-theme', 'screen-game', 'screen-end'].forEach(id => {
+        document.getElementById(id).classList.toggle('hidden', id !== screenId);
+      });
+      document.getElementById('top-skip-btn').classList.toggle('hidden', screenId !== 'screen-warmup');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // WARMUP PART 2 & 3 LOGIC
+    // =========================================================================
+    function renderWarmupPart2() {
+      const grid = document.getElementById('vocab-grid');
+      grid.innerHTML = '';
+      vocabItems.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = "bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2";
+        let selectOptions = `<option value="">-- Choose Definition --</option>`;
+        [...vocabItems].sort((a, b) => a.term.localeCompare(b.term)).forEach(opt => {
+          selectOptions += `<option value="${opt.id}">${opt.def}</option>`;
+        });
+        row.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-md bg-brand-100 text-brand-800 font-extrabold text-xs flex items-center justify-center">${index + 1}</span>
+            <span class="font-bold text-xs sm:text-sm text-slate-900">${item.term}</span>
+          </div>
+          <select id="v-select-${item.id}" class="v-select text-xs p-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-brand-400 focus:outline-none max-w-full sm:max-w-md">
+            ${selectOptions}
+          </select>
+        `;
+        grid.appendChild(row);
+      });
+    }
+
+    function checkVocabAnswers() {
+      let correctCount = 0;
+      vocabItems.forEach(item => {
+        const select = document.getElementById(`v-select-${item.id}`);
+        const userVal = parseInt(select.value, 10);
+        if (userVal === item.id) {
+          correctCount++;
+          select.className = "v-select text-xs p-2 rounded-lg border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-semibold max-w-full sm:max-w-md";
+        } else {
+          select.className = "v-select text-xs p-2 rounded-lg border-2 border-rose-500 bg-rose-50 text-rose-950 max-w-full sm:max-w-md";
+        }
+      });
+      const scoreTag = document.getElementById('vocab-score-tag');
+      scoreTag.innerText = `Score: ${correctCount} / 20`;
+      scoreTag.className = correctCount === 20 
+        ? "text-xs font-bold bg-emerald-100 border border-emerald-300 text-emerald-800 px-3 py-1.5 rounded-lg"
+        : "text-xs font-bold bg-amber-100 border border-amber-300 text-amber-800 px-3 py-1.5 rounded-lg";
+    }
+
+    function renderWarmupPart3() {
+      const grid = document.getElementById('tf-grid');
+      grid.innerHTML = '';
+      gameState.tfAnswers = {};
+      gameState.tfScore = 0;
+      tfQuestions.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between space-y-3";
+        card.innerHTML = `
+          <p class="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">${item.q}</p>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <button onclick="answerTF(${idx}, true)" id="tf-${idx}-true" class="flex-1 bg-white border border-slate-300 hover:bg-slate-100 font-bold text-xs py-2 rounded-lg transition-colors touch-shrink">True</button>
+              <button onclick="answerTF(${idx}, false)" id="tf-${idx}-false" class="flex-1 bg-white border border-slate-300 hover:bg-slate-100 font-bold text-xs py-2 rounded-lg transition-colors touch-shrink">False</button>
+            </div>
+            <div id="tf-exp-${idx}" class="hidden text-[11px] p-2 rounded-lg leading-relaxed font-medium"></div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function answerTF(idx, userAns) {
+      if (gameState.tfAnswers[idx] !== undefined) return;
+      gameState.tfAnswers[idx] = userAns;
+      const item = tfQuestions[idx];
+      const isCorrect = (userAns === item.ans);
+      const btnTrue = document.getElementById(`tf-${idx}-true`);
+      const btnFalse = document.getElementById(`tf-${idx}-false`);
+      const expBox = document.getElementById(`tf-exp-${idx}`);
+
+      btnTrue.disabled = true;
+      btnFalse.disabled = true;
+
+      if (userAns === true) {
+        btnTrue.className = isCorrect ? "flex-1 bg-emerald-600 text-white font-bold text-xs py-2 rounded-lg" : "flex-1 bg-rose-600 text-white font-bold text-xs py-2 rounded-lg";
+      } else {
+        btnFalse.className = isCorrect ? "flex-1 bg-emerald-600 text-white font-bold text-xs py-2 rounded-lg" : "flex-1 bg-rose-600 text-white font-bold text-xs py-2 rounded-lg";
+      }
+
+      expBox.classList.remove('hidden');
+      expBox.innerText = item.exp;
+      expBox.className = isCorrect 
+        ? "text-[11px] p-2 rounded-lg leading-relaxed font-medium bg-emerald-100 text-emerald-950 border border-emerald-200"
+        : "text-[11px] p-2 rounded-lg leading-relaxed font-medium bg-rose-100 text-rose-950 border border-rose-200";
+
+      if (isCorrect) {
+        gameState.tfScore++;
+        document.getElementById('tf-score-tag').innerText = `Score: ${gameState.tfScore} / 12`;
+      }
+    }
+
+    // =========================================================================
+    // GAMEPLAY SIMULATION CORE LOGIC
+    // =========================================================================
+    function selectTheme(themeKey) {
+      gameState.theme = themeKey;
+      gameState.currentStepIndex = 0;
+      gameState.score = 0;
+      gameState.budget = 100;
+      gameState.strikes = 0;
+      gameState.isGameOver = false;
+      gameState.isBudgetDepleted = false;
+
+      showScreen('screen-game');
+      renderScenario();
+    }
+
+    function updateHUD() {
+      document.getElementById('hud-budget').innerText = gameState.budget;
+      document.getElementById('hud-score').innerText = `${gameState.score} / 40`;
+      document.getElementById('hud-strikes').innerText = `${gameState.strikes} / 3`;
+      document.getElementById('hud-theme-text').innerText = themeNames[gameState.theme] || "Festival";
+
+      const pct = (gameState.currentStepIndex / gameStepsData.length) * 100;
+      document.getElementById('progress-fill').style.width = `${pct}%`;
+      document.getElementById('progress-text').innerText = `Step ${gameState.currentStepIndex + 1} of ${gameStepsData.length}`;
+    }
+
+    function renderScenario() {
+      updateHUD();
+      const step = gameStepsData[gameState.currentStepIndex];
+      const card = document.getElementById('scenario-card');
+
+      if (step.isEmergency) {
+        card.className = "bg-rose-50/40 border-2 border-rose-400 rounded-2xl p-6 shadow-md space-y-5";
+        document.getElementById('scenario-tag').className = "bg-rose-600 text-white text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full inline-block mb-2";
+      } else {
+        card.className = "bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5";
+        document.getElementById('scenario-tag').className = "bg-indigo-50 text-brand-700 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full inline-block mb-2";
+      }
+
+      document.getElementById('scenario-tag').innerText = step.tag;
+      document.getElementById('scenario-title').innerText = step.title;
+
+      const tName = themeNames[gameState.theme];
+      document.getElementById('scenario-desc').innerText = step.isEmergency 
+        ? step.desc 
+        : `[${tName}] ${step.desc}`;
+        
+      document.getElementById('vocab-text').innerHTML = step.vocab;
+      document.getElementById('feedback-box').classList.add('hidden');
+
+      // FISHER-YATES RANDOMIZATION OF OPTIONS EVERY SINGLE TIME
+      gameState.currentShuffledOptions = fisherYatesShuffle(step.options);
+
+      const container = document.getElementById('choices-container');
+      container.innerHTML = '';
+
+      gameState.currentShuffledOptions.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.id = `choice-btn-${idx}`;
+        btn.className = "choice-btn w-full text-left p-4 rounded-xl border-2 border-slate-200 hover:border-brand-500 bg-white hover:bg-slate-50 transition-all font-medium text-xs sm:text-sm text-slate-800 flex items-start gap-3 touch-shrink";
+        btn.onclick = () => makeChoice(idx);
+        btn.innerHTML = `
+          <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-1 rounded-md text-xs border border-slate-200">Option ${String.fromCharCode(65 + idx)}</span>
+          <span class="mt-0.5 leading-snug flex-1">${opt.text}</span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function makeChoice(choiceIdx) {
+      const step = gameStepsData[gameState.currentStepIndex];
+      const opt = gameState.currentShuffledOptions[choiceIdx];
+
+      const fbBox = document.getElementById('feedback-box');
+      const fbHeader = document.getElementById('feedback-header');
+      const fbBody = document.getElementById('feedback-body');
+      const nextBtn = document.getElementById('btn-next');
+
+      // Deduct budget cost
+      gameState.budget -= opt.cost;
+      if (gameState.budget <= 0) {
+        gameState.budget = 0;
+        gameState.isBudgetDepleted = true;
+      }
+
+      // 1. EMERGENCY STEP HANDLING
+      if (step.isEmergency) {
+        if (opt.gameOver) {
+          gameState.isGameOver = true;
+          fbBox.className = "bg-rose-100 border-2 border-rose-500 rounded-xl p-5 space-y-3 fade-in text-rose-950";
+          fbHeader.className = "flex items-center gap-2 font-black text-base text-rose-950";
+          fbHeader.innerHTML = `<span>💥 Immediate Game Over! (0 Points Awarded)</span>`;
+          fbBody.innerText = opt.feedback;
+          fbBox.classList.remove('hidden');
+
+          document.querySelectorAll('.choice-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'pointer-events-none');
+          });
+
+          nextBtn.innerHTML = `<span>View Debriefing & Score Report</span><span>➔</span>`;
+          nextBtn.onclick = endGame;
+          return;
+        }
+
+        gameState.score += opt.pts;
+        updateHUD();
+
+        document.querySelectorAll('.choice-btn').forEach(btn => {
+          btn.disabled = true;
+          btn.classList.add('opacity-50', 'pointer-events-none');
+        });
+
+        fbBox.className = "bg-emerald-50 border-2 border-emerald-400 rounded-xl p-5 space-y-3 fade-in text-emerald-950";
+        fbHeader.className = "flex items-center gap-2 font-bold text-base text-emerald-950";
+        fbHeader.innerHTML = `<span>🚨 Emergency Handled Successfully (+${opt.pts} Points Revealed!)</span>`;
+        fbBody.innerText = opt.feedback;
+        fbBox.classList.remove('hidden');
+
+        nextBtn.classList.remove('hidden');
+        nextBtn.innerHTML = `<span>Continue to Next Stage</span><span>➔</span>`;
+        nextBtn.onclick = nextScenario;
+        return;
+      }
+
+      // 2. CHECK FOR BUDGET DEPLETION (RUN OUT OF MONEY)
+      if (gameState.isBudgetDepleted) {
+        updateHUD();
+        document.querySelectorAll('.choice-btn').forEach(btn => {
+          btn.disabled = true;
+          btn.classList.add('opacity-50', 'pointer-events-none');
+        });
+
+        fbBox.className = "bg-rose-100 border-2 border-rose-500 rounded-xl p-5 space-y-3 fade-in text-rose-950";
+        fbHeader.className = "flex items-center gap-2 font-black text-base text-rose-950";
+        fbHeader.innerHTML = `<span>💸 Budget Deficit Failure! (Cost: -${opt.cost} Budget)</span>`;
+        fbBody.innerText = `Your festival has run out of financial budget! You spent heavily on overpriced or wasteful choices and could not sustain operations. The event is halted due to financial insolvency.`;
+        fbBox.classList.remove('hidden');
+
+        nextBtn.classList.remove('hidden');
+        nextBtn.innerHTML = `<span>View Debriefing & Financial Report</span><span>➔</span>`;
+        nextBtn.onclick = endGame;
+        return;
+      }
+
+      // 3. REGULAR STEP: POOR CHOICE RE-SELECTION LOGIC (-1 pt)
+      if (opt.pts === -1) {
+        gameState.score = Math.max(0, gameState.score - 1);
+        gameState.strikes += 1;
+        updateHUD();
+
+        const btnClicked = document.getElementById(`choice-btn-${choiceIdx}`);
+        if (btnClicked) {
+          btnClicked.disabled = true;
+          btnClicked.className = "choice-btn w-full text-left p-4 rounded-xl border-2 border-rose-300 bg-rose-50 text-rose-900 opacity-60 pointer-events-none font-medium text-xs sm:text-sm flex items-start gap-3";
+          btnClicked.innerHTML += ` <span class="text-xs font-bold text-rose-700 ml-auto">(-1 Pt, -${opt.cost} Budget, +1 Strike)</span>`;
+        }
+
+        fbBox.className = "bg-rose-50 border-2 border-rose-400 rounded-xl p-5 space-y-3 fade-in text-rose-950";
+        fbHeader.className = "flex items-center gap-2 font-bold text-base text-rose-950";
+        fbHeader.innerHTML = `<span>⚠️ Poor Decision (-1 Point Revealed, -${opt.cost} Budget, +1 Warning Strike!)</span>`;
+
+        if (gameState.strikes >= 3) {
+          fbBody.innerText = `${opt.feedback} You have accumulated 3 warning strikes! The festival must be shut down immediately.`;
+          fbBox.classList.remove('hidden');
+
+          document.querySelectorAll('.choice-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'pointer-events-none');
+          });
+
+          nextBtn.classList.remove('hidden');
+          nextBtn.innerHTML = `<span>View Debriefing & Score Report</span><span>➔</span>`;
+          nextBtn.onclick = endGame;
+        } else {
+          fbBody.innerText = `${opt.feedback} Please choose another option from the remaining choices above to proceed.`;
+          fbBox.classList.remove('hidden');
+          nextBtn.classList.add('hidden'); // Force choose again
+        }
+        return;
+      }
+
+      // 4. REGULAR STEP: EXCELLENT / VERY GOOD / AVERAGE CHOICE
+      gameState.score += opt.pts;
+      updateHUD();
+
+      document.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'pointer-events-none');
+      });
+
+      let qualityLabel = "";
+      if (opt.pts === 3) qualityLabel = `⭐ Excellent Choice (+3 Points Revealed, -${opt.cost} Budget)`;
+      else if (opt.pts === 2) qualityLabel = `👍 Very Good Choice (+2 Points Revealed, -${opt.cost} Budget)`;
+      else qualityLabel = `😐 Average Choice (+1 Point Revealed, -${opt.cost} Budget)`;
+
+      fbBox.className = "bg-emerald-50 border-2 border-emerald-400 rounded-xl p-5 space-y-3 fade-in text-emerald-950";
+      fbHeader.className = "flex items-center gap-2 font-bold text-base text-emerald-950";
+      fbHeader.innerHTML = `<span>${qualityLabel}</span>`;
+      fbBody.innerText = opt.feedback;
+      fbBox.classList.remove('hidden');
+
+      nextBtn.classList.remove('hidden');
+      nextBtn.innerHTML = `<span>Continue to Next Stage</span><span>➔</span>`;
+      nextBtn.onclick = nextScenario;
+    }
+
+    function nextScenario() {
+      if (gameState.strikes >= 3 || gameState.isBudgetDepleted || gameState.currentStepIndex >= gameStepsData.length - 1) {
+        endGame();
+      } else {
+        gameState.currentStepIndex++;
+        renderScenario();
+      }
+    }
+
+    // =========================================================================
+    // END GAME DEBRIEFING PAGE (4 PERFORMANCE BANDS, 60-80 WORDS EACH)
+    // =========================================================================
+    function endGame() {
+      showScreen('screen-end');
+      document.getElementById('end-score').innerText = gameState.score;
+      document.getElementById('end-budget').innerText = gameState.budget;
+
+      const badgeEl = document.getElementById('end-badge');
+      const debriefEl = document.getElementById('end-debrief-text');
+
+      // BAND 1: Master Director (35 - 40 Points) [64 words]
+      const band1Text = "Outstanding performance! You demonstrated exceptional leadership, strategic decision-making, and flawless crisis management throughout all stages of the festival. Every choice reflected professional judgment, balancing visitor safety, entertainment value, and operational efficiency with perfection. Your proactive response during emergencies kept attendees safe while preserving event quality. You have proved yourself to be a top-tier event manager capable of handling high-stakes international gatherings seamlessly. Outstanding work!";
+
+      // BAND 2: Competent Manager (27 - 34 Points) [68 words]
+      const band2Text = "Great job overall! You successfully steered the festival through all twelve stages and handled emergency scenarios with solid reasoning. While a few decisions were somewhat unimaginative or cautious, your overall operations remained safe, organized, and enjoyable for attendees. With a bit more attention to creative attendee engagement and faster crisis resolution, you could easily reach master level. You have a very strong foundation for organizing successful public events.";
+
+      // BAND 3: Apprentice Organizer (18 - 26 Points) [66 words]
+      const band3Text = "You managed to complete the festival, but several choices lacked strategic vision or led to unnecessary complications. While you avoided total collapse during emergencies, frequent unimaginative choices and minor procedural errors hurt overall visitor satisfaction and operational efficiency. To improve, focus on comprehensive risk assessment, proactive staff preparation, and guest comfort. Review key event logistics vocabulary and attempt the simulation again to sharpen your management skills.";
+
+      // BAND 4: Operational / Financial Failure (0 - 17 Points / Game Over / Budget Depleted) [65 words]
+      const band4Text = "Your management strategy faced severe difficulties, resulting in financial budget deficits, warning strikes, or an emergency shutdown. Overlooking basic safety protocols or wasting funds on overpriced choices put attendees and the event at risk. Successful event management requires careful balancing of budget resources, safety regulations, and clear communication. Review the warm-up vocabulary and try again with a fresh resource strategy.";
+
+      if (!gameState.isGameOver && !gameState.isBudgetDepleted && gameState.strikes < 3 && gameState.score >= 35) {
+        badgeEl.innerText = "🏆 Band 1: Master Director (35 - 40 Pts)";
+        badgeEl.className = "inline-block bg-emerald-600 text-white font-extrabold text-xs uppercase px-4 py-1.5 rounded-full";
+        debriefEl.innerText = band1Text;
+      } else if (!gameState.isGameOver && !gameState.isBudgetDepleted && gameState.strikes < 3 && gameState.score >= 27) {
+        badgeEl.innerText = "🎖️ Band 2: Competent Manager (27 - 34 Pts)";
+        badgeEl.className = "inline-block bg-indigo-600 text-white font-extrabold text-xs uppercase px-4 py-1.5 rounded-full";
+        debriefEl.innerText = band2Text;
+      } else if (!gameState.isGameOver && !gameState.isBudgetDepleted && gameState.strikes < 3 && gameState.score >= 18) {
+        badgeEl.innerText = "📜 Band 3: Apprentice Organizer (18 - 26 Pts)";
+        badgeEl.className = "inline-block bg-amber-600 text-white font-extrabold text-xs uppercase px-4 py-1.5 rounded-full";
+        debriefEl.innerText = band3Text;
+      } else {
+        badgeEl.innerText = "⚠️ Band 4: Operational / Financial Failure";
+        badgeEl.className = "inline-block bg-rose-600 text-white font-extrabold text-xs uppercase px-4 py-1.5 rounded-full";
+        debriefEl.innerText = band4Text;
+      }
+    }
+
+    // =========================================================================
+    // DOWNLOADABLE REPORT FEATURE
+    // =========================================================================
+    function downloadReport() {
+      const themeTitle = themeNames[gameState.theme] || "Festival";
+      const statusBand = document.getElementById('end-badge').innerText;
+      const feedbackText = document.getElementById('end-debrief-text').innerText;
+      const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      const reportContent = `=================================================================
+FESTIVAL MANAGER SIMULATION - EXECUTIVE DEBRIEFING REPORT
+=================================================================
+Date Generated   : ${dateStr}
+Festival Theme   : ${themeTitle}
+Performance Level: ${statusBand}
+
+FINAL METRICS:
+-----------------------------------------------------------------
+• Total Points Score : ${gameState.score} / 40 Points
+• Remaining Budget   : ${gameState.budget} / 100 Points
+• Warning Strikes    : ${gameState.strikes} / 3 Strikes
+• Operational Status : ${gameState.isGameOver ? "CRISIS SHUTDOWN" : gameState.isBudgetDepleted ? "BANKRUPT / INVOLVENT" : "COMPLETED"}
+
+DIRECTOR PERFORMANCE EVALUATION:
+-----------------------------------------------------------------
+${feedbackText}
+
+CLASSROOM REFLECTION QUESTIONS:
+-----------------------------------------------------------------
+1. Budget Strategy: Did you choose low-cost clever solutions or expensive premium options?
+2. Emergency Response: How well did you preserve remaining funds during the two crisis situations?
+3. Vocabulary in Action: Which event logistics terms did you utilize during gameplay?
+4. Resource Trade-offs: How can real festival directors balance attendee satisfaction against strict budget limits?
+=================================================================`;
+
+      const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Festival_Manager_Report_${gameState.theme}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

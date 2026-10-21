@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Oakridge Relocation Challenge | English Learning Game</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #0f172a;
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        .dashboard {
+            display: flex;
+            justify-content: space-around;
+            background-color: #e2e8f0;
+            padding: 15px;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .stat-box {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .stress-bar-container {
+            width: 80%;
+            height: 10px;
+            background-color: #cbd5e1;
+            border-radius: 5px;
+            margin: 5px auto 0;
+            overflow: hidden;
+        }
+
+        .stress-bar {
+            height: 100%;
+            width: 20%;
+            background-color: var(--success);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .content {
+            padding: 25px;
+            flex-grow: 1;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Landing Screen */
+        .landing-card {
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .landing-card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .landing-card p {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* Scenario Screen */
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .scenario-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .scenario-day {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            background-color: #eff6ff;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .emergency-badge {
+            background-color: #fef2f2 !important;
+            color: var(--danger) !important;
+            border: 1px solid #fca5a5;
+        }
+
+        .scenario-text {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-option {
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 1rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .btn-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Feedback Box */
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.98rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .feedback-box.excellent {
+            background-color: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #166534;
+        }
+
+        .feedback-box.good {
+            background-color: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+        }
+
+        .feedback-box.average {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .feedback-box.poor {
+            background-color: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Debriefing / End Screen */
+        .debrief-card {
+            text-align: center;
+        }
+
+        .debrief-card h2 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .band-tag {
+            display: inline-block;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .band-1 { background-color: #dcfce7; color: #15803d; }
+        .band-2 { background-color: #dbeafe; color: #1e40af; }
+        .band-3 { background-color: #fef3c7; color: #b45309; }
+        .band-4 { background-color: #fee2e2; color: #b91c1c; }
+
+        .debrief-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: left;
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stats-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <header>
+        <h1>The Oakridge Relocation Challenge</h1>
+        <p>A Decision-Making English Practice Game (CEFR A2/B1)</p>
+    </header>
+
+    <div class="dashboard" id="dashboard" style="display: none;">
+        <div class="stat-box">
+            <div class="stat-label">⏱️ Time Left</div>
+            <div class="stat-value" id="time-display">40 hrs</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">💰 Money Left</div>
+            <div class="stat-value" id="money-display">$1,000</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">😰 Stress Level</div>
+            <div class="stat-value" id="stress-display">20%</div>
+            <div class="stress-bar-container">
+                <div class="stress-bar" id="stress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Landing Screen -->
+        <div id="landing-screen" class="screen active">
+            <div class="landing-card">
+                <span class="badge">Practical English for Housing & Renting</span>
+                <h2>Welcome to Your New Beginning!</h2>
+                <p>Congratulations! You have been offered a great job in the regional town of <strong>Oakridge</strong>. Your work starts next Monday, which gives you just <strong>5 days</strong> to find suitable accommodation.</p>
+                <p>You have starting funds of <strong>$1,000</strong>, <strong>40 hours</strong> of free time, and an initial <strong>stress level</strong> of 20%.</p>
+                <p>Make practical, realistic decisions over the week. Excellent choices save you time and money, while poor choices increase your stress and waste resources!</p>
+                <div style="margin-top: 25px;">
+                    <button class="btn-action" onclick="startGame()">Start Search Scenario</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gameplay Screen -->
+        <div id="game-screen" class="screen">
+            <div class="scenario-header">
+                <div class="scenario-title" id="scenario-step-title">Scenario 1 of 12</div>
+                <div class="scenario-day" id="scenario-day-tag">Monday Morning</div>
+            </div>
+            
+            <div class="scenario-text" id="scenario-text">
+                Scenario prompt goes here...
+            </div>
+
+            <div class="options-list" id="options-container">
+                <!-- Shuffled options injected dynamically -->
+            </div>
+
+            <div class="feedback-box" id="feedback-box">
+                <!-- Feedback injected dynamically -->
+            </div>
+
+            <div class="controls">
+                <button class="btn-action" id="next-btn" style="display: none;" onclick="nextStep()">Next Scenario →</button>
+                <button class="btn-action" id="retry-btn" style="display: none; background-color: var(--warning);" onclick="resetCurrentScenarioOptions()">Try Choice Again 🔄</button>
+            </div>
+        </div>
+
+        <!-- Debriefing Screen -->
+        <div id="debrief-screen" class="screen">
+            <div class="debrief-card">
+                <h2 id="debrief-title">Search Results & Assessment</h2>
+                <div id="band-tag" class="band-tag band-1">Band 1: Master Relocator</div>
+                
+                <div class="stats-summary">
+                    <div><strong>Time Spent:</strong> <span id="final-time">0</span> hrs</div>
+                    <div><strong>Money Remaining:</strong> $<span id="final-money">0</span></div>
+                    <div><strong>Final Stress:</strong> <span id="final-stress">0</span>%</div>
+                </div>
+
+                <div class="debrief-text" id="debrief-text">
+                    Debrief feedback text goes here (~50 words)...
+                </div>
+
+                <button class="btn-action" onclick="restartGame()">Play Again 🔄</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Game State Variables
+    let gameState = {
+        time: 40,
+        money: 1000,
+        stress: 20,
+        currentStepIndex: 0,
+        excellentCount: 0,
+        isGameOver: false,
+        lastChoiceQuality: null
+    };
+
+    // Scenarios Data (12 standard decisions + 2 emergency situations)
+    const gameSequence = [
+        {
+            isEmergency: false,
+            day: "Monday Morning",
+            title: "Decision 1: Search Strategy",
+            text: "You arrive in Oakridge. You need to find a flat by the end of the week. Where do you start looking for available properties?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Search registered local estate agencies online and set up immediate email/SMS alerts.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Great job! Online alerts save time and give you direct, reliable access to safe and verified property listings."
+                },
+                {
+                    type: "good",
+                    text: "Ask your new work colleagues for housing recommendations and local agent contacts.",
+                    timeCost: 2, moneyCost: 0, stressCost: 0,
+                    feedback: "Good idea! Local colleagues often know trustworthy landlords and can recommend pleasant neighbourhoods in town."
+                },
+                {
+                    type: "average",
+                    text: "Walk around town for hours looking for 'To Let' signs posted in shop windows.",
+                    timeCost: 5, moneyCost: 10, stressCost: 15,
+                    feedback: "This works slowly, but it takes significant physical time and energy. Online tools are much faster and efficient."
+                },
+                {
+                    type: "poor",
+                    text: "Wait in your temporary hotel room until Friday and check the local paper then.",
+                    timeCost: 8, moneyCost: 50, stressCost: 30,
+                    feedback: "Waiting increases pressure! You waste valuable days and run out of time. Please try a more proactive choice."
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Monday Afternoon",
+            title: "Decision 2: Contacting Agencies",
+            text: "You have a list of local rental agencies. How do you contact them to request viewings?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Call agencies directly with a clear monthly budget and precise move-in date.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Excellent! Direct communication shows clear intent and helps rental agents match you with suitable apartments fast."
+                },
+                {
+                    type: "good",
+                    text: "Send formal emails to several agencies asking for flat catalogs.",
+                    timeCost: 2, moneyCost: 0, stressCost: 0,
+                    feedback: "A solid approach, although busy agents might take several hours or days to answer routine email queries."
+                },
+                {
+                    type: "average",
+                    text: "Visit three agencies in person without booking an appointment first.",
+                    timeCost: 4, moneyCost: 15, stressCost: 10,
+                    feedback: "You spent time waiting in lobby queues, but you eventually collected a few property brochures."
+                },
+                {
+                    type: "poor",
+                    text: "Pay $100 upfront to an unverified online agent promising 'secret cheap listings'.",
+                    timeCost: 6, moneyCost: 100, stressCost: 25,
+                    feedback: "Never pay upfront fees to unknown online agents. This is a common financial trap! Choose a safer option."
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Tuesday Morning",
+            title: "Decision 3: Selecting Neighborhoods",
+            text: "You see available listings in different areas of town. Which location option do you focus on?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Focus on flats near public transport with a short daily commute to your workplace.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Smart thinking! A good location reduces daily travel expenses and keeps your long-term daily stress low."
+                },
+                {
+                    type: "good",
+                    text: "Choose a flat in a quiet residential district, even if bus routes are limited.",
+                    timeCost: 2, moneyCost: 0, stressCost: 5,
+                    feedback: "Quiet areas are pleasant, though daily travel to work will require extra planning and time."
+                },
+                {
+                    type: "average",
+                    text: "Select a cheap flat far outside town without checking bus or train connections.",
+                    timeCost: 4, moneyCost: 30, stressCost: 15,
+                    feedback: "Lower rent looks attractive, but long travel times and travel expenses will add up rapidly."
+                },
+                {
+                    type: "poor",
+                    text: "Pick an expensive luxury flat right next to work that exceeds your monthly income.",
+                    timeCost: 5, moneyCost: 150, stressCost: 25,
+                    feedback: "Overspending on rent creates severe financial pressure later. Please reconsider your budget priorities."
+                }
+            ]
+        },
+        {
+            isEmergency: true,
+            day: "Tuesday Midday",
+            title: "🚨 Emergency Situation 1: Accommodation Loss",
+            text: "EMERGENCY! Your temporary hostel room was accidentally double-booked, and you must leave immediately! What do you do?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Book an affordable, well-reviewed Bed & Breakfast nearby for two nights.",
+                    timeCost: 1, moneyCost: 60, stressCost: 5,
+                    feedback: "Quick problem solving! You secured safe accommodation without blowing your overall relocation budget."
+                },
+                {
+                    type: "good",
+                    text: "Ask your new employer if you can stay in the company visitor apartment for a fee.",
+                    timeCost: 2, moneyCost: 40, stressCost: 10,
+                    feedback: "Good resourcefulness! Your employer was happy to help you with temporary emergency housing."
+                },
+                {
+                    type: "worst",
+                    text: "Decide to sleep overnight on a bench in an unsafe public park to save money.",
+                    timeCost: 0, moneyCost: 0, stressCost: 100,
+                    feedback: "Unsafe choices end your journey! Personal safety and security must always be your top priority."
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Tuesday Afternoon",
+            title: "Decision 4: Viewing Preparation",
+            text: "An agent invites you to view two apartments today. How do you prepare before going?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Prepare a written checklist of questions about rent, utility bills, and contract terms.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Brilliant! Preparation helps you spot hidden issues early and shows landlords that you are a serious tenant."
+                },
+                {
+                    type: "good",
+                    text: "Take a notebook and smartphone to photograph room conditions and facilities.",
+                    timeCost: 2, moneyCost: 0, stressCost: 0,
+                    feedback: "Good effort! Taking clear photos helps you compare property features accurately in the evening."
+                },
+                {
+                    type: "average",
+                    text: "Just show up and look around quickly without asking detailed questions.",
+                    timeCost: 3, moneyCost: 0, stressCost: 10,
+                    feedback: "You visited the flat, but forgot to check critical details about heating costs and lease conditions."
+                },
+                {
+                    type: "poor",
+                    text: "Cancel the viewing and trust online photos without visiting in person.",
+                    timeCost: 5, moneyCost: 50, stressCost: 25,
+                    feedback: "Never rent without visiting! Online photos can easily be outdated or misleading. Try another option."
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Wednesday Morning",
+            title: "Decision 5: Inspecting Property",
+            text: "During a viewing at Flat 4B, you notice damp patches on the bathroom ceiling. What is your reaction?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Point out the damp to the agent and request written confirmation of repairs before signing.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Well done! Demanding written commitments protects your deposit and guarantees better living conditions."
+                },
+                {
+                    type: "good",
+                    text: "Ask the agent verbally if the landlord plans to fix the ceiling before move-in.",
+                    timeCost: 2, moneyCost: 0, stressCost: 0,
+                    feedback: "Asking is good, but always ensure spoken promises are added to your official tenancy agreement."
+                },
+                {
+                    type: "average",
+                    text: "Ignore the damp patches and assume it is just a small cosmetic issue.",
+                    timeCost: 3, moneyCost: 0, stressCost: 15,
+                    feedback: "Ignoring damp can lead to health problems and ongoing maintenance disputes later."
+                },
+                {
+                    type: "poor",
+                    text: "Offer to pay cash for repairs yourself before even signing the contract.",
+                    timeCost: 5, moneyCost: 100, stressCost: 25,
+                    feedback: "Landlords are legally responsible for maintenance. Do not spend your cash on pre-existing property damage!"
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Wednesday Afternoon",
+            title: "Decision 6: Flatshare vs Solo Flat",
+            text: "You receive an offer to join a shared flat with two young professionals. How do you evaluate this?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Meet the housemates in person to discuss house rules, cleanliness, and bill sharing.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Excellent communication! Discussing expectations early prevents future household arguments and stress."
+                },
+                {
+                    type: "good",
+                    text: "Check if individual tenancy agreements are available for each room.",
+                    timeCost: 2, moneyCost: 0, stressCost: 0,
+                    feedback: "Smart legal check! Individual leases protect you if another roommate fails to pay their rent."
+                },
+                {
+                    type: "average",
+                    text: "Agree immediately without meeting housemates or checking utility sharing costs.",
+                    timeCost: 4, moneyCost: 0, stressCost: 15,
+                    feedback: "Moving in with strangers without checking habits can lead to unexpected bills and personal conflicts."
+                },
+                {
+                    type: "poor",
+                    text: "Sign a joint lease taking full financial liability for all housemates' rent.",
+                    timeCost: 6, moneyCost: 100, stressCost: 30,
+                    feedback: "Taking total financial responsibility for strangers is extremely risky! Try a safer choice."
+                }
+            ]
+        },
+        {
+            isEmergency: true,
+            day: "Thursday Morning",
+            title: "🚨 Emergency Situation 2: Deposit Scam Alert",
+            text: "EMERGENCY! An unknown caller claims to be a landlord demanding an immediate $300 transfer within 1 hour or you lose the flat!",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Refuse payment, demand official identity verification and formal legal procedures.",
+                    timeCost: 1, moneyCost: 0, stressCost: 5,
+                    feedback: "Fantastic vigilance! You successfully recognized and avoided a dangerous rental fraud scam."
+                },
+                {
+                    type: "good",
+                    text: "Call the official local housing authority to check if the caller is a registered landlord.",
+                    timeCost: 2, moneyCost: 0, stressCost: 10,
+                    feedback: "Smart verification step! The authority confirmed it was fake, protecting your hard-earned funds."
+                },
+                {
+                    type: "worst",
+                    text: "Panic and transfer $300 cash immediately via wire transfer without contract documents.",
+                    timeCost: 0, moneyCost: 300, stressCost: 100,
+                    feedback: "You lost money to a scammer! Never wire cash without verified identity and legal contracts."
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Thursday Midday",
+            title: "Decision 7: Rent Negotiation",
+            text: "The landlord asks $750/month rent plus deposit. Your budget target is $700. What is your tactic?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Offer $700 politely, highlighting your stable job contract and commitment to a long lease.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Great negotiation! Landlords value reliable, employed tenants and frequently accept lower monthly rent."
+                },
+                {
+                    type: "good",
+                    text: "Accept $750 but request that water and internet services are included in the monthly rent.",
+                    timeCost: 2, moneyCost: 0, stressCost: 0,
+                    feedback: "Good compromise! Including utility bills offsets higher rent and simplifies your budget balance."
+                },
+                {
+                    type: "average",
+                    text: "Accept $750 immediately without discussing any rental conditions or terms.",
+                    timeCost: 3, moneyCost: 50, stressCost: 10,
+                    feedback: "You secured the flat, but missed an easy opportunity to negotiate lower monthly living costs."
+                },
+                {
+                    type: "poor",
+                    text: "Demand a 50% discount aggressively and insult the landlord's price.",
+                    timeCost: 5, moneyCost: 0, stressCost: 30,
+                    feedback: "Aggressive behavior damages relationships and causes landlords to reject your application. Try again."
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Thursday Afternoon",
+            title: "Decision 8: Contract Review",
+            text: "The landlord sends you the written rental contract (lease agreement). How do you review it?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Read all clauses carefully, checking notice periods, deposit rules, and maintenance responsibilities.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Perfect diligence! Reading contract details ensures your legal tenant rights and deposit safety are protected."
+                },
+                {
+                    type: "good",
+                    text: "Ask a fluent English-speaking colleague to double-check complex clauses with you.",
+                    timeCost: 2, moneyCost: 0, stressCost: 0,
+                    feedback: "A sensible choice! Asking for help ensures you do not misinterpret formal legal terminology."
+                },
+                {
+                    type: "average",
+                    text: "Glance quickly over the first page and sign without reading the fine print.",
+                    timeCost: 3, moneyCost: 0, stressCost: 15,
+                    feedback: "Skimming legal agreements can leave you unaware of strict notice rules or unexpected penalties."
+                },
+                {
+                    type: "poor",
+                    text: "Sign a blank contract form promising to fill in financial terms later.",
+                    timeCost: 5, moneyCost: 100, stressCost: 25,
+                    feedback: "Never sign incomplete legal forms. This exposes you to high financial exploitation risk. Try again."
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Friday Morning",
+            title: "Decision 9: Paying Security Deposit",
+            text: "It is time to pay the security deposit ($500). What payment method do you use?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Pay via traceable bank transfer into a government-approved tenancy deposit protection scheme.",
+                    timeCost: 1, moneyCost: 500, stressCost: -5,
+                    feedback: "Excellent practice! Approved protection schemes guarantee that your deposit is returned safely when you leave."
+                },
+                {
+                    type: "good",
+                    text: "Pay by direct bank transfer and request a signed, official digital receipt immediately.",
+                    timeCost: 2, moneyCost: 500, stressCost: 0,
+                    feedback: "Good effort! Written receipts provide legal proof of payment for your personal records."
+                },
+                {
+                    type: "average",
+                    text: "Pay cash in hand and accept an informal handwritten note on plain paper.",
+                    timeCost: 4, moneyCost: 500, stressCost: 15,
+                    feedback: "Cash payments with informal notes are risky if legal disputes arise at the end of tenancy."
+                },
+                {
+                    type: "poor",
+                    text: "Buy retail gift cards or untraceable online tokens to give to the landlord.",
+                    timeCost: 6, moneyCost: 500, stressCost: 30,
+                    feedback: "Untraceable gift cards offer zero consumer protection and indicate fraudulent activity. Choose wisely!"
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Friday Afternoon",
+            title: "Decision 10: Key Handover & Inventory",
+            text: "You meet the landlord at the property to receive the keys. What is your priority action?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Conduct a joint property inspection, photograph existing damage, and sign an inventory report.",
+                    timeCost: 1, moneyCost: 0, stressCost: -5,
+                    feedback: "Outstanding work! A documented inventory report prevents landlords from keeping your deposit unfairly later."
+                },
+                {
+                    type: "good",
+                    text: "Test all room keys, light switches, heating, and water taps while the landlord is present.",
+                    timeCost: 2, moneyCost: 0, stressCost: 0,
+                    feedback: "Very practical! Checking functional utilities right away ensures broken items are fixed promptly."
+                },
+                {
+                    type: "average",
+                    text: "Take the keys quickly, thank the landlord, and begin moving your bags inside immediately.",
+                    timeCost: 3, moneyCost: 0, stressCost: 10,
+                    feedback: "Fast action, but without a initial inspection, you might be blamed for existing damage later."
+                },
+                {
+                    type: "poor",
+                    text: "Leave keys hidden under the exterior door mat and post building access codes online.",
+                    timeCost: 5, moneyCost: 50, stressCost: 25,
+                    feedback: "Exposing property security endangers your personal safety and violates lease rules. Try again."
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Saturday Morning",
+            title: "Decision 11: Utility & Electricity Setup",
+            text: "You have moved into your flat! How do you arrange utility services like electricity and internet?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Take meter readings on day one and contact utility suppliers directly to open accounts.",
+                    timeCost: 1, moneyCost: 50, stressCost: -5,
+                    feedback: "Brilliant setup! Recording meter readings ensures you only pay for energy you actually consume."
+                },
+                {
+                    type: "good",
+                    text: "Ask the landlord for recommended local electricity and broadband providers.",
+                    timeCost: 2, moneyCost: 50, stressCost: 0,
+                    feedback: "Helpful approach! Landlord recommendations can speed up initial connection setup."
+                },
+                {
+                    type: "average",
+                    text: "Delay setting up accounts and use existing active energy lines without contacting suppliers.",
+                    timeCost: 4, moneyCost: 80, stressCost: 15,
+                    feedback: "Delaying can cause sudden power disconnections or extra administration fees from energy companies."
+                },
+                {
+                    type: "poor",
+                    text: "Attempt to connect illegal temporary wires to the neighboring apartment supply.",
+                    timeCost: 6, moneyCost: 150, stressCost: 30,
+                    feedback: "Illegal electrical connections create dangerous fire hazards and severe legal penalties. Rethink this!"
+                }
+            ]
+        },
+        {
+            isEmergency: false,
+            day: "Saturday Afternoon",
+            title: "Decision 12: Final Integration",
+            text: "You are settled in! How do you finalize your relocation prep before starting work on Monday?",
+            options: [
+                {
+                    type: "excellent",
+                    text: "Map your daily commute, test transport timing, and locate nearby food stores.",
+                    timeCost: 1, moneyCost: 20, stressCost: -10,
+                    feedback: "Superb organization! Testing your commute route guarantees a smooth, punctual, and stress-free first work day!"
+                },
+                {
+                    type: "good",
+                    text: "Introduce yourself politely to immediate neighbors and share contact details.",
+                    timeCost: 2, moneyCost: 20, stressCost: -5,
+                    feedback: "Friendly connections with neighbors help build a supportive and safe living community environment."
+                },
+                {
+                    type: "average",
+                    text: "Unpack boxes continuously without rest or planning your commute to work.",
+                    timeCost: 4, moneyCost: 20, stressCost: 10,
+                    feedback: "Unpacking is helpful, but exhausting yourself before starting a new job increases physical stress."
+                },
+                {
+                    type: "poor",
+                    text: "Throw a loud 24-hour party without checking noise rules with nearby neighbors.",
+                    timeCost: 6, moneyCost: 100, stressCost: 25,
+                    feedback: "Loud noise ruins neighbor relations immediately and breaks tenancy agreement rules. Choose better!"
+                }
+            ]
+        }
+    ];
+
+    // Fisher-Yates Shuffle Algorithm (Ensures random choice placement each time)
+    function shuffleArray(array) {
+        let shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    // Navigation and Flow
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function startGame() {
+        gameState = {
+            time: 40,
+            money: 1000,
+            stress: 20,
+            currentStepIndex: 0,
+            excellentCount: 0,
+            isGameOver: false,
+            lastChoiceQuality: null
+        };
+        
+        document.getElementById('dashboard').style.display = 'flex';
+        updateDashboard();
+        loadScenario(gameState.currentStepIndex);
+        showScreen('game-screen');
+    }
+
+    function updateDashboard() {
+        // Clamp bounds
+        if (gameState.time < 0) gameState.time = 0;
+        if (gameState.money < 0) gameState.money = 0;
+        if (gameState.stress < 0) gameState.stress = 0;
+        if (gameState.stress > 100) gameState.stress = 100;
+
+        document.getElementById('time-display').innerText = `${gameState.time} hrs`;
+        document.getElementById('money-display').innerText = `$${gameState.money}`;
+        document.getElementById('stress-display').innerText = `${gameState.stress}%`;
+        
+        const bar = document.getElementById('stress-bar');
+        bar.style.width = `${gameState.stress}%`;
+
+        if (gameState.stress < 40) {
+            bar.style.backgroundColor = 'var(--success)';
+        } else if (gameState.stress < 75) {
+            bar.style.backgroundColor = 'var(--warning)';
+        } else {
+            bar.style.backgroundColor = 'var(--danger)';
+        }
+    }
+
+    function loadScenario(index) {
+        const scenario = gameSequence[index];
+        const nextBtn = document.getElementById('next-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        const feedbackBox = document.getElementById('feedback-box');
+
+        nextBtn.style.display = 'none';
+        retryBtn.style.display = 'none';
+        feedbackBox.style.display = 'none';
+
+        // Update titles
+        document.getElementById('scenario-step-title').innerText = scenario.title;
+        const dayTag = document.getElementById('scenario-day-tag');
+        dayTag.innerText = scenario.day;
+        
+        if (scenario.isEmergency) {
+            dayTag.classList.add('emergency-badge');
+        } else {
+            dayTag.classList.remove('emergency-badge');
+        }
+
+        document.getElementById('scenario-text').innerHTML = scenario.text;
+
+        // Render options shuffled with Fisher-Yates
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        const shuffledOptions = shuffleArray(scenario.options);
+
+        shuffledOptions.forEach((opt) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-option';
+            btn.innerText = opt.text;
+            btn.onclick = () => handleChoice(opt, btn);
+            container.appendChild(btn);
+        });
+    }
+
+    function handleChoice(option, selectedBtn) {
+        // Disable all option buttons
+        const allBtns = document.querySelectorAll('.btn-option');
+        allBtns.forEach(b => b.disabled = true);
+
+        // Apply impacts
+        gameState.time -= option.timeCost;
+        gameState.money -= option.moneyCost;
+        gameState.stress += option.stressCost;
+        updateDashboard();
+
+        // Show feedback
+        const feedbackBox = document.getElementById('feedback-box');
+        feedbackBox.className = `feedback-box ${option.type}`;
+        feedbackBox.innerText = option.feedback;
+        feedbackBox.style.display = 'block';
+
+        // Check Emergency Fatal Choice
+        if (option.type === 'worst') {
+            setTimeout(() => triggerGameOver("emergency"), 1500);
+            return;
+        }
+
+        // Check Resource Limits
+        if (gameState.time <= 0 || gameState.money <= 0 || gameState.stress >= 100) {
+            setTimeout(() => triggerGameOver("resources"), 1500);
+            return;
+        }
+
+        if (option.type === 'excellent') {
+            gameState.excellentCount++;
+        }
+
+        // Check Early Flat Discovery Condition (10 Excellent choices by scenario 10)
+        if (gameState.excellentCount >= 10 && gameState.currentStepIndex >= 9) {
+            document.getElementById('next-btn').innerText = "Finish & See Summary ✨";
+            document.getElementById('next-btn').onclick = triggerEarlyVictory;
+            document.getElementById('next-btn').style.display = 'inline-block';
+            return;
+        }
+
+        // Check normal progression vs retry on poor choice
+        if (option.type === 'poor') {
+            document.getElementById('retry-btn').style.display = 'inline-block';
+        } else {
+            document.getElementById('next-btn').innerText = "Next Scenario →";
+            document.getElementById('next-btn').onclick = nextStep;
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+    }
+
+    function resetCurrentScenarioOptions() {
+        const feedbackBox = document.getElementById('feedback-box');
+        feedbackBox.style.display = 'none';
+        document.getElementById('retry-btn').style.display = 'none';
+
+        // Re-enable options so player can choose a better route
+        const allBtns = document.querySelectorAll('.btn-option');
+        allBtns.forEach(b => b.disabled = false);
+    }
+
+    function nextStep() {
+        gameState.currentStepIndex++;
+        if (gameState.currentStepIndex >= gameSequence.length) {
+            triggerGameCompletion();
+        } else {
+            loadScenario(gameState.currentStepIndex);
+        }
+    }
+
+    function triggerGameOver(reason) {
+        document.getElementById('dashboard').style.display = 'none';
+        showScreen('debrief-screen');
+        
+        document.getElementById('final-time').innerText = 40 - gameState.time;
+        document.getElementById('final-money').innerText = gameState.money;
+        document.getElementById('final-stress').innerText = gameState.stress;
+
+        const tag = document.getElementById('band-tag');
+        tag.className = 'band-tag band-4';
+        tag.innerText = 'Band 4: Unsuccessful Relocation';
+
+        document.getElementById('debrief-title').innerText = 'Game Over - Relocation Failed';
+        
+        if (reason === 'emergency') {
+            document.getElementById('debrief-text').innerText = 
+                "Your housing search ended abruptly due to taking an unsafe emergency risk. Personal safety and legal protection are vital when searching for flats. Don't worry—treat this as a valuable learning experience! Re-examine key housing vocabulary, prioritize safety, and try again to master your English relocation skills.";
+        } else {
+            document.getElementById('debrief-text').innerText = 
+                "Your housing search was cut short because your available time, funds, or emotional resilience were fully exhausted. Relocating requires balancing budget, schedule, and safety effectively. Review housing vocabulary, plan your decisions cautiously, and try again to develop smooth real-world English decision-making confidence!";
+        }
+    }
+
+    function triggerEarlyVictory() {
+        document.getElementById('dashboard').style.display = 'none';
+        showScreen('debrief-screen');
+
+        document.getElementById('final-time').innerText = 40 - gameState.time;
+        document.getElementById('final-money').innerText = gameState.money;
+        document.getElementById('final-stress').innerText = gameState.stress;
+
+        const tag = document.getElementById('band-tag');
+        tag.className = 'band-tag band-1';
+        tag.innerText = 'Band 1: Master Relocator (Early Win!)';
+
+        document.getElementById('debrief-title').innerText = 'Outstanding Success!';
+        document.getElementById('debrief-text').innerText = 
+            "Fantastic work! You achieved 10 excellent choices and found a top-quality apartment early! You demonstrated exceptional decision-making and clear English comprehension. You managed your budget, schedule, and emotional well-being efficiently, avoiding risks while securing high-quality accommodation. You are fully prepared to navigate real-world English living situations with confidence!";
+    }
+
+    function triggerGameCompletion() {
+        document.getElementById('dashboard').style.display = 'none';
+        showScreen('debrief-screen');
+
+        document.getElementById('final-time').innerText = 40 - gameState.time;
+        document.getElementById('final-money').innerText = gameState.money;
+        document.getElementById('final-stress').innerText = gameState.stress;
+
+        const tag = document.getElementById('band-tag');
+        
+        // Determine Performance Band
+        if (gameState.excellentCount >= 8 && gameState.stress <= 40) {
+            tag.className = 'band-tag band-1';
+            tag.innerText = 'Band 1: Master Relocator';
+            document.getElementById('debrief-title').innerText = 'Excellent Relocation!';
+            document.getElementById('debrief-text').innerText = 
+                "Fantastic work! You demonstrated outstanding decision-making and clear English comprehension throughout your search. You managed your budget, schedule, and emotional well-being efficiently, securing high-quality accommodation while keeping stress low. You are fully prepared to navigate complex real-world English living situations with confidence and poise!";
+        } else if (gameState.stress < 70 && gameState.money > 200) {
+            tag.className = 'band-tag band-2';
+            tag.innerText = 'Band 2: Capable Commuter';
+            document.getElementById('debrief-title').innerText = 'Successful Search!';
+            document.getElementById('debrief-text').innerText = 
+                "Well done! You navigated the housing challenge successfully and made practical decisions. While a few choices cost extra time or funds, you maintained control over your budget and schedule. You demonstrated solid A2/B1 language skills and effective problem-solving strategies in a modern everyday context.";
+        } else {
+            tag.className = 'band-tag band-3';
+            tag.innerText = 'Band 3: Stressed Survivor';
+            document.getElementById('debrief-title').innerText = 'Accommodation Secured!';
+            document.getElementById('debrief-text').innerText = 
+                "You managed to find accommodation, but the process was stressful and costly! Some sub-optimal decisions drained your energy and resources. Review housing vocabulary, research procedures before acting, and focus on clear communication to ensure a smoother, more affordable transition in future real-world situations.";
+        }
+    }
+
+    function restartGame() {
+        showScreen('landing-screen');
+    }
+</script>
+
+</body>
+</html>

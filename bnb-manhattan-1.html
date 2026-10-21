@@ -1,0 +1,465 @@
+<!-- bnb-manhattan-b1.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Manhattan Heights: Loft Manager Elite</title>
+<style>
+    :root {
+        --primary: #2d3436;
+        --accent: #f7b731;
+        --bg: #dfe6e9;
+        --card-bg: #ffffff;
+        --text: #2d3436;
+        --success: #26de81;
+        --warning: #fed330;
+        --danger: #eb4d4b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 2rem; }
+    header { background: var(--primary); color: white; padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 1000; border-bottom: 5px solid var(--accent); }
+    .header-content { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .dashboard { max-width: 900px; margin: 1.5rem auto 0; padding: 0 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-card { background: var(--card-bg); padding: 0.8rem 1rem; border-radius: 6px; border: 2px solid var(--primary); text-align: center; box-shadow: 4px 4px 0px var(--primary); }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #636e72; }
+    .stat-value { font-size: 1.25rem; font-weight: 800; margin: 0.2rem 0; }
+    .bar-bg { background: #b2bec3; height: 8px; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; transition: width 0.4s ease, background-color 0.4s ease; }
+    .container { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem; }
+    .card { background: var(--card-bg); padding: 2rem; border-radius: 6px; border: 2px solid var(--primary); box-shadow: 6px 6px 0px var(--primary); display: none; }
+    .card.active { display: block; animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from { transform: translateX(10px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1rem; border: 1px solid var(--primary); }
+    .badge-std { background: #ffeaa7; color: #d35400; }
+    .badge-emergency { background: #ff7675; color: white; }
+    h1, h2 { color: var(--primary); text-transform: uppercase; margin-bottom: 1rem; }
+    .choices-grid { display: grid; gap: 0.8rem; margin: 1.5rem 0; }
+    .btn { background: #ffffff; border: 2px solid var(--primary); padding: 1rem; border-radius: 4px; text-align: left; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; color: var(--text); width: 100%; }
+    .btn:hover:not(:disabled) { background: #fff9e6; border-color: #d35400; transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+    .btn-action { background: var(--primary); color: white; border: none; text-align: center; padding: 0.9rem; margin-top: 1rem; font-size: 1rem; display: none; width: 100%; font-weight: 800; text-transform: uppercase; }
+    .btn-action:hover { background: #000000; }
+    .feedback-box { padding: 1.2rem; border-radius: 4px; margin-top: 1rem; display: none; border: 2px solid var(--primary); }
+    .fb-excel { background: #badc58; color: #22543d; }
+    .fb-good { background: #7ed6df; color: #0c2461; }
+    .fb-avg { background: #f7d794; color: #574b90; }
+    .fb-poor { background: #f8a5c2; color: #b71540; }
+    .debrief-band { margin-top: 1rem; padding: 1.2rem; background: #ffffff; border: 2px solid var(--primary); box-shadow: 4px 4px 0px var(--primary); }
+    .early-win { background: #badc58; border: 2px solid var(--primary); padding: 1.5rem; margin-bottom: 1rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div>
+            <h2 style="color:white; margin:0; font-size:1.3rem;">THE MANHATTAN HEIGHTS</h2>
+            <p style="font-size:0.8rem; color:var(--accent); margin:0;">B1 Intermediate • SoHo Serviced Lofts</p>
+        </div>
+        <div id="step-indicator" style="font-weight:bold; font-size:0.9rem;">Shift Phase 1 / 12</div>
+    </div>
+</header>
+
+<div class="dashboard">
+    <div class="stat-card">
+        <div class="stat-label">Approval</div>
+        <div class="stat-value" id="val-approval">80%</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-approval" style="width:80%; background-color:var(--success);"></div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Staff Energy</div>
+        <div class="stat-value" id="val-energy">100%</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-energy" style="width:100%; background-color:var(--success);"></div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Shift Fund</div>
+        <div class="stat-value" id="val-fund">$3,000</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-fund" style="width:100%; background-color:var(--success);"></div></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card active" id="screen-start">
+        <h1>Loft Concierge Simulation: SoHo NYC</h1>
+        <p><strong>CEFR Level:</strong> B1 (Intermediate Hospitality English)</p>
+        <p><strong>Goal:</strong> Manage demanding VIP guest requests, NYC urban logistical delays, and luxury loft service standard across 12 shift steps.</p>
+        <p><strong>Initial Resources:</strong> Guest Approval: 80% | Staff Energy: 100% | Shift Fund: $3,000</p>
+        <button class="btn btn-action" style="display:block;" onclick="startGame()">Punch In For Shift</button>
+    </div>
+
+    <div class="card" id="screen-game">
+        <span class="badge badge-std" id="step-badge">Standard Concierge Task</span>
+        <h2 id="step-title">Phase Title</h2>
+        <p id="step-desc">Phase Description</p>
+
+        <div class="choices-grid" id="choices-container"></div>
+
+        <div class="feedback-box" id="feedback-box">
+            <strong id="fb-title">Outcome</strong>
+            <p id="fb-text" style="margin-top:0.3rem; font-size:0.95rem;"></p>
+        </div>
+
+        <button class="btn btn-action" id="btn-next" onclick="nextStep()">Next Shift Phase</button>
+    </div>
+
+    <div class="card" id="screen-debrief">
+        <h1>Shift Performance Review</h1>
+        <div id="early-win-container"></div>
+        <div id="debrief-summary"></div>
+        <div class="debrief-band" id="debrief-details"></div>
+        <button class="btn btn-action" style="display:block;" onclick="location.reload()">Clock In Again</button>
+    </div>
+</div>
+
+<script>
+const scenarios = [
+    {
+        isEmergency: false,
+        title: "Phase 1: Gridlock Traffic Arrival",
+        desc: "A VIP guest arrives furious after a 2-hour airport traffic delay: 'This city transit is unbearable! Why wasn't I warned?'",
+        choices: [
+            { type: "excellent", text: "Empathize warmly: 'I completely understand your frustration. Let me take your bags and serve espresso while we check in.'", approval: 3, energy: -5, fund: -15, fb: "Active listening and polite empathetic phrasing turn travel stress into instant guest satisfaction." },
+            { type: "good", text: "Offer a fast-track check-in process and provide complimentary bottled sparkling water.", approval: 1, energy: -2, fund: -5, fb: "Efficient service delivery reduces immediate friction, though empathetic conversational statements build better rapport." },
+            { type: "average", text: "Inform them factually that tunnel construction delays are standard NYC traffic conditions.", approval: 0, energy: 0, fund: 0, fb: "Factually accurate statement, but lacks necessary customer service warmth." },
+            { type: "poor", text: "Tell them they should have taken the subway if they wanted to arrive on time.", approval: -10, energy: -10, fund: 0, fb: "Blaming VIP guests for urban travel delays causes immediate complaints. Use empathetic customer phrasing." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 2: Gourmet Coffee Expectation",
+        desc: "A loft guest calls front desk: 'The suite coffee maker is too basic; I expect artisanal oat milk lattes in SoHo!'",
+        choices: [
+            { type: "excellent", text: "Provide proactive luxury solution: 'I will personally deliver fresh barista espresso and oat milk to your loft in 10 minutes.'", approval: 3, energy: -10, fund: -20, fb: "Proactive service delivery ('I will personally deliver...') aligns with luxury NYC concierge standards." },
+            { type: "good", text: "Recommend two top-rated local SoHo cafes located within one block of the entrance.", approval: 1, energy: -2, fund: 0, fb: "Good local neighborhood knowledge is helpful, though fulfilling amenity requests directly is preferable." },
+            { type: "average", text: "Explain that room coffee machines are standard models across all building lofts.", approval: 0, energy: 0, fund: 0, fb: "Uninspired response misses an easy opportunity to deliver memorable hospitality." },
+            { type: "poor", text: "Tell the guest that complaining about milk at 7 AM is unreasonable.", approval: -10, energy: -10, fund: 0, fb: "Judging guest preferences damages review scores severely. Maintain polite professional service tone." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 3: Street Construction Noise",
+        desc: "Jackhammer noise begins outside a 4th-floor penthouse at 7:00 AM. The guest demands immediate resolution.",
+        choices: [
+            { type: "excellent", text: "Offer immediate solution: 'I sincerely apologize. I can move you to a high-floor rear loft right now or provide premium noise-canceling headsets.'", approval: 3, energy: -10, fund: -50, fb: "Immediate relocation offers combined with sincere apologies resolve external disturbance issues effectively." },
+            { type: "good", text: "Provide high-grade earplugs and offer a complimentary voucher for the building spa partner.", approval: 1, energy: -5, fund: -40, fb: "Compensatory vouchers ease annoyance, though changing rooms remains the top luxury solution." },
+            { type: "average", text: "Explain that city municipal utility work is beyond building management control.", approval: 0, energy: 0, fund: 0, fb: "Valid explanation, but leaves guests feeling unsupported during active sleep disturbance." },
+            { type: "poor", text: "Tell them jackhammers represent 'authentic NYC sounds' and refuse assistance.", approval: -10, energy: -10, fund: 0, fb: "Dismissive sarcasm triggers severe review penalties. Always validate guest comfort concerns." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 4: Courier Delivery Delay",
+        desc: "An urgent business package for a fashion industry guest was signed for by reception but mislaid in storage.",
+        choices: [
+            { type: "excellent", text: "Locate item personally immediately: 'I am tracking down the package right now and will hand-deliver it to your suite in 5 minutes.'", approval: 3, energy: -10, fund: 0, fb: "Clear action verbs and time commitments reassure anxious business travelers." },
+            { type: "good", text: "Search the logging database system and notify the guest as soon as the parcel is found.", approval: 1, energy: -5, fund: 0, fb: "Methodical search procedure, though immediate hands-on urgency is expected for critical deliveries." },
+            { type: "average", text: "Ask the guest to check back with front desk staff after the afternoon shift change.", approval: 0, energy: 0, fund: 0, fb: "Delaying urgent package recovery creates severe guest panic and professional friction." },
+            { type: "poor", text: "Claim reception is not responsible for lost courier packages and close desk ticket.", approval: -10, energy: -10, fund: 0, fb: "Disclaiming handling responsibility for signed parcels severely damages concierge reliability." }
+        ]
+    },
+    {
+        isEmergency: true,
+        title: "Phase 5: EMERGENCY - Penthouse Terrace Glass Break",
+        desc: "High winds shatter a large penthouse glass table! Sharp shards are scattering across the patio near guests.",
+        choices: [
+            { type: "viable1", text: "Secure patio area immediately, escort guests inside safely, and dispatch emergency clean team.", approval: 2, energy: -15, fund: -150, fb: "Rapid safety perimeter establishment and guest escort procedures prevent serious physical injuries." },
+            { type: "viable2", text: "Move guests to an executive interior suite immediately and seal off balcony entrance doors.", approval: 1, energy: -10, fund: -200, fb: "Immediate hazard isolation and room relocation safeguard guests effectively." },
+            { type: "critical", text: "Hand guests a broom and ask them to clear shards so wind doesn't blow them.", approval: -40, energy: -40, fund: 0, fb: "Critical Failure: Asking guests to clean hazardous glass caused severe laceration injuries and lawsuits." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 6: Keyless Access Lock Failure",
+        desc: "Digital keypad locks fail on two loft doors simultaneously during peak evening return hour.",
+        choices: [
+            { type: "excellent", text: "Deploy physical master keys immediately, issue temporary physical keycards, and call emergency locksmith.", approval: 3, energy: -10, fund: -100, fb: "Decisive physical key override combined with professional maintenance dispatch restores seamless access." },
+            { type: "good", text: "Escort guests to executive lounge while technician resets system server locks remotely.", approval: 1, energy: -5, fund: -50, fb: "Hospitality comfort holding area eases waiting stress during minor IT access glitches." },
+            { type: "average", text: "Ask guests to keep trying digital app access codes until system syncs.", approval: 0, energy: -2, fund: 0, fb: "Repeated digital failures frustrate guests standing in hallways with luggage." },
+            { type: "poor", text: "Blame guests for mismanaging smartphone Bluetooth settings and walk away.", approval: -10, energy: -10, fund: 0, fb: "Accusatory technical responses destroy guest trust. Maintain customer assistance stance." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 7: Rooftop Lounge Dispute",
+        desc: "A resident loft owner complains that temporary hotel guests are occupying reserved rooftop lounge cabanas.",
+        choices: [
+            { type: "excellent", text: "Diplomatically balance interests: 'Allow me to escort hotel guests to premium terrace seating while reserving your designated cabana.'", approval: 3, energy: -5, fund: -20, fb: "Diplomatic phrasing resolves space conflicts between permanent owners and temporary hotel guests seamlessly." },
+            { type: "good", text: "Verify cabana reservation tags politely and guide hotel guests toward unreserved lounge chairs.", approval: 1, energy: -5, fund: 0, fb: "Standard space management procedure executed with polite intermediate English clarity." },
+            { type: "average", text: "Ask both parties to share the lounge space amicably without host intervention.", approval: 0, energy: 0, fund: 0, fb: "Passive management forces guests to negotiate rules themselves, causing unnecessary friction." },
+            { type: "poor", text: "Eject hotel guests loudly in front of onlookers while apologizing only to the owner.", approval: -10, energy: -10, fund: 0, fb: "Publicly embarrassing paying hotel guests ruins satisfaction ratings. Use discrete diplomacy." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 8: Late Checkout Negotiation",
+        desc: "A celebrity guest requests a free 4-hour late checkout, but clean teams must prep the penthouse for incoming guests.",
+        choices: [
+            { type: "excellent", text: "Offer elegant compromise: 'We can hold your luggage securely and grant access to our private spa lounge until 4:00 PM.'", approval: 3, energy: -5, fund: -30, fb: "Offering luxury hospitality holding alternatives protects house turn times without offending VIP clients." },
+            { type: "good", text: "Grant a 2-hour late extension and assign extra cleaning staff to complete rapid turnaround.", approval: 1, energy: -10, fund: -60, fb: "Accommodates VIP guest, though paying extra staff fees strains shift funds." },
+            { type: "average", text: "State strictly that standard checkout is 11:00 AM sharp due to housekeeping schedules.", approval: 0, energy: 0, fund: 0, fb: "Firm policy enforcement is fair, but lacks high-touch concierge problem solving." },
+            { type: "poor", text: "Threaten to charge full double-night penalty rates if keycards are not turned in.", approval: -10, energy: -10, fund: 0, fb: "Aggressive penalty threats create severe review damage. Communicate guidelines politely." }
+        ]
+    },
+    {
+        isEmergency: true,
+        title: "Phase 9: EMERGENCY - Elevator Stranding",
+        desc: "The main building elevator freezes between 8th and 9th floors with 3 guests inside!",
+        choices: [
+            { type: "viable1", text: "Maintain intercom calm, dial emergency elevator rescue service, and prepare cold beverages for exit arrival.", approval: 2, energy: -15, fund: -200, fb: "Calm voice communication and immediate emergency dispatch handle elevator strandings safely." },
+            { type: "viable2", text: "Notify municipal rescue services immediately, talk to trapped guests continuously, and offer full night credit.", approval: 1, energy: -10, fund: -300, fb: "Prioritizing rescue coordination and reassuring communication protects guest well-being." },
+            { type: "critical", text: "Attempt to pry open outer elevator doors manually using leverage tools yourself.", approval: -40, energy: -40, fund: 0, fb: "Critical Failure: Manual door prying caused severe mechanical failure and extreme safety hazards." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 10: Special Anniversary Request",
+        desc: "A guest secretly asks concierges for last-minute help arranging a romantic penthouse proposal setup tonight.",
+        choices: [
+            { type: "excellent", text: "Coordinate swiftly: 'It would be our pleasure! I will arrange champagne, local rose petals, and candle lighting by 8 PM.'", approval: 3, energy: -10, fund: -50, fb: "High-enthusiasm service language ('It would be our pleasure...') creates magical guest memories." },
+            { type: "good", text: "Contact top local SoHo florist partners to deliver pre-arranged celebratory floral bouquets.", approval: 1, energy: -5, fund: -30, fb: "Resourceful vendor coordination delivers good service results efficiently." },
+            { type: "average", text: "Provide a list of recommended local event planners the guest can call directly.", approval: 0, energy: 0, fund: 0, fb: "Handing off tasks loses the personal concierge touch expected in luxury lofts." },
+            { type: "poor", text: "Inform them that short-notice special setups are impossible during shift hours.", approval: -10, energy: -10, fund: 0, fb: "Refusing special hospitality requests damages concierge service standing." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 11: Lost Designer Item",
+        desc: "A guest reports dropping an expensive designer watch in the main lobby lounge during afternoon check-in.",
+        choices: [
+            { type: "excellent", text: "Review security feed immediately, secure watch in vault, and present it personally in a felt box.", approval: 3, energy: -5, fund: 0, fb: "Immediate investigative action and elegant presentation turn lost item anxiety into guest loyalty." },
+            { type: "good", text: "Log description in lost-and-found system and conduct physical search of lobby seating.", approval: 1, energy: -5, fund: 0, fb: "Proper administrative procedures handle lost item inquiries reliably." },
+            { type: "average", text: "Ask guest to leave contact info and promise to call if cleaning staff find it.", approval: 0, energy: 0, fund: 0, fb: "Passive handling lacks the proactive urgency expected for high-value items." },
+            { type: "poor", text: "State that lobby areas are unmonitored public spaces and disclaim responsibility.", approval: -10, energy: -10, fund: 0, fb: "Disclaiming care duty ruins luxury property reputation fast." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Phase 12: Shift Farewell & Departure",
+        desc: "Final checkout wave for departing VIP lofts. How do you close the guest experience?",
+        choices: [
+            { type: "excellent", text: "Arrange private black car airport transfer and present curated NYC souvenir gifts with custom thank-you notes.", approval: 3, energy: -10, fund: -60, fb: "Premium departure touches secure repeat VIP direct bookings effortlessly." },
+            { type: "good", text: "Assist with luggage transfer, book standard airport taxis, and request online reviews.", approval: 1, energy: -5, fund: 0, fb: "Solid, courteous departure workflow executed with clear professional communication." },
+            { type: "average", text: "Print final receipt statements and wish guests a safe flight home.", approval: 0, energy: 0, fund: 0, fb: "Standard administrative checkout farewell." },
+            { type: "poor", text: "Complain about NYC taxi traffic delays while hurrying guests out the door.", approval: -10, energy: -10, fund: 0, fb: "Complaining at checkout leaves negative lasting impressions." }
+        ]
+    }
+];
+
+let state = {
+    stepIdx: 0,
+    approval: 80,
+    energy: 100,
+    fund: 3000,
+    excellentCount: 0,
+    gameOver: false
+};
+
+function startGame() {
+    state = { stepIdx: 0, approval: 80, energy: 100, fund: 3000, excellentCount: 0, gameOver: false };
+    showScreen("game");
+    renderStep();
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+}
+
+function updateDashboard() {
+    state.approval = Math.max(0, Math.min(100, state.approval));
+    state.energy = Math.max(0, Math.min(100, state.energy));
+    state.fund = Math.max(0, state.fund);
+
+    document.getElementById('val-approval').innerText = state.approval + "%";
+    document.getElementById('val-energy').innerText = state.energy + "%";
+    document.getElementById('val-fund').innerText = "$" + state.fund;
+
+    const aBar = document.getElementById('bar-approval');
+    aBar.style.width = state.approval + "%";
+    aBar.style.backgroundColor = state.approval >= 75 ? "var(--success)" : state.approval >= 45 ? "var(--warning)" : "var(--danger)";
+
+    const eBar = document.getElementById('bar-energy');
+    eBar.style.width = state.energy + "%";
+    eBar.style.backgroundColor = state.energy >= 50 ? "var(--success)" : state.energy >= 25 ? "var(--warning)" : "var(--danger)";
+
+    const fBar = document.getElementById('bar-fund');
+    fBar.style.width = Math.min(100, (state.fund / 3000 * 100)) + "%";
+    fBar.style.backgroundColor = state.fund >= 1000 ? "var(--success)" : state.fund >= 400 ? "var(--warning)" : "var(--danger)";
+
+    document.getElementById('step-indicator').innerText = `Shift Phase ${state.stepIdx + 1} / 12`;
+}
+
+function shuffle(array) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function renderStep() {
+    updateDashboard();
+    const data = scenarios[state.stepIdx];
+
+    const badge = document.getElementById('step-badge');
+    if (data.isEmergency) {
+        badge.className = "badge badge-emergency";
+        badge.innerText = "🚨 Emergency Safety Event";
+    } else {
+        badge.className = "badge badge-std";
+        badge.innerText = "Standard Concierge Task";
+    }
+
+    document.getElementById('step-title').innerText = data.title;
+    document.getElementById('step-desc').innerText = data.desc;
+
+    const container = document.getElementById('choices-container');
+    container.innerHTML = "";
+
+    document.getElementById('feedback-box').style.display = "none";
+    document.getElementById('btn-next').style.display = "none";
+
+    const shuffledChoices = shuffle(data.choices);
+
+    shuffledChoices.forEach((choice) => {
+        const btn = document.createElement('button');
+        btn.className = "btn";
+        btn.innerText = choice.text;
+        btn.onclick = () => handleChoice(choice, btn);
+        container.appendChild(btn);
+    });
+}
+
+function handleChoice(choice, btnElement) {
+    const fbBox = document.getElementById('feedback-box');
+    const fbTitle = document.getElementById('fb-title');
+    const fbText = document.getElementById('fb-text');
+
+    if (choice.type === "poor") {
+        state.approval += choice.approval;
+        state.energy += choice.energy;
+        state.fund += choice.fund;
+        updateDashboard();
+
+        btnElement.disabled = true;
+        fbBox.className = "feedback-box fb-poor";
+        fbBox.style.display = "block";
+        fbTitle.innerText = "Flawed Response (-10% Approval) - Try Alternative Action!";
+        fbText.innerText = choice.fb;
+
+        if (state.approval <= 20 || state.energy <= 0) {
+            triggerGameOver("Concierge Dismissal: Guest satisfaction or staff energy collapsed!");
+        }
+        return;
+    }
+
+    if (choice.type === "critical") {
+        state.approval = 0;
+        updateDashboard();
+        triggerGameOver(choice.fb);
+        return;
+    }
+
+    // Process valid options
+    if (choice.type === "excellent") state.excellentCount++;
+    state.approval += choice.approval;
+    state.energy += choice.energy;
+    state.fund += choice.fund;
+    updateDashboard();
+
+    document.querySelectorAll('.choices-grid .btn').forEach(b => b.disabled = true);
+
+    fbBox.style.display = "block";
+    if (choice.type === "excellent") {
+        fbBox.className = "feedback-box fb-excel";
+        fbTitle.innerText = "Optimal VIP Concierge Choice! (+3% Approval)";
+    } else if (choice.type === "good" || choice.type === "viable1" || choice.type === "viable2") {
+        fbBox.className = "feedback-box fb-good";
+        fbTitle.innerText = "Good Service Delivery";
+    } else {
+        fbBox.className = "feedback-box fb-avg";
+        fbTitle.innerText = "Average Response";
+    }
+    fbText.innerText = choice.fb;
+
+    // Check early victory
+    if (state.excellentCount >= 8 && state.stepIdx < 11) {
+        document.getElementById('btn-next').innerText = "Claim Early Victory!";
+    } else {
+        document.getElementById('btn-next').innerText = state.stepIdx === 11 ? "View Shift Summary" : "Next Shift Phase";
+    }
+    document.getElementById('btn-next').style.display = "block";
+}
+
+function triggerGameOver(reason) {
+    state.gameOver = true;
+    showScreen("debrief");
+    document.getElementById('early-win-container').innerHTML = "";
+    document.getElementById('debrief-summary').innerHTML = `<h2 style="color:var(--danger)">Shift Terminated - Safety Breach</h2><p>${reason}</p>`;
+    document.getElementById('debrief-details').innerHTML = `
+        <h3>Band 4: Unsuccessful Concierge</h3>
+        <p>Your shift management ended due to critical safety errors or depleted guest approval ratings. Review luxury hospitality phrasing, active empathetic listening ('I completely understand...'), and emergency response guidelines to succeed in high-end NYC loft management.</p>
+    `;
+}
+
+function nextStep() {
+    if (state.excellentCount >= 8 && state.stepIdx < 11) {
+        showDebrief(true);
+        return;
+    }
+
+    state.stepIdx++;
+    if (state.stepIdx >= scenarios.length) {
+        showDebrief(false);
+    } else {
+        renderStep();
+    }
+}
+
+function showDebrief(isEarlyWin) {
+    showScreen("debrief");
+    const winContainer = document.getElementById('early-win-container');
+    const summary = document.getElementById('debrief-summary');
+    const details = document.getElementById('debrief-details');
+
+    if (isEarlyWin) {
+        winContainer.innerHTML = `
+            <div class="early-win">
+                <h2>🏆 Early Victory Unlocked!</h2>
+                <p>You made 8 Excellent concierge choices before the final phase! Outstanding luxury service delivery.</p>
+            </div>
+        `;
+    } else {
+        winContainer.innerHTML = "";
+    }
+
+    summary.innerHTML = `
+        <h2>Shift Performance Summary</h2>
+        <p><strong>Final Guest Approval:</strong> ${state.approval}% | <strong>Staff Energy:</strong> ${state.energy}% | <strong>Shift Fund:</strong> $${state.fund}</p>
+        <p><strong>Optimal Choices:</strong> ${state.excellentCount} / 10</p>
+    `;
+
+    let bandTitle = "";
+    let bandFeedback = "";
+
+    if (state.approval >= 85 && state.energy >= 50) {
+        bandTitle = "Band 1: Master Concierge";
+        bandFeedback = "Exceptional performance! You demonstrated fluent intermediate customer service English, outstanding problem-solving skills, and luxury NYC hospitality flair. Your warm empathetic phrasing, proactive offers ('I will personally deliver...'), and smooth emergency containment set the highest industry standard.";
+    } else if (state.approval >= 70 && state.energy >= 30) {
+        bandTitle = "Band 2: Competent Manager";
+        bandFeedback = "Solid operational shift management across demanding Manhattan loft scenarios. You communicated effectively in B1 English and maintained high guest satisfaction. To achieve Master status, anticipate VIP expectations even faster and rely on personalized high-touch service solutions.";
+    } else if (state.approval >= 50) {
+        bandTitle = "Band 3: Survivor Concierge";
+        bandFeedback = "You completed the shift, but high staff fatigue and lower approval ratings revealed operational gaps. Practice replacing rigid policy statements with polite service alternatives and active listening phrases to keep demanding guests satisfied.";
+    } else {
+        bandTitle = "Band 4: Unsuccessful Concierge";
+        bandFeedback = "Your shift performance fell below acceptable luxury hospitality standards. Re-study functional customer service vocabulary, empathetic de-escalation techniques, and urgent problem resolution strategies for fast-paced urban loft settings.";
+    }
+
+    details.innerHTML = `<h3>${bandTitle}</h3><p>${bandFeedback}</p>`;
+}
+</script>
+</body>
+</html>

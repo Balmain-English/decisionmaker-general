@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stockholm & Sweden Week - CEFR A2 Adult Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --sweden-blue: #005293;
+        --sweden-yellow: #fecb00;
+        --bg-light: #f4f7f9;
+        --card-bg: #ffffff;
+        --text-dark: #1f2937;
+        
+        --success-green: #2e7d32;
+        --success-bg: #e8f5e9;
+        --good-blue: #1565c0;
+        --good-bg: #e3f2fd;
+        --ochre-amber: #b78103;
+        --ochre-bg: #fff8e1;
+        --error-red: #c62828;
+        --error-bg: #ffebee;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Open Sans', sans-serif;
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+        line-height: 1.6;
+        padding-bottom: 2rem;
+    }
+
+    header {
+        background: var(--sweden-blue);
+        color: white;
+        padding: 1.2rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 5px solid var(--sweden-yellow);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    header h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.3rem;
+        letter-spacing: 0.5px;
+    }
+
+    .score-box { 
+        background: white; 
+        color: var(--sweden-blue); 
+        padding: 0.4rem 1rem; 
+        border-radius: 6px; 
+        font-weight: 700; 
+        font-size: 1.05rem;
+    }
+
+    .container { max-width: 680px; margin: 2rem auto; padding: 0 1rem; }
+
+    .card { 
+        background: var(--card-bg); 
+        padding: 2rem; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+        display: none; 
+    }
+    .card.active { display: block; }
+
+    h2 { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; margin-bottom: 0.8rem; color: var(--sweden-blue); }
+    p { margin-bottom: 1rem; color: #4b5563; }
+
+    .progress-bar {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .choices-grid { display: grid; gap: 12px; margin: 1.5rem 0; }
+    
+    .choice-btn {
+        background: #fff;
+        border: 2px solid #e5e7eb;
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.98rem;
+        color: var(--text-dark);
+        text-align: left;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+    .choice-btn:hover:not(:disabled) { 
+        border-color: var(--sweden-blue); 
+        background: #f0f7ff; 
+    }
+    .choice-btn:disabled { 
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .feedback { 
+        margin-top: 1.5rem; 
+        padding: 1.2rem; 
+        border-radius: 8px; 
+        display: none; 
+        border-left: 6px solid; 
+    }
+    .fb-excellent { background: var(--success-bg); border-color: var(--success-green); color: #1b5e20; }
+    .fb-good { background: var(--good-bg); border-color: var(--good-blue); color: #0d47a1; }
+    .fb-average { background: var(--ochre-bg); border-color: var(--ochre-amber); color: #5d4037; }
+    .fb-poor { background: var(--error-bg); border-color: var(--error-red); color: #b71c1c; }
+
+    .feedback-title {
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+        display: block;
+    }
+
+    .next-btn {
+        margin-top: 1.5rem;
+        background: var(--sweden-blue);
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: 700;
+        font-size: 1rem;
+        display: none;
+        transition: background 0.2s;
+    }
+    .next-btn:hover { background: #003d70; }
+
+    .emergency-tag { 
+        background: var(--error-red); 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 4px; 
+        font-size: 0.75rem; 
+        font-weight: 700; 
+        letter-spacing: 1px;
+        display: inline-block; 
+        margin-bottom: 0.8rem; 
+    }
+
+    .path-tag {
+        background: var(--sweden-yellow);
+        color: var(--sweden-blue);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-block;
+        margin-bottom: 0.8rem;
+    }
+    
+    .debrief-content {
+        margin-top: 1rem;
+        font-size: 1rem;
+        color: #374151;
+        text-align: left;
+    }
+    
+    .debrief-content p {
+        margin-bottom: 1rem;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Sweden One-Week Travel - CEFR A2</h1>
+    <div class="score-box">Points: <span id="score">0</span></div>
+</header>
+
+<div class="container">
+    <div class="card active" id="screen-start">
+        <h2>Welcome to Stockholm & Sweden!</h2>
+        <p>This interactive travel scenario helps adult learners practice practical English and Swedish cultural etiquette at the CEFR A2 level.</p>
+        <p>You will explore Stockholm and choose a regional excursion for days 5 to 7 (Gotland, Lapland, or the Archipelago) before returning to the capital.</p>
+        <button class="next-btn" style="display:block;" onclick="startGame()">Start Journey</button>
+    </div>
+
+    <div class="card" id="screen-game">
+        <div class="progress-bar" id="progress-indicator">Scenario 1</div>
+        <div id="status-area"></div>
+        <h2 id="step-title"></h2>
+        <p id="step-desc"></p>
+        
+        <div class="choices-grid" id="choices-container"></div>
+        
+        <div class="feedback" id="feedback-box">
+            <span class="feedback-title" id="points-text"></span>
+            <p id="feedback-content" style="margin-bottom:0;"></p>
+        </div>
+        
+        <button class="next-btn" id="btn-next">Continue</button>
+    </div>
+
+    <div class="card" id="screen-final">
+        <h2>Trip Completed</h2>
+        <div id="final-stats" style="font-size: 1.4rem; text-align: center; margin: 1.5rem 0; font-weight:700;"></div>
+        <div id="band-result" style="padding: 1.5rem; border-radius: 8px; text-align: center;"></div>
+        <button class="next-btn" style="display:block; margin-top:2rem;" onclick="startGame()">Play Again</button>
+    </div>
+</div>
+
+<script>
+// Main scenario database
+const database = {
+    // Stage 1: Stockholm Arrival & City Exploration (1-3)
+    s1: {
+        title: "Arriving at Stockholm Arlanda Airport",
+        desc: "You land at Arlanda Airport with a suitcase. How do you travel to central Stockholm?",
+        choices: [
+            { text: "Take the Arlanda Express high-speed train directly to Central Station.", pts: 3, fb: "Excellent choice! The Arlanda Express is fast, comfortable, and reaches the city center in just 18 minutes smoothly." },
+            { text: "Take the Flygbussarna airport coach bus to Central Station.", pts: 2, fb: "Good choice! Airport coaches are affordable and reliable, though morning highway traffic can slow down your travel time slightly." },
+            { text: "Book a local taxi without checking the fixed price on the window sticker.", pts: 1, fb: "Average choice! Swedish taxi prices are unregulated. Always confirm a fixed price before entering to avoid unexpected high costs." },
+            { text: "Accept a cash ride from an unbadged driver in the arrivals terminal.", pts: -1, fb: "Unsafe choice! Unlicensed taxi drivers are unregulated and can overcharge you. Always use official public transport or licensed taxis. Choose again." }
+        ]
+    },
+    s2: {
+        title: "Swedish 'Fika' Culture in Gamla Stan",
+        desc: "You are walking through Gamla Stan (Old Town). You want to experience traditional Swedish 'fika'. What do you order?",
+        choices: [
+            { text: "Order a fresh cinnamon bun (kanelbulle) and black coffee at a café counter.", pts: 3, fb: "Spot on! Cinnamon buns and black coffee are the heart of traditional Swedish fika culture. A wonderful afternoon coffee break!" },
+            { text: "Order a slice of Swedish princess cake (prinsesstårta) and tea.", pts: 2, fb: "Good choice! Prinsesstårta is a famous Swedish cake with marzipan. It is delicious, though sweeter than traditional daily fika." },
+            { text: "Order a takeaway espresso and drink it quickly while running down the street.", pts: 1, fb: "Average choice! Swedish fika is meant to be a slow, social break with friends, not a hurried drink on the go." },
+            { text: "Demand hot English tea with milk in a quiet traditional bakery.", pts: -1, fb: "Impolite tone! Most Swedish cafes serve filter coffee or herbal tea. Ask politely what drinks they offer today. Please choose again." }
+        ]
+    },
+    s3: {
+        title: "Visiting the Historic Vasa Museum",
+        desc: "You visit the Vasa Museum on Djurgården island to see the preserved 17th-century warship. How do you plan your entry?",
+        choices: [
+            { text: "Buy a digital ticket online in advance and join the entry queue.", pts: 3, fb: "Brilliant choice! Booking online saves time and guarantees entry to Scandinavia's most popular museum during busy travel hours." },
+            { text: "Pay with your bank card at the museum entrance ticket desk.", pts: 2, fb: "Good choice! The Vasa Museum accepts card payments easily, though you may wait in line during busy weekend afternoons." },
+            { text: "Try to pay for your admission ticket using physical paper bank notes.", pts: 1, fb: "Average choice! The Vasa Museum is completely cashless like most Swedish attractions. You must use a bank card or app." },
+            { text: "Touch the wooden ship carvings despite warning signs strictly prohibiting touch.", pts: -1, fb: "Respect museum rules! The Vasa ship is delicate historical artifact. Touching it causes permanent damage. Please choose again." }
+        ]
+    },
+
+    // Scenario 4: Major Decision Point for Days 5-7 Excursion
+    s4: {
+        title: "Mid-Week Travel Decision (Days 5 to 7)",
+        desc: "You have three days in the middle of your week. Which regional Swedish excursion would you like to take before returning to Stockholm?",
+        choices: [
+            { text: "Take a ferry to Visby on Gotland island to explore medieval history.", pts: 3, branch: "gotland", fb: "Fantastic choice! Gotland is famous for its medieval town walls, Baltic coastal views, and rich historic atmosphere." },
+            { text: "Take an overnight train north to Kiruna in Swedish Lapland.", pts: 2, branch: "lapland", fb: "Great decision! Swedish Lapland offers dramatic northern landscapes, Arctic wilderness, and rich Sami cultural heritage." },
+            { text: "Stay near Stockholm and take day ferries across the Stockholm Archipelago.", pts: 1, branch: "archipelago", fb: "Nice choice! Exploring the tranquil islands of the archipelago is relaxing and offers beautiful Baltic island scenery." },
+            { text: "Fly to Paris, France for two days before coming back.", pts: -1, fb: "Invalid trip option! This module focuses on exploring regions within Sweden. Stay in Sweden and select a regional destination. Choose again." }
+        ]
+    },
+
+    // Emergency Situation 1 (Triggers after Scenario 4)
+    e1: {
+        title: "EMERGENCY: Lost Travel Documents & Wallet",
+        isEmergency: true,
+        desc: "While preparing for your mid-week excursion, you realize your small shoulder bag containing your wallet and ID is missing!",
+        choices: [
+            { text: "Report the missing bag to the Central Station lost and found office.", pts: 3, fb: "Smart decision! Swedish transit lost property offices are very efficient and frequently return lost belongings safely to travelers." },
+            { text: "Contact your bank card app immediately to temporarily freeze your credit card.", pts: 2, fb: "Good action! Freezing your card digitally prevents unauthorized charges while you search for your missing items safely." },
+            { text: "Search through public street trash bins around the station randomly.", pts: 1, fb: "Unwise choice! Searching trash bins wastes energy and rarely works. You will face travel complications again very soon." },
+            { text: "Accuse a nearby waiting passenger of stealing your bag angrily.", pts: -1, fb: "GAME OVER. Making false public accusations creates legal trouble. Always seek assistance from station police or official staff." }
+        ]
+    },
+
+    // Branch A: Gotland Medieval Excursion (Steps 5, 6, 7)
+    s5_gotland: {
+        pathName: "Gotland Excursion",
+        title: "Arriving in Medieval Visby",
+        desc: "You arrive by ferry in Visby, Gotland. The ancient stone city walls surround the historic town center. How do you explore?",
+        choices: [
+            { text: "Take a guided walking tour along the UNESCO medieval ring wall.", pts: 3, fb: "Excellent choice! Guided tours explain Visby's rich Hanseatic history clearly while keeping you oriented inside the cobbled city streets." },
+            { text: "Rent a bicycle to explore the coastal trails outside the city walls.", pts: 2, fb: "Good choice! Gotland is flat and cycle-friendly. Cycling along the Baltic coast offers fantastic sea views and fresh air." },
+            { text: "Walk aimlessly through narrow alleys without taking a street map.", pts: 1, fb: "Average choice! Visby's cobble alleys are charming, but it is easy to get disoriented without a map or digital offline guide." },
+            { text: "Climb over preserved historic ruins marked with warning prohibition signs.", pts: -1, fb: "Illegal behavior! Visby's medieval stone structures are protected ruins. Climbing them damages heritage and brings heavy fines. Choose again." }
+        ]
+    },
+    s6_gotland: {
+        pathName: "Gotland Excursion",
+        title: "Exploring Gotland Countryside & 'Raukar'",
+        desc: "You travel north on Gotland to see the 'Raukar' (natural sea stack limestone rocks). How do you behave around nature?",
+        choices: [
+            { text: "Walk along marked nature reserve paths and photograph the limestone rocks.", pts: 3, fb: "Perfect etiquette! Respecting Swedish nature guidelines protects fragile coastal ecosystems while letting you take stunning photography." },
+            { text: "Enjoy a picnic on the beach and carry all your trash back to town.", pts: 2, fb: "Good choice! Leaving no trace in nature aligns with Sweden's environmental ethics and outdoor recreation tradition." },
+            { text: "Chisel a small piece off a limestone sea stack to keep as souvenir.", pts: 1, fb: "Poor conservation ethics! Geological sea stacks are protected natural monuments in Sweden. Never break off rock pieces." },
+            { text: "Light an open campfire directly on protected wooden coastal boardwalks.", pts: -1, fb: "Dangerous action! Fire destroys protected timber infrastructure and threatens coastal reserves. Use designated barbecue pits only. Choose again." }
+        ]
+    },
+    s7_gotland: {
+        pathName: "Gotland Excursion",
+        title: "Local Gotland Culinary Dinner",
+        desc: "You visit a traditional restaurant in Visby. What local Gotland specialty do you choose for dinner?",
+        choices: [
+            { text: "Order Gotland lamb stew followed by saffron pancake with dewberry jam.", pts: 3, fb: "Delicious choice! Saffron pancake (saffranspannkaka) with salmbär jam is Gotland's most famous traditional dessert. A memorable meal!" },
+            { text: "Order grilled local Baltic fish with fresh spring potatoes and dill.", pts: 2, fb: "Good choice! Fresh Baltic fish cooked with local herbs is fresh, light, and healthy after a long outdoor walking day." },
+            { text: "Order a basic fast-food American burger from an international chain store.", pts: 1, fb: "Average choice! Standard fast food is familiar, but you miss out on experiencing unique regional Swedish island culinary culture." },
+            { text: "Refuse to pay your restaurant bill because saffron pancake smells unusual.", pts: -1, fb: "Unacceptable conduct! If food is prepared correctly, you must pay your bill. Speak politely to staff if you have dietary questions. Choose again." }
+        ]
+    },
+
+    // Branch B: Swedish Lapland Excursion (Steps 5, 6, 7)
+    s5_lapland: {
+        pathName: "Lapland Excursion",
+        title: "Arriving in Kiruna & Arctic Wilderness",
+        desc: "Your sleeper train arrives in Kiruna, Swedish Lapland. Temperatures are chilly even in spring/autumn. How do you prepare?",
+        choices: [
+            { text: "Dress in warm wool thermal layers, windproof jacket, and sturdy boots.", pts: 3, fb: "Brilliant choice! Swedish outdoors experts emphasize dressing in layers ('lager på lager') to stay comfortable in changing Arctic weather." },
+            { text: "Buy a warm knitted Swedish beanie hat and gloves from a local shop.", pts: 2, fb: "Good choice! Keeping extremities warm is important when exploring northern nature trails and mountain wilderness areas." },
+            { text: "Explore the town wearing light cotton hoodies and thin running sneakers.", pts: 1, fb: "Average choice! Lightweight clothing leaves you shivering in cold Arctic winds, shortening your outdoor exploration time." },
+            { text: "Refuse to wear a coat outdoor to prove you can endure Arctic cold weather.", pts: -1, fb: "Unsafe choice! Cold Arctic winds cause hypothermia quickly. Dress warmly and sensibly for northern weather conditions. Choose again." }
+        ]
+    },
+    s6_lapland: {
+        pathName: "Lapland Excursion",
+        title: "Sami Cultural Center & Reindeer Experience",
+        desc: "You visit an authentic Sami cultural village to learn about indigenous Arctic traditions. How do you interact?",
+        choices: [
+            { text: "Listen attentively to the Sami guide and ask polite questions about traditions.", pts: 3, fb: "Respectful choice! Learning about indigenous Sami culture directly from local guides provides deep cultural insight and understanding." },
+            { text: "Feed the reindeer dried lichen under the supervision of local Sami herders.", pts: 2, fb: "Good experience! Reindeer are important animals in Arctic ecosystems. Guided feeding offers safe, memorable interaction." },
+            { text: "Take photos of private residential homes without asking permission from owners.", pts: 1, fb: "Average choice! Always respect personal privacy when visiting local residential areas in indigenous cultural villages." },
+            { text: "Attempt to chase reindeer across the fence to capture a video.", pts: -1, fb: "Disrespectful action! Stressing semi-domesticated animals is cruel and breaks cultural visitor rules. Treat animals calmly. Choose again." }
+        ]
+    },
+    s7_lapland: {
+        pathName: "Lapland Excursion",
+        title: "Hiking in Abisko National Park",
+        desc: "You take a daytime hike in Abisko National Park under Sweden's 'Right to Roam' (Allemansrätten). What rule must you follow?",
+        choices: [
+            { text: "Enjoy hiking freely while taking all trash home and respecting wildlife.", pts: 3, fb: "Spot on! 'Allemansrätten' allows public access to nature, following the essential core principle: 'Do not disturb, do not destroy.'" },
+            { text: "Stay on established hiking trails to protect mountain tundra vegetation.", pts: 2, fb: "Good choice! Mountain vegetation grows very slowly in cold Arctic climates. Staying on trails prevents soil erosion." },
+            { text: "Pick wild Arctic berries near trails without checking if they are safe.", pts: 1, fb: "Caution needed! Picking wild berries is permitted under Allemansrätten, but ensure you identify wild plant species correctly first." },
+            { text: "Chop branches off live arctic birch trees to build a campfire.", pts: -1, fb: "Illegal under Allemansrätten! Breaking live tree branches or damaging living wood in national parks is strictly forbidden. Choose again." }
+        ]
+    },
+
+    // Branch C: Archipelago Excursion (Steps 5, 6, 7)
+    s5_archipelago: {
+        pathName: "Archipelago Excursion",
+        title: "Taking the Ferry to Vaxholm Island",
+        desc: "You board a classic Waxholmsbolaget ferry to explore Vaxholm, the capital of the Stockholm Archipelago. How do you travel?",
+        choices: [
+            { text: "Sit on the outdoor upper deck with a windproof coat to admire tiny islands.", pts: 3, fb: "Fantastic choice! The upper deck offers sweeping views of wooden sea cottages, rocky islets, and Baltic maritime scenery." },
+            { text: "Buy a warm coffee and Swedish cardamom bun from the ferry cafeteria.", pts: 2, fb: "Good choice! Onboard cafeterias provide cozy indoor seating and traditional snacks while cruising through archipelago sea channels." },
+            { text: "Stay on the ground floor looking at your smartphone screen the whole voyage.", pts: 1, fb: "Average choice! Smartphone screens distract you from seeing some of Scandinavia's most picturesque coastal scenery." },
+            { text: "Lean far over the ferry safety railing to film water waves closely.", pts: -1, fb: "Dangerous behavior! Leaning over ship guardrails risks falling into freezing Baltic waters. Maintain safe positions aboard vessels. Choose again." }
+        ]
+    },
+    s6_archipelago: {
+        pathName: "Archipelago Excursion",
+        title: "Sea Kayaking near Grinda Island",
+        desc: "You visit Grinda island and rent a sea kayak for two hours. How do you handle safety on Baltic waters?",
+        choices: [
+            { text: "Wear a fitted life jacket, listen to safety briefing, and stay near shoreline.", pts: 3, fb: "Excellent safety! Baltic sea temperatures can be cool. Wearing life jackets and staying near shores ensures safe kayaking." },
+            { text: "Paddle in quiet shallow bays alongside an experienced local instructor.", pts: 2, fb: "Good choice! Guided kayak tours help beginner paddlers navigate Archipelago currents safely while enjoying island views." },
+            { text: "Kayak without reviewing sea weather forecasts or wind speed conditions.", pts: 1, fb: "Risky choice! Sudden coastal winds can make paddling back difficult. Always check local marine weather before kayaking." },
+            { text: "Refuse to wear a life jacket because you consider yourself a strong swimmer.", pts: -1, fb: "Safety violation! Life jackets are mandatory equipment for kayak rentals. Never risk water safety in open sea waters. Choose again." }
+        ]
+    },
+    s7_archipelago: {
+        pathName: "Archipelago Excursion",
+        title: "Traditional Swedish Sauna & Baltic Dip",
+        desc: "You visit a lakeside sauna on Sandhamn island. Swedes often follow sauna heating with a dip in cold Baltic water. What do you do?",
+        choices: [
+            { text: "Enjoy the sauna heat, shower, and dip briefly in the Baltic water safely.", pts: 3, fb: "Authentic experience! Combining warm saunas with refreshing cold sea dips is a beloved Swedish wellness tradition." },
+            { text: "Relax inside the warm sauna and enjoy cool mineral water afterwards.", pts: 2, fb: "Good choice! Listening to your body is smart. You can enjoy Swedish sauna relaxation without taking cold sea dips." },
+            { text: "Wear muddy street outdoor shoes inside the clean wooden sauna room.", pts: 1, fb: "Poor etiquette! Outdoor shoes are strictly removed before entering Swedish saunas or homes. Wear clean footwear or bare feet." },
+            { text: "Pour sweet carbonated soda onto hot sauna stove rocks to create scent.", pts: -1, fb: "Property damage! Pouring sugary drinks on hot sauna heaters creates dangerous smoke and ruins heating elements. Use clean water. Choose again." }
+        ]
+    },
+
+    // Stage 3: Return to Stockholm (8-12)
+    s8: {
+        title: "Return to Stockholm: The Royal Palace",
+        desc: "You return to central Stockholm and visit Kungliga Slottet (The Royal Palace). How do you enjoy the royal guard shift?",
+        choices: [
+            { text: "Watch the Royal Guard parade calmly from designated spectator areas.", pts: 3, fb: "Excellent choice! Watching the Royal Guard changing ceremony from spectator areas provides great photos and respects military guards." },
+            { text: "Explore the Royal Armoury museum located beneath the palace courtyard.", pts: 2, fb: "Good choice! The Royal Armoury features historic royal costumes, crowns, and royal carriages with clear English descriptions." },
+            { text: "Shout loudly at a marching royal guard to make them smile for a selfie.", pts: 1, fb: "Poor etiquette! On-duty royal guards are active military personnel. Never distract or shout at working guards." },
+            { text: "Cross official rope barriers to touch historic palace entrance doors.", pts: -1, fb: "Security violation! Roped areas protect historical royal grounds. Stay behind marked barriers at all times. Choose again." }
+        ]
+    },
+
+    // Emergency Situation 2 (Triggers after Scenario 8)
+    e2: {
+        title: "EMERGENCY: Missed the Last Metro Train",
+        isEmergency: true,
+        desc: "It is 00:45 AM after an evening in Södermalm. Metro station doors are closed and your hotel is 3 miles away.",
+        choices: [
+            { text: "Use a verified taxi app or ride-hailing service to book a safe ride.", pts: 3, fb: "Smart solution! Pre-booking rides through official apps guarantees verified driver details and transparent fixed pricing late at night." },
+            { text: "Find a night bus stop and check SL digital schedules for night routes.", pts: 2, fb: "Good choice! Stockholm has reliable 24-hour night buses connecting Södermalm to central hotel districts safely." },
+            { text: "Start walking 3 miles alone through unfamiliar dark industrial docklands.", pts: 1, fb: "Risky choice! Walking alone at late hours in unfamiliar docklands wastes energy. Expect travel complications soon." },
+            { text: "Accept a ride offer from an unmarked private vehicle parked by a pub.", pts: -1, fb: "GAME OVER. Entering unverified private cars late at night is dangerous. Never compromise safety for convenience." }
+        ]
+    },
+
+    s9: {
+        title: "Shopping in Norrmalm & Cashless Sweden",
+        desc: "You visit shopping streets in Norrmalm to buy Swedish design items. You approach the checkout register. How do you pay?",
+        choices: [
+            { text: "Pay using a contactless credit card or mobile phone payment app.", pts: 3, fb: "Spot on! Sweden is one of the world's most cashless societies. Nearly all shops preference contactless cards." },
+            { text: "Ask politely if card payment is accepted for small souvenirs.", pts: 2, fb: "Good choice! Swedish shop staff appreciate polite queries, though virtually every store prefers digital payments over cash." },
+            { text: "Try to pay for a small souvenir using a large 500 SEK paper note.", pts: 1, fb: "Average choice! Many Swedish shops carry zero paper cash in registers and refuse paper bank notes entirely ('Kontantfri')." },
+            { text: "Argue angrily with the cashier because the store does not accept physical cash.", pts: -1, fb: "Impolite behavior! Private stores in Sweden legally decide payment methods. Adapt politely to local cashless systems. Choose again." }
+        ]
+    },
+    s10: {
+        title: "Modern Art at Fotografiska",
+        desc: "You visit Fotografiska, Stockholm's world-famous contemporary photography museum. How do you experience exhibitions?",
+        choices: [
+            { text: "View photography displays quietly and read English exhibition guide texts.", pts: 3, fb: "Brilliant choice! Fotografiska offers excellent English descriptions, allowing you to appreciate modern photography exhibitions deeply." },
+            { text: "Visit the top-floor museum cafe for panoramic harbor views over Stockholm.", pts: 2, fb: "Good choice! Fotografiska's top-floor restaurant is famous for sustainable food and spectacular views across Stockholm harbor waters." },
+            { text: "Take flash photography pictures in dark rooms where flash is banned.", pts: 1, fb: "Poor museum etiquette! Camera flash damages delicate photographic prints and disturbs other museum visitors inside dark galleries." },
+            { text: "Touch glossy photography prints directly with uncleaned hands.", pts: -1, fb: "Damaging action! Finger oils ruin art prints permanently. Keep safe distance from artwork displayed without glass covers. Choose again." }
+        ]
+    },
+    s11: {
+        title: "Final Evening Dinner in Södermalm",
+        desc: "On your last evening in Sweden, you dine at a trendy neighborhood restaurant in Södermalm. What dinner choice do you make?",
+        choices: [
+            { text: "Order classic Swedish meatballs with lingonberry jam, cream sauce, and mash.", pts: 3, fb: "Classic choice! Köttbullar with lingonberries and potato purée is Sweden's iconic comfort dish. A perfect final dinner!" },
+            { text: "Order wild Baltic salmon served with dill potatoes and lemon butter.", pts: 2, fb: "Good choice! Swedish seafood culinary traditions emphasize fresh local ingredients and delicate herb flavors. Delicious!" },
+            { text: "Order plain boiled pasta without sauce or seasoning.", pts: 1, fb: "Average choice! Simple food is safe, but you miss an opportunity to enjoy delicious Swedish culinary flavors on your final evening." },
+            { text: "Leave without paying your dinner bill because lingonberry jam is sweet.", pts: -1, fb: "Illegal behavior! Lingonberry jam is traditionally sweet and savory. Pay for ordered meals and communicate politely with staff. Choose again." }
+        ]
+    },
+    s12: {
+        title: "Departure Day at Arlanda Airport",
+        desc: "Your flight home departs Arlanda Airport at 16:00. How do you schedule your final departure timing?",
+        choices: [
+            { text: "Arrive at Arlanda Airport at 13:00 PM (3 hours before your flight).", pts: 3, fb: "Perfect timing! Arriving three hours early allows comfortable airport security checks, souvenir shopping, and stress-free boarding." },
+            { text: "Arrive at Arlanda Airport at 14:00 PM (2 hours before your flight).", pts: 2, fb: "Good timing! Two hours is sufficient for European flights, though security queue lines during peak travel hours can feel hurried." },
+            { text: "Arrive at Arlanda Airport at 15:15 PM (45 minutes before your flight).", pts: 1, fb: "Very risky timing! Express security lines or gate closing deadlines can easily cause you to miss international flights." },
+            { text: "Remain at a central café until 15:30 PM before boarding a taxi.", pts: -1, fb: "Disastrous decision! Boarding gates close 20-30 minutes before takeoff. Missing flights incurs heavy rebooking costs. Choose again." }
+        ]
+    }
+};
+
+// Queue state variables
+let queue = [];
+let currentIndex = 0;
+let score = 0;
+let chosenBranch = "gotland"; // Default fallback branch
+
+/* FISHER-YATES SHUFFLE ALGORITHM */
+function fisherYatesShuffle(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function startGame() {
+    score = 0;
+    currentIndex = 0;
+    chosenBranch = "gotland";
+    
+    // Initial queue up to Scenario 4
+    queue = ['s1', 's2', 's3', 's4'];
+    
+    updateScoreUI();
+    showScreen('game');
+    renderStep();
+}
+
+function updateScoreUI() {
+    document.getElementById('score').innerText = score;
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+}
+
+function buildRemainingQueue() {
+    // Construct steps 5, 6, 7 based on branch selection, then add e1, s8, e2, s9, s10, s11, s12
+    const pathSteps = [
+        `s5_${chosenBranch}`,
+        `s6_${chosenBranch}`,
+        `s7_${chosenBranch}`
+    ];
+
+    // Build complete queue: s1, s2, s3, s4, e1, [5, 6, 7], s8, e2, s9, s10, s11, s12
+    queue = [
+        's1', 's2', 's3', 's4',
+        'e1',
+        ...pathSteps,
+        's8',
+        'e2',
+        's9', 's10', 's11', 's12'
+    ];
+}
+
+function renderStep() {
+    const key = queue[currentIndex];
+    const data = database[key];
+
+    document.getElementById('progress-indicator').innerText = `Step ${currentIndex + 1} of ${queue.length}`;
+    document.getElementById('step-title').innerText = data.title;
+    document.getElementById('step-desc').innerText = data.desc;
+
+    const statusArea = document.getElementById('status-area');
+    statusArea.innerHTML = '';
+    
+    if (data.isEmergency) {
+        statusArea.innerHTML = `<span class="emergency-tag">EMERGENCY SITUATION</span>`;
+    } else if (data.pathName) {
+        statusArea.innerHTML = `<span class="path-tag">${data.pathName}</span>`;
+    }
+
+    const fbBox = document.getElementById('feedback-box');
+    fbBox.style.display = 'none';
+    fbBox.className = 'feedback';
+
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.style.display = 'none';
+
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+
+    // Shuffle choices using Fisher-Yates
+    const shuffledChoices = fisherYatesShuffle(data.choices);
+
+    shuffledChoices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerText = choice.text;
+        btn.onclick = () => handleChoice(choice, btn, data);
+        container.appendChild(btn);
+    });
+}
+
+function handleChoice(choice, btnElement, scenarioData) {
+    const fbBox = document.getElementById('feedback-box');
+    const pointsText = document.getElementById('points-text');
+    const fbContent = document.getElementById('feedback-content');
+
+    // Emergency Poor Choice -> Game Over
+    if (scenarioData.isEmergency && choice.pts === -1) {
+        score += choice.pts;
+        updateScoreUI();
+        document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+
+        pointsText.innerText = "GAME OVER (-1 Point)";
+        fbContent.innerText = choice.fb;
+        fbBox.className = "feedback fb-poor";
+        fbBox.style.display = "block";
+
+        setTimeout(() => {
+            alert("Game Over! Critical safety decision error. Restarting journey.");
+            startGame();
+        }, 3500);
+        return;
+    }
+
+    // Standard Poor Choice -> Subtract point, disable button, pick again
+    if (choice.pts === -1) {
+        score += choice.pts;
+        updateScoreUI();
+        btnElement.disabled = true;
+
+        pointsText.innerText = "Incorrect Choice (-1 Point) - Choose Again";
+        fbContent.innerText = choice.fb;
+        fbBox.className = "feedback fb-poor";
+        fbBox.style.display = "block";
+        return;
+    }
+
+    // Valid Choices (3 = Excellent, 2 = Good, 1 = Average)
+    score += choice.pts;
+    updateScoreUI();
+
+    document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+
+    // FIX: Check 'choice.branch' rather than 'scenarioData.branch' to proceed to side trips
+    if (choice.branch) {
+        chosenBranch = choice.branch;
+        buildRemainingQueue();
+    }
+
+    let typeClass = "fb-excellent";
+    let typeLabel = `Excellent Choice! (+${choice.pts} Points)`;
+
+    if (choice.pts === 2) {
+        typeClass = "fb-good";
+        typeLabel = `Good Choice (+${choice.pts} Points)`;
+    } else if (choice.pts === 1) {
+        typeClass = "fb-average";
+        typeLabel = `Average Choice (+${choice.pts} Point)`;
+    }
+
+    pointsText.innerText = typeLabel;
+    fbContent.innerText = choice.fb;
+    fbBox.className = `feedback ${typeClass}`;
+    fbBox.style.display = "block";
+
+    // Emergency Average Choice Mechanic: Duplicate emergency step 2 scenarios later
+    if (scenarioData.isEmergency && choice.pts === 1) {
+        const currentKey = queue[currentIndex];
+        let insertIndex = currentIndex + 3; // 2 scenarios later
+        if (insertIndex > queue.length) insertIndex = queue.length;
+        queue.splice(insertIndex, 0, currentKey);
+    }
+
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.style.display = 'block';
+    nextBtn.onclick = () => {
+        currentIndex++;
+        if (currentIndex < queue.length) {
+            renderStep();
+        } else {
+            showFinalResults();
+        }
+    };
+}
+
+function showFinalResults() {
+    showScreen('final');
+    // Compute max dynamically based on queue length (in case emergencies added steps)
+    const maxScore = queue.length * 3;
+    document.getElementById('final-stats').innerText = `Final Score: ${score} / ${maxScore}`;
+
+    const bandResult = document.getElementById('band-result');
+    let title = "";
+    let message = "";
+    let color = "";
+    let bg = "";
+
+    const percentage = (score / maxScore) * 100;
+
+    // Expanded feedback mapping
+    if (percentage >= 80) {
+        title = "Sweden Travel Master 👑";
+        message = `
+            <div class="debrief-content">
+                <p><strong>Outstanding work!</strong> You demonstrated excellent English comprehension and an impressive, thorough understanding of Swedish travel etiquette, nature conservation rules, and culture.</p>
+                <p><strong>Key Takeaways:</strong> You successfully navigated public transport systems like the Arlanda Express, understood the critical importance of digital payments in Sweden's highly cashless society, and deeply respected cultural nuances—from partaking in authentic 'fika' to adhering to 'Allemansrätten' (the right to roam). Your ability to handle unexpected late-night or lost-item emergencies calmly shows great travel preparedness. You are more than ready for a real-world trip to Scandinavia!</p>
+            </div>
+        `;
+        color = "#2e7d32";
+        bg = "#e8f5e9";
+    } else if (percentage >= 55) {
+        title = "Capable Explorer 🚇";
+        message = `
+            <div class="debrief-content">
+                <p><strong>Well done!</strong> You navigated Stockholm and your chosen regional excursion successfully, utilizing solid CEFR A2 English skills.</p>
+                <p><strong>Key Takeaways:</strong> You handled daily travel situations adequately and made safe choices during transit emergencies. However, to maximize your experience, remember to double-check local regulations—such as always confirming unregulated taxi prices before entering, ensuring you have backup digital payment methods since paper cash is rarely accepted, and strictly following museum and nature reserve prohibition signs. Reviewing Swedish weather preparedness will elevate your travel confidence to the next level.</p>
+            </div>
+        `;
+        color = "#1565c0";
+        bg = "#e3f2fd";
+    } else {
+        title = "Inexperienced Visitor 🎒";
+        message = `
+            <div class="debrief-content">
+                <p><strong>Trip completed, but with complications.</strong> You finished your journey across Sweden, but you faced several significant travel and safety challenges along the way.</p>
+                <p><strong>Key Takeaways:</strong> Traveling in a new country requires close attention to local customs. During this simulation, you missed several key cultural expectations. Remember that Sweden is nearly entirely cashless, highly values environmental preservation under 'Allemansrätten', and relies heavily on digital booking systems for transit and museums. Take time to practice A2 vocabulary related to travel logistics, asking for help politely, and reading essential safety signs to drastically improve your future journeys.</p>
+            </div>
+        `;
+        color = "#b78103";
+        bg = "#fff8e1";
+    }
+
+    bandResult.style.border = `2px solid ${color}`;
+    bandResult.style.backgroundColor = bg;
+    bandResult.innerHTML = `<h3 style="color:${color}; margin-bottom:0.5rem; font-size: 1.5rem;">${title}</h3>${message}`;
+}
+</script>
+</body>
+</html>

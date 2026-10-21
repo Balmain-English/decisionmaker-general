@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ultimate Spring Garden Challenge: B1 Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #2d5a27; --green-mid: #4a8c3f; --green-light: #7dba6f;
+    --cream: #faf7f0; --gold: #c9a84c; --red: #c0392b; --text: #1a2e1a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: var(--text); line-height: 1.6; }
+  .site-header { background: var(--green-dark); color: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  .header-content { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+  .title-row { display: flex; justify-content: space-between; align-items: center; }
+  .title-row h1 { font-family: 'Playfair Display', serif; font-size: 1.2rem; }
+  .score-badge { font-weight: bold; color: var(--gold); background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; }
+  .emoji-line { display: flex; flex-wrap: wrap; gap: 5px; min-height: 35px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; }
+  .garden-emoji { font-size: 1.5rem; animation: grow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); border-bottom: 5px solid var(--green-mid); }
+  .emergency { border: 3px solid var(--red); background: #fff5f5; }
+  .emergency-label { color: var(--red); font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: block; }
+  h2 { font-family: 'Playfair Display', serif; margin-bottom: 15px; color: var(--green-dark); }
+  .description { font-size: 1.1rem; margin-bottom: 25px; }
+  .choice-list { display: grid; gap: 12px; }
+  .choice-btn { background: white; border: 2px solid #eee; padding: 15px 20px; border-radius: 10px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--green-light); background: #f9fff9; }
+  .feedback { margin-top: 25px; padding: 20px; border-radius: 10px; display: none; }
+  .fb-3 { background: #eefbee; border: 1px solid var(--green-mid); color: #1e461e; }
+  .fb-2 { background: #f0f7ff; border: 1px solid #3498db; color: #1a3a5a; }
+  .fb-1 { background: #fffdf2; border: 1px solid var(--gold); color: #5c4d1a; }
+  .fb-neg { background: #fff5f5; border: 1px solid var(--red); color: #611a1a; }
+  .btn-next { background: var(--green-dark); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+  @keyframes grow { from { transform: scale(0); } to { transform: scale(1); } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-content">
+    <div class="title-row">
+      <h1>🌻 Advanced Garden Challenge</h1>
+      <div class="score-badge">Garden Points: <span id="numScore">0</span></div>
+    </div>
+    <div class="emoji-line" id="emojiLine"></div>
+  </div>
+</header>
+
+<div class="container">
+  <section id="screen-start" class="screen active">
+    <div class="card" style="text-align: center;">
+      <h2>The Full Growing Season</h2>
+      <p class="description">Welcome, Gardener! You are about to manage a garden from early spring to late summer. Your choices will determine if your harvest is bountiful or a disaster. Be ready for sudden emergencies!</p>
+      <button class="btn-next" onclick="startGame()">Start Your Journey</button>
+    </div>
+  </section>
+
+  <section id="screen-game" class="screen">
+    <div id="gameCard" class="card">
+      <span id="emergencyLabel" class="emergency-label" style="display:none">🚨 Emergency Situation</span>
+      <h2 id="stepTitle">Title</h2>
+      <p class="description" id="stepDesc">Description</p>
+      <div class="choice-list" id="choiceList"></div>
+      <div id="feedbackBox" class="feedback">
+        <h3 id="fbTitle">Result</h3>
+        <p id="fbText" style="margin: 10px 0;"></p>
+        <button class="btn-next" id="nextBtn">Continue →</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-final" class="screen">
+    <div class="card" style="text-align: center;">
+      <h2>Season Evaluation</h2>
+      <p id="finalMessage" class="description"></p>
+      <button class="btn-next" onclick="location.reload()">Garden Again</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const gardenItems = ["🌱", "🌿", "🍀", "🍃", "🌸", "🌼", "🌻", "🌺", "🌹", "🌷", "🐝", "🦋", "🍄", "🌳", "🧺", "🐦", "🍎", "🥕", "🍓", "🧤", "🚿", "🦆", "🌞", "💧"];
+
+const steps = [
+  { 
+    title: "Step 1: Planning and Tools", 
+    desc: "It is early March. Before you start digging, how will you prepare your gardening tools for the season ahead?", 
+    choices: [
+      { text: "Scrub off all dirt, sharpen the blades, and apply oil to prevent rust.", pts: 3, fb: "This is the perfect start! Sharp, clean tools make precise cuts which prevent plant diseases and make your physical work much easier throughout the long season." },
+      { text: "Rinse them with a garden hose and leave them in the sun to dry.", pts: 2, fb: "This is a good habit for daily use, but for the start of the season, your tools might still be a bit dull for heavy spring pruning." },
+      { text: "Simply wipe the handles with a damp cloth so they aren't dusty.", pts: 1, fb: "While the handles are clean, the blades are likely still dull or dirty from last year. This will make your gardening tasks more difficult than they need to be." },
+      { text: "Start digging immediately; tools will clean themselves in the soil.", pts: -1, fb: "Unfortunately, using dirty or rusty tools can spread harmful bacteria into the soil and damage your plants. You must take better care of your equipment. Please try again." }
+    ]
+  },
+  { 
+    title: "Step 2: Starting the Seeds", 
+    desc: "You have several packets of tomato and pepper seeds. How should you begin their life cycle?", 
+    choices: [
+      { text: "Start them in seed trays indoors near a sunny, warm window.", pts: 3, fb: "Excellent choice! Tomatoes and peppers love warmth. Starting them indoors protects the delicate sprouts from the unpredictable and cold spring weather outside until they are strong enough." },
+      { text: "Plant them in small pots kept in a ventilated garden shed.", pts: 2, fb: "This is a reasonable option, but a shed might be too cold at night for these heat-loving plants. They will grow slowly until the temperature rises significantly." },
+      { text: "Sow them directly into the outdoor soil and cover them with a light net.", pts: 1, fb: "This is very risky in early spring. The soil is usually too cold for tropical seeds to germinate, and many might simply rot before they ever start to grow." },
+      { text: "Place the seeds in a bowl of water in a dark cupboard.", pts: -1, fb: "Seeds will rot if they stay underwater for too long without soil and light. This method will likely destroy your entire crop. You need a better plan. Try again." }
+    ]
+  },
+  { 
+    isEmergency: true, 
+    title: "EMERGENCY: The Late Frost", 
+    desc: "The weather forecast warns of a sudden drop to -3°C tonight! Your young sprouts are already in the ground. What do you do?", 
+    choices: [
+      { text: "Cover every plant with individual plastic buckets or thick frost blankets.", pts: 2, fb: "You saved them! By trapping the heat from the ground, you kept the frost away from the leaves. Your garden survived this dangerous night and will continue to grow." },
+      { text: "Go to sleep and hope the plants are strong enough to survive the cold.", pts: -5, fb: "Disaster! The frost turned the water inside the plants into ice, killing them instantly. Your journey ends here because the garden has perished. You must start over." }
+    ]
+  },
+  { 
+    title: "Step 3: Improving the Soil", 
+    desc: "Your garden soil looks a bit dry and lacks nutrients. How will you feed the earth before planting your main vegetables?", 
+    choices: [
+      { text: "Mix in a generous amount of organic compost and aged manure.", pts: 3, fb: "This is wonderful! Organic matter improves the soil structure, helps it hold water, and provides a slow-release buffet of nutrients for your hungry plants all summer long." },
+      { text: "Buy a bag of all-purpose chemical fertilizer and sprinkle it on top.", pts: 2, fb: "This provides a quick boost of nutrients, but it doesn't help the soil's health or texture. It is a good short-term fix but lacks long-term benefits." },
+      { text: "Turn the soil over with a shovel to let the air in.", pts: 1, fb: "Aerating the soil is helpful, but you aren't actually adding any new food for the plants. They might struggle to grow large without some extra nutrients." },
+      { text: "Pour a gallon of soapy water over the bed to clean the dirt.", pts: -1, fb: "Stop! Soap can be toxic to beneficial worms and soil microbes. This will hurt your garden's ecosystem rather than helping it. Please choose a safer method." }
+    ]
+  },
+  { 
+    title: "Step 4: Watering Strategy", 
+    desc: "It is now May and the sun is getting stronger. What is your plan for keeping the garden hydrated?", 
+    choices: [
+      { text: "Water deeply at the base of the plants early every morning.", pts: 3, fb: "Perfect timing! Watering in the morning allows plants to drink before the heat of the day. Keeping the leaves dry also prevents many common fungal diseases." },
+      { text: "Give the plants a light spray with the hose every evening.", pts: 2, fb: "This keeps the plants alive, but wet leaves at night can lead to mold issues. Also, light watering doesn't reach the deep roots." },
+      { text: "Water the garden only when you see the leaves starting to wilt.", pts: 1, fb: "This is a reactive strategy. While it saves water, it causes significant stress to the plants, which can reduce the amount of fruit they eventually produce." },
+      { text: "Keep a sprinkler running 24 hours a day to ensure it's always wet.", pts: -1, fb: "Too much water is just as bad as too little! You will drown the roots and cause them to rot. You must find a balance. Try again." }
+    ]
+  },
+  { 
+    isEmergency: true, 
+    title: "EMERGENCY: Pest Invasion!", 
+    desc: "A massive army of aphids (tiny green bugs) is covering your prize roses! They are sucking the life out of the buds. Action?", 
+    choices: [
+      { text: "Spray the plants with a mixture of water and a few drops of mild dish soap.", pts: 2, fb: "Success! The soapy water suffocates the aphids without harming the plant or the environment. Your roses are clean and ready to bloom beautifully once again." },
+      { text: "Do nothing and let nature take its course.", pts: -5, fb: "Oh no! The aphids multiplied so quickly that they killed the roses and moved on to your vegetables. The infestation is too big to stop now. Game Over." }
+    ]
+  },
+  { 
+    title: "Step 5: Supporting the Growth", 
+    desc: "Your peas and tomatoes are growing rapidly and are starting to lean over. How do you help them stay upright?", 
+    choices: [
+      { text: "Install tall wooden stakes or metal cages and tie the stems loosely to them.", pts: 3, fb: "Smart move! Providing support keeps the fruit off the damp ground, improves airflow, and makes it much easier for you to harvest later in the season." },
+      { text: "Leant them against a nearby fence and hope they climb it.", pts: 2, fb: "This works for peas, but tomatoes aren't natural climbers. They might still fall over during a heavy rain or if the fruit gets too heavy." },
+      { text: "Plant them very close together so they support each other.", pts: 1, fb: "While they might stay upright, they will fight for sunlight and air. This often leads to smaller harvests and more diseases because the leaves stay wet." },
+      { text: "Cut the tops of the plants off so they stay short and bushy.", pts: -1, fb: "Wait! If you cut the tops off your climbing plants, you are removing the parts that produce flowers and fruit. You will have no harvest! Try again." }
+    ]
+  },
+  { 
+    title: "Step 6: The Final Harvest", 
+    desc: "August has arrived! Your garden is full of ripe produce. How will you collect your rewards?", 
+    choices: [
+      { text: "Pick the fruit as soon as it is ripe and check the garden every morning.", pts: 3, fb: "Wonderful! Regular harvesting encourages the plants to produce even more. Picking in the morning also ensures the vegetables are at their crispest and sweetest." },
+      { text: "Wait until every single vegetable is ripe so you can harvest all at once.", pts: 2, fb: "This makes for a great photo, but some early vegetables might become overripe, tough, or be eaten by birds while you wait for the others." },
+      { text: "Pull the entire plant out of the ground to reach the vegetables easily.", pts: 1, fb: "This works for carrots, but for tomatoes or beans, you are killing a plant that could have continued to produce food for several more weeks." },
+      { text: "Leave them on the vine as decoration for the garden.", pts: -1, fb: "If you don't harvest, the fruit will rot and attract pests. All your hard work will be wasted! You must pick your crops. Try again." }
+    ]
+  }
+];
+
+let score = 0, currentIdx = 0;
+
+// Fisher-Yates Shuffle
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function startGame() {
+  score = 0;
+  currentIdx = 0;
+  updateScore();
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-game').classList.add('active');
+  renderStep();
+}
+
+function updateScore() {
+  document.getElementById('numScore').innerText = score;
+  const line = document.getElementById('emojiLine');
+  line.innerHTML = '';
+  const displayScore = Math.max(0, score);
+  for (let i = 0; i < displayScore; i++) {
+    const span = document.createElement('span');
+    span.className = 'garden-emoji';
+    span.innerText = gardenItems[i % gardenItems.length];
+    line.appendChild(span);
+  }
+}
+
+function renderStep() {
+  const data = steps[currentIdx];
+  const card = document.getElementById('gameCard');
+  const label = document.getElementById('emergencyLabel');
+  
+  card.className = data.isEmergency ? 'card emergency' : 'card';
+  label.style.display = data.isEmergency ? 'block' : 'none';
+  
+  document.getElementById('stepTitle').innerText = data.title;
+  document.getElementById('stepDesc').innerText = data.desc;
+  document.getElementById('feedbackBox').style.display = 'none';
+  
+  const list = document.getElementById('choiceList');
+  list.innerHTML = '';
+  list.style.display = 'grid';
+
+  // Shuffle choices for the B1 challenge
+  const shuffledChoices = [...data.choices];
+  shuffle(shuffledChoices);
+
+  shuffledChoices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerText = choice.text;
+    btn.onclick = () => handleChoice(choice);
+    list.appendChild(btn);
+  });
+}
+
+function handleChoice(choice) {
+  const isNeg = choice.pts === -1;
+  const isGameOver = choice.pts === -5;
+  
+  document.getElementById('choiceList').style.display = 'none';
+  const fb = document.getElementById('feedbackBox');
+  fb.style.display = 'block';
+  
+  if (isGameOver) {
+    fb.className = 'feedback fb-neg';
+    document.getElementById('fbTitle').innerText = "GAME OVER";
+    document.getElementById('fbText').innerHTML = choice.fb;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.innerText = "Restart Season";
+    nextBtn.onclick = () => location.reload();
+  } else if (isNeg) {
+    fb.className = 'feedback fb-neg';
+    document.getElementById('fbTitle').innerText = "Not Quite...";
+    document.getElementById('fbText').innerHTML = choice.fb;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.innerText = "Try Again";
+    nextBtn.onclick = () => renderStep();
+  } else {
+    score += choice.pts;
+    updateScore();
+    fb.className = `feedback fb-${choice.pts}`;
+    document.getElementById('fbTitle').innerText = "Great Result!";
+    document.getElementById('fbText').innerHTML = choice.fb;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.innerText = "Continue →";
+    nextBtn.onclick = () => {
+      currentIdx++;
+      if (currentIdx < steps.length) renderStep();
+      else showFinal();
+    };
+  }
+}
+
+function showFinal() {
+  document.getElementById('screen-game').classList.remove('active');
+  document.getElementById('screen-final').classList.add('active');
+  
+  let msg = "";
+  if (score >= 18) {
+    msg = "Congratulations, Master Gardener! Your garden is a magnificent success. Because of your patient care and smart choices, your plants are blooming with vibrant colors and your harvest is incredibly bountiful. You have shown that you truly understand the needs of a spring garden. Your neighbors are inspired by your hard work and beautiful green space. Well done!";
+  } else if (score >= 12) {
+    msg = "Well done! You have a very successful garden. While there were a few small challenges along the way, your plants are healthy and you have plenty of fresh vegetables to share with your friends. With just a little more attention to detail next year, you will certainly achieve a perfect score. You should be very proud of your green thumb!";
+  } else {
+    msg = "You made it to the end of the season! Gardening is a skill that takes time to learn, and although your harvest was small, you gained valuable experience. Some of your plants struggled, but with more focus on soil health and consistent watering, your next garden will be much stronger. Don't give up; every great gardener started as a beginner!";
+  }
+  
+  document.getElementById('finalMessage').innerText = msg;
+}
+</script>
+</body>
+</html>

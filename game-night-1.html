@@ -1,0 +1,483 @@
+<!-- Adapted from awkward-dinner-party-b1.html[cite: 1] -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Casual Game Night: A2/B1 English Decision Game</title>
+  <style>
+    :root {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-color: #1e293b;
+      --border-color: #cbd5e1;
+      --primary-color: #0ea5e9;
+      --primary-hover: #0284c7;
+      
+      /* Rating Colors */
+      --color-excellent: #15803d;
+      --bg-excellent: #f0fdf4;
+
+      --color-good: #0369a1;
+      --bg-good: #f0f9ff;
+
+      --color-average: #b45309;
+      --bg-average: #fffbeb;
+
+      --color-bad: #b91c1c;
+      --bg-bad: #fef2f2;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .game-container {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      max-width: 760px;
+      width: 100%;
+      padding: 32px;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--bg-color);
+      padding-bottom: 12px;
+    }
+
+    .progress-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .score-tracker {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      background-color: #e0f2fe;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    .story-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .prompt-text {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+
+    .choices-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .choice-btn {
+      background-color: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      color: var(--text-color);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--primary-color);
+      background-color: #f8fafc;
+      transform: translateY(-1px);
+    }
+
+    .feedback-box {
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      border-left: 6px solid;
+    }
+
+    .feedback-box.excellent {
+      background-color: var(--bg-excellent);
+      color: var(--color-excellent);
+      border-color: var(--color-excellent);
+    }
+
+    .feedback-box.good {
+      background-color: var(--bg-good);
+      color: var(--color-good);
+      border-color: var(--color-good);
+    }
+
+    .feedback-box.average {
+      background-color: var(--bg-average);
+      color: var(--color-average);
+      border-color: var(--color-average);
+    }
+
+    .feedback-box.bad {
+      background-color: var(--bg-bad);
+      color: var(--color-bad);
+      border-color: var(--color-bad);
+    }
+
+    .discussion-box {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .action-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 700;
+      width: 100%;
+      transition: background-color 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .intro-list {
+      background-color: #f8fafc;
+      border-left: 4px solid var(--primary-color);
+      padding: 16px 20px;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .intro-list ul {
+      margin: 8px 0 0 0;
+      padding-left: 20px;
+    }
+
+    .debrief-card {
+      background-color: #f8fafc;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .band-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    
+    <!-- LANDING PAGE -->
+    <div id="landing-page">
+      <h1 style="margin-top:0; color:#0f172a;">The Casual Game Night 🍕</h1>
+      <p class="story-text">
+        Welcome to <strong>The Casual Game Night</strong>! This is an interactive scenario for adult English learners. 
+        Your good friend, Alex, has invited you over for a relaxed evening of pizza and board games with a few other friends. You want to have a good time and be a great guest, but small social challenges keep popping up!
+      </p>
+
+      <div class="intro-list">
+        <strong>Game Rules & Points:</strong>
+        <ul>
+          <li><strong>10 Scenarios:</strong> Make the best social choice for hanging out with friends.</li>
+          <li><strong>4 Options Every Time:</strong> The answers appear in a random order every game.</li>
+          <li>🟩 <strong>Excellent Answer (+2 points):</strong> Friendly, engaging, and uses great natural English!</li>
+          <li>🟦 <strong>Good Answer (+1 point):</strong> A perfectly fine and polite choice.</li>
+          <li>🟧 <strong>Average Answer (+0 points):</strong> Okay, but maybe a bit quiet or slightly awkward.</li>
+          <li>🟥 <strong>Bad Answer (-1 point):</strong> Rude, aggressive, or completely kills the fun vibe. You lose 1 point and must try again!</li>
+          <li><strong>Maximum Points:</strong> 20 Points.</li>
+        </ul>
+      </div>
+
+      <button class="action-btn" onclick="startGame()">Start Game →</button>
+    </div>
+
+    <!-- GAMEPLAY PAGE -->
+    <div id="gameplay-page" style="display: none;">
+      <div class="header-bar">
+        <div id="progress" class="progress-title">Scenario 1 of 10</div>
+        <div id="score" class="score-tracker">Score: 0 / 20</div>
+      </div>
+
+      <div id="story" class="story-text">Loading...</div>
+      <div id="feedback" class="feedback-box" style="display: none;"></div>
+      <div id="discussion" class="discussion-box" style="display: none;"></div>
+      <div id="prompt" class="prompt-text"></div>
+      <div id="choices" class="choices-grid"></div>
+      <button id="action-btn" class="action-btn" style="display: none;">Continue →</button>
+    </div>
+
+    <!-- DEBRIEFING PAGE -->
+    <div id="debrief-page" style="display: none;">
+      <h2 style="margin-top:0;">Your Game Results</h2>
+      <div id="debrief-content"></div>
+      <button class="action-btn" onclick="location.reload()">Play Again (New Order) ↺</button>
+    </div>
+
+  </div>
+
+  <script>
+    const scenarios = [
+      {
+        id: 1,
+        title: "Scenario 1: Arriving with Snacks",
+        text: "You arrive at your friend Alex's apartment on a Friday night. Music is playing inside. You brought a bag of chips and some soda to share.",
+        prompt: "What do you say when Alex opens the door?",
+        choices: [
+          {
+            type: "excellent",
+            pts: 2,
+            text: "Smile and say: 'Hey Alex! Thanks for hosting. I brought some snacks for everyone.'",
+            feedback: "🟩 EXCELLENT (+2 pts): Friendly, casual, and uses natural English to show appreciation for him hosting.",
+            discussion: "What kinds of snacks do you usually bring when visiting a friend's house?"
+          },
+          {
+            type: "good",
+            pts: 1,
+            text: "Say: 'Hi! Am I late? Here are some chips and drinks.'",
+            feedback: "🟦 GOOD (+1 pt): Friendly enough, though you don't always need to worry about being exactly on time for a casual hangout.",
+            discussion: "Is it better to arrive exactly on time or slightly late to a casual friend's party?"
+          },
+          {
+            type: "average",
+            pts: 0,
+            text: "Hand him the bag without saying much, walk in, and look around.",
+            feedback: "🟧 AVERAGE (+0 pts): A little too quiet. Greeting your friend properly starts the night off with good energy.",
+            discussion: "Why is a warm verbal greeting important, even with close friends?"
+          },
+          {
+            type: "bad",
+            pts: -1,
+            text: "Say: 'Finally, you opened the door. It is freezing outside, move out of the way.'",
+            feedback: "🟥 BAD RESPONSE (-1 pt): Too aggressive and rude, even as a joke! Try another choice.",
+            discussion: "Why can sarcastic or aggressive jokes sometimes cause misunderstandings?"
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "Scenario 2: The New Friend",
+        text: "You walk into the living room and see Sarah, a mutual friend, talking to someone you have never met before. They look up when you walk in.",
+        prompt: "How do you introduce yourself?",
+        choices: [
+          {
+            type: "excellent",
+            pts: 2,
+            text: "Walk over, smile, and say: 'Hi Sarah! And hi, I'm [Your Name], I don't think we've met yet.'",
+            feedback: "🟩 EXCELLENT (+2 pts): Confident and very natural. Taking the initiative to introduce yourself to strangers at a party is a great social skill.",
+            discussion: "Do you find it easy or difficult to introduce yourself to strangers in English?"
+          },
+          {
+            type: "good",
+            pts: 1,
+            text: "Wave at Sarah and wait for her to introduce her new friend to you.",
+            feedback: "🟦 GOOD (+1 pt): Perfectly fine and normal, letting the mutual friend handle the introduction.",
+            discussion: "How do you usually introduce two people who don't know each other?"
+          },
+          {
+            type: "average",
+            pts: 0,
+            text: "Say 'Hey' quietly to the room and immediately sit down on the sofa.",
+            feedback: "🟧 AVERAGE (+0 pts): You missed a good opportunity to be social and make a new friend.",
+            discussion: "What simple phrases can you use to join a conversation at a party?"
+          },
+          {
+            type: "bad",
+            pts: -1,
+            text: "Stare at the stranger and say: 'Who are you and why are you in Alex's house?'",
+            feedback: "🟥 BAD RESPONSE (-1 pt): Very hostile! This will make the new person feel incredibly unwelcome. Try another choice.",
+            discussion: "How can asking direct questions sound rude if the tone is wrong?"
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "Scenario 3: Ordering Pizza",
+        text: "Alex decides to order pizza for everyone. He asks the group: 'Does anyone mind if we get a Hawaiian pizza with pineapple?' You really hate warm pineapple.",
+        prompt: "How do you express your dislike casually?",
+        choices: [
+          {
+            type: "excellent",
+            pts: 2,
+            text: "Laugh and say: 'I'm actually not a fan of pineapple on pizza. Could we do half pepperoni and half Hawaiian?'",
+            feedback: "🟩 EXCELLENT (+2 pts): Great compromise! You stated your preference honestly but offered an easy solution so everyone is happy.",
+            discussion: "What is your favorite pizza topping, and how do you compromise on food with friends?"
+          },
+          {
+            type: "good",
+            pts: 1,
+            text: "Say: 'I'll eat the other snacks, don't worry about me. Go ahead and get the Hawaiian.'",
+            feedback: "🟦 GOOD (+1 pt): Polite and low-maintenance, but friends usually want you to enjoy the meal too!",
+            discussion: "Is it better to speak up about food preferences or just go along with the group?"
+          },
+          {
+            type: "average",
+            pts: 0,
+            text: "Say nothing, and then just pick the pineapple pieces off your slices later.",
+            feedback: "🟧 AVERAGE (+0 pts): Avoiding the conversation works, but it's easier to just communicate before ordering.",
+            discussion: "Why do some people avoid stating what they want in a group setting?"
+          },
+          {
+            type: "bad",
+            pts: -1,
+            text: "Groan loudly and say: 'Pineapple on pizza is disgusting! Anyone who eats that is crazy.'",
+            feedback: "🟥 BAD RESPONSE (-1 pt): Insulting people's tastes ruins the fun vibe. Try another choice.",
+            discussion: "How can you disagree with someone's tastes without insulting them?"
+          }
+        ]
+      },
+      {
+        id: 4,
+        title: "Scenario 4: Explaining the Game",
+        text: "Alex pulls out a complex new board game. He starts explaining the rules very quickly. You missed a few steps and are totally confused about how to take a turn.",
+        prompt: "What do you say to get clarification?",
+        choices: [
+          {
+            type: "excellent",
+            pts: 2,
+            text: "Say: 'Sorry, Alex, could you go over that last part again? I want to make sure I understand the turns.'",
+            feedback: "🟩 EXCELLENT (+2 pts): Clear and confident. Asking for clarification politely ensures you won't be confused later.",
+            discussion: "What English phrases do you use when you don't understand someone's explanation?"
+          },
+          {
+            type: "good",
+            pts: 1,
+            text: "Say: 'I think I get most of it. Let's start playing and I'll learn as we go.'",
+            feedback: "🟦 GOOD (+1 pt): A very common and casual approach to learning games with friends.",
+            discussion: "Do you prefer reading rules carefully or learning by playing?"
+          },
+          {
+            type: "average",
+            pts: 0,
+            text: "Nod silently, pretending you understand, hoping the person next to you will help later.",
+            feedback: "🟧 AVERAGE (+0 pts): Pretending to understand can lead to awkward moments when it's your turn.",
+            discussion: "Why is it important for adult learners to practice saying 'I don't understand'?"
+          },
+          {
+            type: "bad",
+            pts: -1,
+            text: "Sigh loudly and say: 'This game is too complicated and your explanation is terrible.'",
+            feedback: "🟥 BAD RESPONSE (-1 pt): Complaining and insulting the host will kill the mood entirely! Try another choice.",
+            discussion: "Why is patience important when friends share their hobbies with you?"
+          }
+        ]
+      },
+      {
+        id: 5,
+        title: "Scenario 5: The Spilled Drink",
+        text: "While reaching across the table to move your game piece, your sleeve catches your glass of water. It tips over, spilling onto the edge of the game board and the table.",
+        prompt: "How do you handle the accident?",
+        choices: [
+          {
+            type: "excellent",
+            pts: 2,
+            text: "Say: 'Oh no, I'm so sorry! I'll grab some paper towels right now.' and quickly go to the kitchen.",
+            feedback: "🟩 EXCELLENT (+2 pts): Taking immediate action and responsibility is exactly what a good friend does.",
+            discussion: "What immediate action should you take when you spill something at a friend's place?"
+          },
+          {
+            type: "good",
+            pts: 1,
+            text: "Say: 'My bad! I'm so clumsy. Alex, do you have a towel I can use?'",
+            feedback: "🟦 GOOD (+1 pt): A good, casual apology. Using 'My bad' is very common in informal American English.",
+            discussion: "Have you ever heard the phrase 'My bad' in English? When is it used?"
+          },
+          {
+            type: "average",
+            pts: 0,
+            text: "Freeze and repeatedly say: 'I'm sorry, I'm sorry, I'm sorry,' waiting for someone else to wipe it up.",
+            feedback: "🟧 AVERAGE (+0 pts): Over-apologizing without helping fix the problem can make the host more stressed.",
+            discussion: "Why is action sometimes better than just apologizing multiple times?"
+          },
+          {
+            type: "bad",
+            pts: -1,
+            text: "Laugh and say: 'Oops! Good thing it was just water and not wine, right?' while ignoring the puddle.",
+            feedback: "🟥 BAD RESPONSE (-1 pt): Laughing off a mess you made without offering to clean it is very poor manners. Try another choice.",
+            discussion: "Why should you always help clean up your own messes?"
+          }
+        ]
+      },
+      {
+        id: 6,
+        title: "Scenario 6: Splitting the Bill",
+        text: "The pizza arrives. The total is $40. Alex paid the delivery driver with his card and is now sitting back down with the food.",
+        prompt: "How do you offer to pay for your share?",
+        choices: [
+          {
+            type: "excellent",
+            pts: 2,
+            text: "Say: 'Thanks for covering it, Alex. Do you have a payment app so I can send you my share?'",
+            feedback: "🟩 EXCELLENT (+2 pts): Very considerate and modern. Offering to transfer money right away is great etiquette.",
+            discussion: "How do friends usually split bills in your culture?"
+          },
+          {
+            type: "good",
+            pts: 1,
+            text: "Say: 'Thanks for the pizza! Let me buy the drinks or the next round of food next time.'",
+            feedback: "🟦 GOOD (+1 pt): Offering a 'next time' trade is very common among close friends.",
+            discussion: "Do you prefer splitting bills exactly or taking turns paying for everything?"
+          },
+          {
+            type: "average",
+            pts: 0,
+            text: "Eat the pizza and wait to see if Alex asks everyone for money later.",
+            feedback: "🟧 AVERAGE (+0 pts): Waiting to be asked can put the host in an uncomfortable position of asking for money.",
+            discussion: "Why is it uncomfortable to ask friends for money they owe you?"
+          },
+          {
+            type: "bad",
+            pts: -1,
+            text: "Say: 'Wow, you're so generous to buy us all free dinner! Thanks!'",
+            feedback: "🟥 BAD RESPONSE (-1 pt): Assuming your friend is paying for everyone without checking is taking advantage of them! Try another choice.",
+            discussion: "Why should you never assume someone else is paying for your meal?"
+          }
+        ]
+      },
+      {
+        id: 7,
+        title: "Scenario 7: The Boring Story",
+        text: "During a break in the game, Sarah starts telling a very long, slightly boring story about her day at work. The energy in the room is dropping.",
+        prompt: "How do you keep the mood positive?",
+        choices:

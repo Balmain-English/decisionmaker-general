@@ -1,0 +1,465 @@
+<!-- bnb-paris-b1.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Paris Heights: Apartment Manager Elite</title>
+<style>
+    :root {
+        --primary: #2c3e50;
+        --accent: #af944d;
+        --bg: #f4f1ea;
+        --card-bg: #ffffff;
+        --text: #34495e;
+        --success: #27ae60;
+        --warning: #e67e22;
+        --danger: #c0392b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 2rem; }
+    header { background: var(--primary); color: white; padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border-bottom: 4px solid var(--accent); }
+    .header-content { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .dashboard { max-width: 900px; margin: 1.5rem auto 0; padding: 0 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-card { background: var(--card-bg); padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #dcdde1; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #7f8c8d; }
+    .stat-value { font-size: 1.25rem; font-weight: 800; margin: 0.2rem 0; color: var(--primary); }
+    .bar-bg { background: #dcdde1; height: 8px; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; transition: width 0.4s ease, background-color 0.4s ease; }
+    .container { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem; }
+    .card { background: var(--card-bg); padding: 2rem; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 5px solid var(--accent); display: none; }
+    .card.active { display: block; animation: slideUp 0.3s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; }
+    .badge-std { background: #fef5e7; color: #d35400; }
+    .badge-emergency { background: #fadbd8; color: #78281f; }
+    h1, h2 { color: var(--primary); margin-bottom: 1rem; }
+    .choices-grid { display: grid; gap: 0.8rem; margin: 1.5rem 0; }
+    .btn { background: #ffffff; border: 1px solid #bdc3c7; padding: 1rem; border-radius: 6px; text-align: left; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; color: var(--text); width: 100%; }
+    .btn:hover:not(:disabled) { border-color: var(--accent); background: #fdfbf7; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+    .btn-action { background: var(--primary); color: white; border: none; text-align: center; padding: 0.9rem; margin-top: 1rem; font-size: 1rem; display: none; width: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .btn-action:hover { background: #1a252f; }
+    .feedback-box { padding: 1.2rem; border-radius: 6px; margin-top: 1rem; display: none; border-left: 6px solid; }
+    .fb-excel { background: #eafaf1; border-color: var(--success); color: #1e8449; }
+    .fb-good { background: #ebf5fb; border-color: #2980b9; color: #1b4f72; }
+    .fb-avg { background: #fef9e7; border-color: var(--warning); color: #7e5109; }
+    .fb-poor { background: #fdedec; border-color: var(--danger); color: #78281f; }
+    .debrief-band { margin-top: 1rem; padding: 1.2rem; border-radius: 6px; background: #f8f9f9; border: 1px solid #d5dbdb; }
+    .early-win { background: #eafaf1; border: 2px solid var(--success); padding: 1.5rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div>
+            <h2 style="color:white; margin:0; font-size:1.3rem;">THE PARIS HEIGHTS</h2>
+            <p style="font-size:0.8rem; color:var(--accent); margin:0;">B1 Intermediate • Luxury Serviced Apartments</p>
+        </div>
+        <div id="step-indicator" style="font-weight:bold; font-size:0.9rem;">Step 1 / 12</div>
+    </div>
+</header>
+
+<div class="dashboard">
+    <div class="stat-card">
+        <div class="stat-label">Prestige</div>
+        <div class="stat-value" id="val-rating">4.0 ⭐</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-rating" style="width:80%; background-color:var(--success);"></div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Stamina</div>
+        <div class="stat-value" id="val-energy">100%</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-energy" style="width:100%; background-color:var(--success);"></div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Budget</div>
+        <div class="stat-value" id="val-budget">€2,000</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-budget" style="width:100%; background-color:var(--success);"></div></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card active" id="screen-start">
+        <h1>Parisian Hospitality Simulation</h1>
+        <p><strong>CEFR Level:</strong> B1 (Intermediate Hospitality English)</p>
+        <p><strong>Goal:</strong> Manage high-end Parisian apartments, historic building constraints, and refined guest services across 12 steps without losing prestige or exhausting resources.</p>
+        <p><strong>Initial Resources:</strong> Prestige Rating: 4.0 Stars | Host Stamina: 100% | Operating Budget: €2,000</p>
+        <button class="btn btn-action" style="display:block;" onclick="startGame()">Begin Management Shift</button>
+    </div>
+
+    <div class="card" id="screen-game">
+        <span class="badge badge-std" id="step-badge">Standard Concierge Decision</span>
+        <h2 id="step-title">Step Title</h2>
+        <p id="step-desc">Step Description</p>
+
+        <div class="choices-grid" id="choices-container"></div>
+
+        <div class="feedback-box" id="feedback-box">
+            <strong id="fb-title">Outcome</strong>
+            <p id="fb-text" style="margin-top:0.3rem; font-size:0.95rem;"></p>
+        </div>
+
+        <button class="btn btn-action" id="btn-next" onclick="nextStep()">Proceed to Next Step</button>
+    </div>
+
+    <div class="card" id="screen-debrief">
+        <h1>Season Performance Report</h1>
+        <div id="early-win-container"></div>
+        <div id="debrief-summary"></div>
+        <div class="debrief-band" id="debrief-details"></div>
+        <button class="btn btn-action" style="display:block;" onclick="location.reload()">Restart Parisian Career</button>
+    </div>
+</div>
+
+<script>
+const scenarios = [
+    {
+        isEmergency: false,
+        title: "Step 1: The Historic Elevator Dilemma",
+        desc: "A guest family arrives with six large suitcases. Your historic Haussmann building elevator fits only two people with no luggage.",
+        choices: [
+            { type: "excellent", text: "Offer courteous assistance: 'Please take the elevator while I gladly carry your luggage up the stairs.'", rating: 0.2, energy: -10, budget: 0, fb: "Polite personal assistance phrasing transforms historical building constraints into charming luxury concierge service." },
+            { type: "good", text: "Demonstrate taking luggage up in separate elevator trips while guests take the staircase safely.", rating: 0.1, energy: -5, budget: 0, fb: "Practical solution communicated clearly, though carrying heavy luggage for guests reflects superior hospitality." },
+            { type: "average", text: "Explain that historic preservation laws prevent installing larger elevator systems in Paris.", rating: 0.0, energy: 0, budget: 0, fb: "Factually correct information, but lacks helpful proactive service offers." },
+            { type: "poor", text: "Laugh and tell them 'Welcome to old Europe!' leaving them to carry bags alone.", rating: -0.4, energy: -10, budget: 0, fb: "Mocking guest struggles ruins host reputation instantly. Always offer practical support politely." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 2: Espresso Machine Confusion",
+        desc: "A guest calls at 7:00 AM: 'The high-tech espresso machine looks complicated, and I just need a simple hot coffee.'",
+        choices: [
+            { type: "excellent", text: "Respond attentively: 'I would be delighted to come demonstrate it now and bring a fresh French press as well.'", rating: 0.2, energy: -5, budget: -10, fb: "Courteous offers ('I would be delighted to...') paired with backup options deliver top-tier guest care." },
+            { type: "good", text: "Send a brief video demonstration guide directly to their phone with clear written steps.", rating: 0.1, energy: -2, budget: 0, fb: "Clear visual instruction is helpful, though personal in-person demonstration is superior in luxury flats." },
+            { type: "average", text: "Direct them to a commercial coffee shop located down the boulevard.", rating: 0.0, energy: 0, budget: 0, fb: "Sending guests outside for basic coffee misses an opportunity to showcase apartment amenities." },
+            { type: "poor", text: "Tell them real coffee lovers should easily understand modern espresso equipment.", rating: -0.4, energy: -10, budget: 0, fb: "Condescending remarks offend guests quickly. Maintain helpful customer-oriented communication." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 3: Fine Dining Reservation",
+        desc: "A couple asks for a last-minute table at a fully booked Michelin-star bistro in Le Marais tonight.",
+        choices: [
+            { type: "excellent", text: "Use concierge connections: 'Let me contact the restaurant manager directly; I will do my best to secure a table for you.'", rating: 0.2, energy: -5, budget: -20, fb: "Polite commitment phrasing ('I will do my best...') sets realistic expectations while demonstrating effort." },
+            { type: "good", text: "Recommend an equally outstanding boutique bistro nearby and make an immediate table booking.", rating: 0.1, energy: -2, budget: 0, fb: "Resourceful alternative suggestions showcase excellent local neighborhood expertise." },
+            { type: "average", text: "Hand them a printed list of popular restaurants and suggest calling themselves.", rating: 0.0, energy: 0, budget: 0, fb: "Basic information, but leaves the administrative booking burden entirely on the guest." },
+            { type: "poor", text: "Tell them booking famous restaurants on short notice is completely impossible in Paris.", rating: -0.4, energy: -10, budget: 0, fb: "Abrupt refusals damage concierge prestige. Frame limitations using constructive options." }
+        ]
+    },
+    {
+        isEmergency: true,
+        title: "Step 4: EMERGENCY - Water Ingress Threat",
+        desc: "Heavy rain causes roof water leakage dripping onto antique hardwood parquet in the main salon!",
+        choices: [
+            { type: "viable1", text: "Place protective containment basins, relocate salon artwork, and call emergency building repair services.", rating: 0.1, energy: -15, budget: -200, fb: "Rapid containment actions protect historical building floors and prevent severe structural claims." },
+            { type: "viable2", text: "Move guests into an adjacent executive flat immediately and seal off the damaged salon room.", rating: 0.1, energy: -10, budget: -250, fb: "Prioritizing guest comfort and property protection through immediate room transfers is safe and effective." },
+            { type: "critical", text: "Ignore the leak hoping rain stops soon so you avoid weekend emergency maintenance fees.", rating: -3.0, energy: -50, budget: 0, fb: "Critical Failure: Neglecting leaks ruined antique parquet floors, causing massive structural restoration claims." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 5: Food Delivery Disappointment",
+        desc: "A guest's €150 gourmet bistro delivery was delivered cold to the wrong courtyard entrance.",
+        choices: [
+            { type: "excellent", text: "Take immediate action: 'I am so sorry. Allow me to retrieve a fresh hot meal from the bistro personally for you.'", rating: 0.2, energy: -10, budget: -40, fb: "Taking personal responsibility for third-party courier errors demonstrates extraordinary luxury hospitality." },
+            { type: "good", text: "Assist the guest in contacting the delivery application support line to claim an immediate full refund.", rating: 0.1, energy: -2, budget: 0, fb: "Helpful administrative assistance, though resolving the immediate meal hunger directly is better." },
+            { type: "average", text: "Suggest reheating the food in the luxury kitchen microwave oven.", rating: 0.0, energy: 0, budget: 0, fb: "Practical suggestion, but disappointing for guests who ordered gourmet hot dining." },
+            { type: "poor", text: "Tell them courier errors are not your responsibility and close the ticket.", rating: -0.4, energy: -10, budget: 0, fb: "Dismissing guest complaints damages service ratings. Express empathy for guest inconveniences." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 6: Courtyard Noise Complaint",
+        desc: "An elderly resident in the courtyard complains that your guests are talking loudly on the balcony at 10:30 PM.",
+        choices: [
+            { type: "excellent", text: "Address guests politely: 'Excuse me, to respect our neighbors, could you please move your conversation indoors?'", rating: 0.2, energy: -5, budget: 0, fb: "Polite, firm requests maintain harmonious courtyard neighbor relations while respecting guests." },
+            { type: "good", text: "Send a gentle message asking guests to close balcony doors after 10:00 PM per building rules.", rating: 0.1, energy: -2, budget: 0, fb: "Effective written policy reminder, though in-person diplomatic communication prevents misunderstandings." },
+            { type: "average", text: "Apologize to the neighbor but take no direct action with the balcony guests.", rating: 0.0, energy: 0, budget: 0, fb: "Fails to enforce building noise rules, leading to escalated neighbor complaints." },
+            { type: "poor", text: "Yell up at the balcony from the courtyard demanding quiet immediately.", rating: -0.4, energy: -10, budget: 0, fb: "Aggressive behavior creates public scenes that ruin luxury boutique flat reputation." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 7: Thermostat Control Issue",
+        desc: "Guests report that the apartment heating feels chilly despite setting the wall thermostat to maximum.",
+        choices: [
+            { type: "excellent", text: "Inspect heating system immediately, explain radiator valves politely, and provide extra cashmere throws.", rating: 0.2, energy: -5, budget: -15, fb: "Prompt physical inspection paired with cozy luxury amenities maintains high guest satisfaction." },
+            { type: "good", text: "Provide high-efficiency portable space heaters to boost room temperature quickly.", rating: 0.1, energy: -5, budget: -30, fb: "Practical heating solution, though explaining historic radiator operation is also beneficial." },
+            { type: "average", text: "Tell them stone Haussmann buildings retain chill and recommend wearing warm sweaters indoors.", rating: 0.0, energy: 0, budget: 0, fb: "Insensitive framing reduces guest comfort perceptions severely during cold months." },
+            { type: "poor", text: "Accuse guests of mismanaging thermostat controls and refuse to send aid.", rating: -0.4, energy: -10, budget: 0, fb: "Blaming guests for heating issues leads to negative reviews. Address comfort concerns swiftly." }
+        ]
+    },
+    {
+        isEmergency: true,
+        title: "Step 8: EMERGENCY - Gas Odor Alarm",
+        desc: "Guests smell a faint gas odor near the kitchen stove area during evening meal preparation!",
+        choices: [
+            { type: "viable1", text: "Evacuate guests to courtyard immediately, shut main gas valve, and call emergency gas utility services.", rating: 0.1, energy: -15, budget: -150, fb: "Flawless emergency protocol execution prevents catastrophic explosion hazards." },
+            { type: "viable2", text: "Open windows, guide guests outside to safety, and dispatch certified gas technicians urgently.", rating: 0.1, energy: -10, budget: -200, fb: "Decisive safety prioritization safeguards guest well-being and property integrity." },
+            { type: "critical", text: "Tell guests to ignite a burner to test if gas pressure is flowing normally.", rating: -3.0, energy: -50, budget: 0, fb: "Critical Failure: Attempting ignition during suspected gas leaks caused catastrophic explosion and legal action." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 9: High-End Laundry Request",
+        desc: "A guest needs delicate silk garments dry-cleaned before an evening gala event in 5 hours.",
+        choices: [
+            { type: "excellent", text: "Coordinate express service: 'I will take these to our trusted boutique cleaner immediately for express 4-hour service.'", rating: 0.2, energy: -10, budget: -35, fb: "Express concierge handling for high-value requests demonstrates elite hospitality commitment." },
+            { type: "good", text: "Locate an express dry cleaner nearby and provide clear walk directions to the guest.", rating: 0.1, energy: -2, budget: 0, fb: "Helpful directional advice, though personal handling of delicate garments is preferred." },
+            { type: "average", text: "Inform them that standard dry cleaning in Paris requires at least 24 business hours.", rating: 0.0, energy: 0, budget: 0, fb: "Factually accurate standard timelines, but misses an opportunity for VIP problem-solving." },
+            { type: "poor", text: "Suggest they wash delicate silk items in the suite bathroom sink themselves.", rating: -0.4, energy: -10, budget: 0, fb: "Inappropriate care advice for delicate luxury clothing damages professional trust." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 10: Airport Transfer Logistics",
+        desc: "A departing family needs guaranteed transportation to Charles de Gaulle Airport during morning rush hour.",
+        choices: [
+            { type: "excellent", text: "Pre-book private chauffeur transfer: 'I have secured a private driver for 6:30 AM to guarantee seamless travel.'", rating: 0.2, energy: -5, budget: -50, fb: "Pre-emptive travel booking eliminates guest airport anxiety effectively." },
+            { type: "good", text: "Provide reliable taxi booking numbers and advise them to reserve a pickup vehicle 3 hours early.", rating: 0.1, energy: -2, budget: 0, fb: "Good practical advice, though securing confirmed transport directly provides better reassurance." },
+            { type: "average", text: "Suggest taking RER train lines from Gare du Nord with all six suitcases.", rating: 0.0, energy: 0, budget: 0, fb: "Public transit suggestions with heavy luggage during peak hours frustrate tired families." },
+            { type: "poor", text: "Tell them finding taxis during Paris morning rush hour is their own problem.", rating: -0.4, energy: -10, budget: 0, fb: "Unhelpful farewell responses ruin otherwise great stay experiences." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 11: Security Key Card Loss",
+        desc: "A guest misplaces their high-security courtyard key fob at midnight and cannot enter the building.",
+        choices: [
+            { type: "excellent", text: "Respond promptly: 'I am coming to grant access right now and will issue a spare fob safely.'", rating: 0.2, energy: -10, budget: -15, fb: "Prompt late-night key assistance demonstrates exceptional host reliability." },
+            { type: "good", text: "Provide secondary emergency lockbox access codes to retrieve backup keys stored on site.", rating: 0.1, energy: -2, budget: 0, fb: "Smart key redundancy system handles access emergencies efficiently." },
+            { type: "average", text: "Ask them if they can wake up another guest staying inside the apartment to unlock doors.", rating: 0.0, energy: 0, budget: 0, fb: "Inconveniencing sleeping family members creates internal guest friction." },
+            { type: "poor", text: "Charge a €200 cash penalty on the spot before coming out to assist.", rating: -0.4, energy: -10, budget: 0, fb: "Demanding predatory penalty fees during emergencies causes severe guest reviews." }
+        ]
+    },
+    {
+        isEmergency: false,
+        title: "Step 12: Season Finale & Farewell Gift",
+        desc: "The final guests depart at the end of the season. How do you conclude your luxury service?",
+        choices: [
+            { type: "excellent", text: "Present high-end Parisian macarons with a personalized handwritten note thanking them for their visit.", rating: 0.2, energy: -5, budget: -25, fb: "Personalized farewell gifts lock in glowing 5-star direct booking reviews." },
+            { type: "good", text: "Offer a 10% discount code for future stays and politely invite online review feedback.", rating: 0.1, energy: -2, budget: 0, fb: "Effective repeat marketing strategy delivered with polite customer phrasing." },
+            { type: "average", text: "Inspect the flat quickly and confirm deposit refunds upon departure.", rating: 0.0, energy: 0, budget: 0, fb: "Standard administrative checkout closure." },
+            { type: "poor", text: "Complain about how demanding summer guests were and rush departure procedures.", rating: -0.4, energy: -10, budget: 0, fb: "Unprofessional venting at departure ruins host prestige completely." }
+        ]
+    }
+];
+
+let state = {
+    stepIdx: 0,
+    rating: 4.0,
+    energy: 100,
+    budget: 2000,
+    excellentCount: 0,
+    gameOver: false
+};
+
+function startGame() {
+    state = { stepIdx: 0, rating: 4.0, energy: 100, budget: 2000, excellentCount: 0, gameOver: false };
+    showScreen("game");
+    renderStep();
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+}
+
+function updateDashboard() {
+    state.rating = Math.max(0, Math.min(5.0, state.rating));
+    state.energy = Math.max(0, Math.min(100, state.energy));
+    state.budget = Math.max(0, state.budget);
+
+    document.getElementById('val-rating').innerText = state.rating.toFixed(1) + " ⭐";
+    document.getElementById('val-energy').innerText = state.energy + "%";
+    document.getElementById('val-budget').innerText = "€" + state.budget;
+
+    const rBar = document.getElementById('bar-rating');
+    rBar.style.width = (state.rating / 5.0 * 100) + "%";
+    rBar.style.backgroundColor = state.rating >= 4.0 ? "var(--success)" : state.rating >= 3.0 ? "var(--warning)" : "var(--danger)";
+
+    const eBar = document.getElementById('bar-energy');
+    eBar.style.width = state.energy + "%";
+    eBar.style.backgroundColor = state.energy >= 50 ? "var(--success)" : state.energy >= 25 ? "var(--warning)" : "var(--danger)";
+
+    const bBar = document.getElementById('bar-budget');
+    bBar.style.width = Math.min(100, (state.budget / 2000 * 100)) + "%";
+    bBar.style.backgroundColor = state.budget >= 800 ? "var(--success)" : state.budget >= 300 ? "var(--warning)" : "var(--danger)";
+
+    document.getElementById('step-indicator').innerText = `Step ${state.stepIdx + 1} / 12`;
+}
+
+function shuffle(array) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function renderStep() {
+    updateDashboard();
+    const data = scenarios[state.stepIdx];
+
+    const badge = document.getElementById('step-badge');
+    if (data.isEmergency) {
+        badge.className = "badge badge-emergency";
+        badge.innerText = "🚨 Emergency Hazard Event";
+    } else {
+        badge.className = "badge badge-std";
+        badge.innerText = "Standard Concierge Decision";
+    }
+
+    document.getElementById('step-title').innerText = data.title;
+    document.getElementById('step-desc').innerText = data.desc;
+
+    const container = document.getElementById('choices-container');
+    container.innerHTML = "";
+
+    document.getElementById('feedback-box').style.display = "none";
+    document.getElementById('btn-next').style.display = "none";
+
+    const shuffledChoices = shuffle(data.choices);
+
+    shuffledChoices.forEach((choice) => {
+        const btn = document.createElement('button');
+        btn.className = "btn";
+        btn.innerText = choice.text;
+        btn.onclick = () => handleChoice(choice, btn);
+        container.appendChild(btn);
+    });
+}
+
+function handleChoice(choice, btnElement) {
+    const fbBox = document.getElementById('feedback-box');
+    const fbTitle = document.getElementById('fb-title');
+    const fbText = document.getElementById('fb-text');
+
+    if (choice.type === "poor") {
+        state.rating += choice.rating;
+        state.energy += choice.energy;
+        state.budget += choice.budget;
+        updateDashboard();
+
+        btnElement.disabled = true;
+        fbBox.className = "feedback-box fb-poor";
+        fbBox.style.display = "block";
+        fbTitle.innerText = "Flawed Choice (-0.4 ⭐) - Try Again!";
+        fbText.innerText = choice.fb;
+
+        if (state.rating <= 1.0 || state.energy <= 0) {
+            triggerGameOver("Prestige Loss: Rating or manager stamina collapsed!");
+        }
+        return;
+    }
+
+    if (choice.type === "critical") {
+        state.rating = 0;
+        updateDashboard();
+        triggerGameOver(choice.fb);
+        return;
+    }
+
+    // Process valid options
+    if (choice.type === "excellent") state.excellentCount++;
+    state.rating += choice.rating;
+    state.energy += choice.energy;
+    state.budget += choice.budget;
+    updateDashboard();
+
+    document.querySelectorAll('.choices-grid .btn').forEach(b => b.disabled = true);
+
+    fbBox.style.display = "block";
+    if (choice.type === "excellent") {
+        fbBox.className = "feedback-box fb-excel";
+        fbTitle.innerText = "Excellent Choice! (+0.2 ⭐)";
+    } else if (choice.type === "good" || choice.type === "viable1" || choice.type === "viable2") {
+        fbBox.className = "feedback-box fb-good";
+        fbTitle.innerText = "Good Decision (+0.1 ⭐)";
+    } else {
+        fbBox.className = "feedback-box fb-avg";
+        fbTitle.innerText = "Average Choice (+0.0 ⭐)";
+    }
+    fbText.innerText = choice.fb;
+
+    // Check early victory
+    if (state.excellentCount >= 8 && state.stepIdx < 11) {
+        document.getElementById('btn-next').innerText = "Claim Early Victory!";
+    } else {
+        document.getElementById('btn-next').innerText = state.stepIdx === 11 ? "View Performance Report" : "Proceed to Next Step";
+    }
+    document.getElementById('btn-next').style.display = "block";
+}
+
+function triggerGameOver(reason) {
+    state.gameOver = true;
+    showScreen("debrief");
+    document.getElementById('early-win-container').innerHTML = "";
+    document.getElementById('debrief-summary').innerHTML = `<h2 style="color:var(--danger)">Career Terminated - Severe Hazard</h2><p>${reason}</p>`;
+    document.getElementById('debrief-details').innerHTML = `
+        <h3>Band 4: Unsuccessful Manager</h3>
+        <p>Your apartment management ended due to unmitigated safety hazards or severe prestige drops. Re-examine B1 polite customer service register, diplomatic phrasing ('I would be delighted to...'), and emergency safety protocols to manage luxury Parisian flats successfully.</p>
+    `;
+}
+
+function nextStep() {
+    if (state.excellentCount >= 8 && state.stepIdx < 11) {
+        showDebrief(true);
+        return;
+    }
+
+    state.stepIdx++;
+    if (state.stepIdx >= scenarios.length) {
+        showDebrief(false);
+    } else {
+        renderStep();
+    }
+}
+
+function showDebrief(isEarlyWin) {
+    showScreen("debrief");
+    const winContainer = document.getElementById('early-win-container');
+    const summary = document.getElementById('debrief-summary');
+    const details = document.getElementById('debrief-details');
+
+    if (isEarlyWin) {
+        winContainer.innerHTML = `
+            <div class="early-win">
+                <h2>🏆 Early Victory Unlocked!</h2>
+                <p>You made 8 Excellent choices before the final step! Superior Parisian concierge performance.</p>
+            </div>
+        `;
+    } else {
+        winContainer.innerHTML = "";
+    }
+
+    summary.innerHTML = `
+        <h2>Final Performance Summary</h2>
+        <p><strong>Final Prestige:</strong> ${state.rating.toFixed(1)} / 5.0 ⭐ | <strong>Remaining Stamina:</strong> ${state.energy}% | <strong>Remaining Budget:</strong> €${state.budget}</p>
+        <p><strong>Excellent Choices Made:</strong> ${state.excellentCount} / 10</p>
+    `;
+
+    let bandTitle = "";
+    let bandFeedback = "";
+
+    if (state.rating >= 4.5 && state.energy >= 50) {
+        bandTitle = "Band 1: Master Concierge";
+        bandFeedback = "Outstanding management! You demonstrated elegant intermediate English fluency and exquisite Parisian hospitality etiquette. Your polite customer phrasing ('I would be delighted to...'), proactive service delivery, and decisive emergency management maintained elite prestige ratings throughout the season.";
+    } else if (state.rating >= 3.8 && state.energy >= 30) {
+        bandTitle = "Band 2: Competent Manager";
+        bandFeedback = "Solid operational performance across luxury apartment scenarios. You communicated effectively in B1 English and resolved guest inquiries reliably. To achieve Master status, offer personalized concierge assistance even faster during high-pressure guest requests.";
+    } else if (state.rating >= 2.5) {
+        bandTitle = "Band 3: Survivor Manager";
+        bandFeedback = "You completed the management season, but stamina loss and guest misunderstandings reduced overall prestige. Focus on expanding your customer service phrasing, avoiding blunt refusals, and anticipating luxury guest expectations more effectively.";
+    } else {
+        bandTitle = "Band 4: Unsuccessful Manager";
+        bandFeedback = "Your apartment prestige rating fell below acceptable luxury hospitality standards. Re-study essential B1 functional language for handling guest complaints, expressing polite regrets, and managing building emergencies safely.";
+    }
+
+    details.innerHTML = `<h3>${bandTitle}</h3><p>${bandFeedback}</p>`;
+}
+</script>
+</body>
+</html>

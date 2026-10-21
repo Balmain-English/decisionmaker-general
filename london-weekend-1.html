@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>London City Navigation - English CEFR A2</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --london-red: #d11243;
+        --tube-blue: #0019a8;
+        --river-grey: #f4f6f8;
+        --card-bg: #ffffff;
+        --text-main: #2c3e50;
+        
+        --success-green: #2e7d32;
+        --success-bg: #e8f5e9;
+        --good-blue: #1565c0;
+        --good-bg: #e3f2fd;
+        --ochre-amber: #b78103;
+        --ochre-bg: #fff8e1;
+        --error-red: #c62828;
+        --error-bg: #ffebee;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Open Sans', sans-serif;
+        background-color: var(--river-grey);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding-bottom: 2rem;
+    }
+
+    header {
+        background: var(--tube-blue);
+        color: white;
+        padding: 1.2rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 5px solid var(--london-red);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    header h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: 0.5px;
+    }
+
+    .score-box { 
+        background: white; 
+        color: var(--tube-blue); 
+        padding: 0.4rem 1rem; 
+        border-radius: 6px; 
+        font-weight: 700; 
+        font-size: 1.05rem;
+    }
+
+    .container { max-width: 680px; margin: 2rem auto; padding: 0 1rem; }
+
+    .card { 
+        background: var(--card-bg); 
+        padding: 2rem; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+        display: none; 
+    }
+    .card.active { display: block; }
+
+    h2 { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; margin-bottom: 0.8rem; color: var(--tube-blue); }
+    p { margin-bottom: 1rem; color: #4a5568; }
+
+    .progress-bar {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .choices-grid { display: grid; gap: 12px; margin: 1.5rem 0; }
+    
+    .choice-btn {
+        background: #fff;
+        border: 2px solid #e2e8f0;
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.98rem;
+        color: var(--text-main);
+        text-align: left;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+    .choice-btn:hover:not(:disabled) { 
+        border-color: var(--tube-blue); 
+        background: #f8fafc; 
+    }
+    .choice-btn:disabled { 
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .feedback { 
+        margin-top: 1.5rem; 
+        padding: 1.2rem; 
+        border-radius: 8px; 
+        display: none; 
+        border-left: 6px solid; 
+    }
+    .fb-excellent { background: var(--success-bg); border-color: var(--success-green); color: #1b5e20; }
+    .fb-good { background: var(--good-bg); border-color: var(--good-blue); color: #0d47a1; }
+    .fb-average { background: var(--ochre-bg); border-color: var(--ochre-amber); color: #5d4037; }
+    .fb-poor { background: var(--error-bg); border-color: var(--error-red); color: #b71c1c; }
+
+    .feedback-title {
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+        display: block;
+    }
+
+    .next-btn {
+        margin-top: 1.5rem;
+        background: var(--london-red);
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: 700;
+        font-size: 1rem;
+        display: none;
+        transition: background 0.2s;
+    }
+    .next-btn:hover { background: #b00e37; }
+
+    .emergency-tag { 
+        background: var(--london-red); 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 4px; 
+        font-size: 0.75rem; 
+        font-weight: 700; 
+        letter-spacing: 1px;
+        display: inline-block; 
+        margin-bottom: 0.8rem; 
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>London Adult CEFR A2 Tour</h1>
+    <div class="score-box">Points: <span id="score">0</span></div>
+</header>
+
+<div class="container">
+    <div class="card active" id="screen-start">
+        <h2>Welcome to London!</h2>
+        <p>This interactive module helps adult learners practice practical English and British cultural etiquette at the CEFR A2 level.</p>
+        <p>Navigate 10 real-world city scenarios. Choose carefully to gain points and handle unexpected emergencies.</p>
+        <button class="next-btn" style="display:block;" onclick="startGame()">Start Trip</button>
+    </div>
+
+    <div class="card" id="screen-game">
+        <div class="progress-bar" id="progress-indicator">Scenario 1 of 10</div>
+        <div id="status-area"></div>
+        <h2 id="step-title"></h2>
+        <p id="step-desc"></p>
+        
+        <div class="choices-grid" id="choices-container"></div>
+        
+        <div class="feedback" id="feedback-box">
+            <span class="feedback-title" id="points-text"></span>
+            <p id="feedback-content" style="margin-bottom:0;"></p>
+        </div>
+        
+        <button class="next-btn" id="btn-next">Continue</button>
+    </div>
+
+    <div class="card" id="screen-final">
+        <h2>Trip Completed</h2>
+        <div id="final-stats" style="font-size: 1.4rem; text-align: center; margin: 1.5rem 0; font-weight:700;"></div>
+        <div id="band-result" style="padding: 1.5rem; border-radius: 8px; text-align: center;"></div>
+        <button class="next-btn" style="display:block; margin-top:2rem;" onclick="startGame()">Try Again</button>
+    </div>
+</div>
+
+<script>
+const scenarios = {
+    d1: {
+        title: "Arriving at Heathrow Airport",
+        desc: "You have just landed at Heathrow Airport with two heavy bags. How will you travel to your hotel in central London?",
+        choices: [
+            { text: "Take the Elizabeth Line train directly to central London.", pts: 3, type: "excellent", fb: "Excellent choice! The Elizabeth Line is fast, modern, and direct. You arrive at your hotel quickly and comfortably. Great decision!" },
+            { text: "Book a licensed black cab at the official taxi rank.", pts: 2, type: "good", fb: "Good choice! Taxis are very comfortable, but traffic in London makes them expensive. It remains a safe, convenient option." },
+            { text: "Take the Underground Piccadilly Line slow train.", pts: 1, type: "average", fb: "An okay option! The Tube is very cheap, but it is crowded and slow with luggage during peak travel hours." },
+            { text: "Accept a ride from an unofficial driver waiting in arrivals.", pts: -1, type: "poor", fb: "Be careful! Unlicensed taxi drivers can be unsafe and overcharge you. Always use official transport in London. Please choose again." }
+        ]
+    },
+    d2: {
+        title: "Unexpected London Rain",
+        desc: "You step outside your hotel and notice heavy rain. You planned to explore open parks today. How do you adapt?",
+        choices: [
+            { text: "Buy an umbrella and visit the free indoor National Gallery.", pts: 3, type: "excellent", fb: "Brilliant choice! Visiting London's world-class indoor museums on rainy days is traditional, practical, and saves your outdoor plans for later." },
+            { text: "Buy a waterproof coat and continue walking outdoors.", pts: 2, type: "good", fb: "Good effort! Londoners walk in light rain often, but heavy rain can ruin your clothes and make sightseeing uncomfortable." },
+            { text: "Wait inside a coffee shop until the weather clears up.", pts: 1, type: "average", fb: "Fair decision! Relaxing in a café is pleasant, but British rain can last all day, wasting valuable sightseeing time." },
+            { text: "Cancel your afternoon plans and stay inside your hotel room.", pts: -1, type: "poor", fb: "Don't give up! Weather in London changes fast. Put on rain gear and explore indoor landmarks instead. Please choose again." }
+        ]
+    },
+    d3: {
+        title: "The King at Buckingham Palace",
+        desc: "You are visiting Buckingham Palace. Suddenly, King Charles III walks onto the balcony! The crowd reacts strongly. What do you do?",
+        choices: [
+            { text: "Take photos respectfully and watch the balcony appearance.", pts: 3, type: "excellent", fb: "Excellent choice! Watching royal events peacefully allows you to take great photographs and observe local customs safely from distance." },
+            { text: "Wave a small flag and join the crowd in cheering politely.", pts: 2, type: "good", fb: "Good choice! Joining local celebrations is fun. Expressing polite enthusiasm helps you experience authentic British public life and culture." },
+            { text: "Peacefully shout a republican slogan like 'Not My King!'.", pts: 1, type: "average", fb: "Fair choice! Expressing political opinions is legal in the UK, though shouting republican slogans during royal events creates mild awkwardness." },
+            { text: "Try to climb over the security fence to get closer.", pts: -1, type: "poor", fb: "Dangerous decision! Royal security will arrest you immediately for trespassing. Always respect official barriers in London. Please choose again." }
+        ]
+    },
+    e1: {
+        title: "EMERGENCY: Lost in Central London",
+        isEmergency: true,
+        desc: "Your smartphone battery dies completely. You have no map, nighttime is approaching, and you are lost near Soho.",
+        choices: [
+            { text: "Ask a uniformed Underground staff member for directions.", pts: 3, type: "excellent", fb: "Smart choice! Transport staff are helpful and professional. You receive clear directions to your destination safely and easily." },
+            { text: "Find a 'Legible London' street map printed on a nearby pillar.", pts: 2, type: "good", fb: "Good solution! London has clear yellow-and-black street maps on key street corners to help pedestrians navigate without phones." },
+            { text: "Keep walking straight without asking anyone, hoping to find a station.", pts: 1, type: "average", fb: "Risky choice! Walking without directions can make you lose more time. You will face this orientation problem again soon." },
+            { text: "Follow a stranger who offers to lead you down a dark alley.", pts: -1, type: "poor", fb: "GAME OVER. Following unknown individuals into isolated dark areas is unsafe. Always remain on busy public streets when lost." }
+        ]
+    },
+    d4: {
+        title: "Ordering Lunch at a British Pub",
+        desc: "You walk into a busy, historic pub for lunch. How do you correctly order your meal?",
+        choices: [
+            { text: "Note your table number and order food directly at the bar.", pts: 3, type: "excellent", fb: "Spot on! In traditional British pubs, guests order food and drinks at the bar counter after choosing table numbers." },
+            { text: "Ask a staff member if table service is available today.", pts: 2, type: "good", fb: "Good choice! Some modern gastropubs offer table service. Asking politely ensures you follow that specific restaurant's system correctly." },
+            { text: "Sit at an uncleaned table and wait for a waiter to visit.", pts: 1, type: "average", fb: "Average choice! Pub staff rarely visit tables to take orders. You will wait a long time feeling hungry and ignored." },
+            { text: "Shout loudly across the bar to catch the bartender's attention.", pts: -1, type: "poor", fb: "Unpolite behavior! Shouting at bar staff breaks British etiquette. Queue calmly and wait for staff to serve you. Choose again." }
+        ]
+    },
+    d5: {
+        title: "Afternoon Tea Etiquette",
+        desc: "You are enjoying traditional afternoon tea. A scone with clotted cream and strawberry jam is served. How do you eat it?",
+        choices: [
+            { text: "Break the scone in half using your fingers, then spread cream and jam.", pts: 3, type: "excellent", fb: "Perfect etiquette! Scones should be broken by hand gently, not cut completely with knives. You enjoy authentic British traditions!" },
+            { text: "Cut the scone cleanly with a knife and eat it like a sandwich.", pts: 2, type: "good", fb: "Good effort! While using a knife is common among tourists, breaking scones by hand remains the proper formal tradition." },
+            { text: "Dip the whole scone straight into your hot cup of tea.", pts: 1, type: "average", fb: "Messy choice! Dipping sweet scones into tea leaves crumbs in your cup. It is considered poor table manners in public." },
+            { text: "Ask the waiter to grill your scone with cheese and pepper.", pts: -1, type: "poor", fb: "Incorrect choice! Afternoon tea scones are sweet bakery items eaten with cream and jam, not savory meals. Please choose again." }
+        ]
+    },
+    d6: {
+        title: "Using the Red Double-Decker Bus",
+        desc: "You board a famous red bus to travel to Covent Garden. How do you handle your fare payment?",
+        choices: [
+            { text: "Tap your contactless payment card on the yellow reader at the front.", pts: 3, type: "excellent", fb: "Excellent choice! London buses are completely cashless. Tapping your card or Oyster card at the front door is correct." },
+            { text: "Show your ticket to the bus driver while boarding calmly.", pts: 2, type: "good", fb: "Good effort! Most passengers use digital cards, but pre-paid paper travelcards are valid. Tapping digital cards is faster for everyone." },
+            { text: "Try to pay the driver using a twenty-pound paper cash note.", pts: 1, type: "average", fb: "Outdated choice! London buses have not accepted cash since 2014. You delay other passengers while finding a contactless card." },
+            { text: "Walk directly past the driver to the top floor without paying.", pts: -1, type: "poor", fb: "Illegal action! Fares are mandatory. Bus inspectors issue heavy fines to non-paying passengers. Pay correctly and choose again." }
+        ]
+    },
+    e2: {
+        title: "EMERGENCY: Missed the Last Underground Train",
+        isEmergency: true,
+        desc: "It is 00:30 AM. The Underground station doors are locked, and your hotel is 4 miles away.",
+        choices: [
+            { text: "Use an official ride-hailing app or hail an illuminated Black Cab.", pts: 3, type: "excellent", fb: "Very smart! Licensed taxis and verified ride-hailing apps provide safe, reliable transport across London late at night." },
+            { text: "Locate a Night Bus stop and check the 24-hour route map.", pts: 2, type: "good", fb: "Good choice! London has an extensive Night Bus network. It is affordable and safe, though travel times are longer." },
+            { text: "Start walking 4 miles back to your hotel alone in the dark.", pts: 1, type: "average", fb: "Unwise choice! Walking long distances late at night tires you out and exposes you to hazards. Expect complications later." },
+            { text: "Accept a ride from an unmarked car offering cheap cash transport.", pts: -1, type: "poor", fb: "GAME OVER. Entering illegal, unmarked vehicles late at night is extremely dangerous. Never compromise safety for cheap fares." }
+        ]
+    },
+    d7: {
+        title: "Shopping at Borough Market",
+        desc: "You visit Borough Market to sample local foods and buy souvenirs for friends.",
+        choices: [
+            { text: "Purchase packaged English teas and gourmet shortbread biscuits.", pts: 3, type: "excellent", fb: "Great choice! High-quality packaged foods make lightweight, traditional gifts that survive travel easily. Your friends will love them!" },
+            { text: "Buy handcrafted wooden kitchenware from a local artisan stall.", pts: 2, type: "good", fb: "Good choice! Unique handmade items support local traders, though heavy souvenirs add extra weight to your flight luggage." },
+            { text: "Attempt to bargain aggressively with market stallholders for lower prices.", pts: 1, type: "average", fb: "Awkward choice! Unlike street markets in some countries, fixed prices are standard in British retail shops and food markets." },
+            { text: "Eat food samples repeatedly from stalls without purchasing anything.", pts: -1, type: "poor", fb: "Poor etiquette! Food samples are meant for interested buyers. Taking excessive samples without intention to buy is disrespectful. Choose again." }
+        ]
+    },
+    d8: {
+        title: "Departure Day to Heathrow",
+        desc: "Your flight home leaves Heathrow Airport at 15:00. How do you plan your departure from central London?",
+        choices: [
+            { text: "Leave your hotel at 11:00 am using the Elizabeth Line.", pts: 3, type: "excellent", fb: "Perfect timing! Arriving three hours before international flights allows stress-free airport security checks and relaxing before boarding." },
+            { text: "Leave at 12:00 noon taking a pre-booked airport express bus.", pts: 2, type: "good", fb: "Good option! Two hours arrival window is acceptable, but traffic delays could make security checks hurried and stressful." },
+            { text: "Leave at 1:00 pm using the Underground stopping train.", pts: 1, type: "average", fb: "Very risky! London traffic or train delays can easily cause you to miss your flight check-in deadline." },
+            { text: "Wait at your hotel café until 1:45 pm before ordering a cab.", pts: -1, type: "poor", fb: "Disastrous decision! Heathrow is large and busy. Leaving less than two hours total will cause missed flights. Choose again." }
+        ]
+    }
+};
+
+const defaultQueue = ['d1', 'd2', 'd3', 'e1', 'd4', 'd5', 'd6', 'e2', 'd7', 'd8'];
+let gameQueue = [];
+let currentQueueIndex = 0;
+let score = 0;
+
+/* FISHER-YATES SHUFFLE ALGORITHM */
+function fisherYatesShuffle(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function startGame() {
+    score = 0;
+    currentQueueIndex = 0;
+    gameQueue = [...defaultQueue];
+    updateScoreUI();
+    showScreen('game');
+    renderCurrentStep();
+}
+
+function updateScoreUI() {
+    document.getElementById('score').innerText = score;
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+}
+
+function renderCurrentStep() {
+    const stepKey = gameQueue[currentQueueIndex];
+    const data = scenarios[stepKey];
+    
+    document.getElementById('progress-indicator').innerText = `Scenario ${currentQueueIndex + 1} of ${gameQueue.length}`;
+    document.getElementById('step-title').innerText = data.title;
+    document.getElementById('step-desc').innerText = data.desc;
+    
+    const statusArea = document.getElementById('status-area');
+    statusArea.innerHTML = data.isEmergency ? `<span class="emergency-tag">EMERGENCY SITUATION</span>` : '';
+    
+    const fbBox = document.getElementById('feedback-box');
+    fbBox.style.display = 'none';
+    fbBox.className = 'feedback';
+    
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.style.display = 'none';
+
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+
+    // Apply Fisher-Yates shuffle to choices array
+    const shuffledChoices = fisherYatesShuffle(data.choices);
+
+    shuffledChoices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerText = choice.text;
+        btn.onclick = () => handleChoice(choice, btn, data);
+        container.appendChild(btn);
+    });
+}
+
+function handleChoice(choice, btnElement, scenarioData) {
+    const fbBox = document.getElementById('feedback-box');
+    const pointsText = document.getElementById('points-text');
+    const fbContent = document.getElementById('feedback-content');
+
+    // Handle Emergency Poor Choice -> Instant Game Over
+    if (scenarioData.isEmergency && choice.pts === -1) {
+        score += choice.pts;
+        updateScoreUI();
+        document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+        
+        pointsText.innerText = "GAME OVER (-1 Point)";
+        fbContent.innerText = choice.fb;
+        fbBox.className = "feedback fb-poor";
+        fbBox.style.display = "block";
+        
+        setTimeout(() => {
+            alert("Game Over! Safety critical error. Restarting travel module.");
+            startGame();
+        }, 3500);
+        return;
+    }
+
+    // Handle Standard Poor Choice -> Subtract point, disable button, pick again
+    if (choice.pts === -1) {
+        score += choice.pts;
+        updateScoreUI();
+        btnElement.disabled = true;
+        
+        pointsText.innerText = "Incorrect Choice (-1 Point)";
+        fbContent.innerText = choice.fb;
+        fbBox.className = "feedback fb-poor";
+        fbBox.style.display = "block";
+        return;
+    }
+
+    // Handle Positive Scoring Choices (3 = Excellent, 2 = Good, 1 = Average)
+    score += choice.pts;
+    updateScoreUI();
+    
+    document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+
+    let typeClass = "fb-excellent";
+    let typeLabel = `Excellent Choice! (+${choice.pts} Points)`;
+    
+    if (choice.pts === 2) {
+        typeClass = "fb-good";
+        typeLabel = `Good Choice (+${choice.pts} Points)`;
+    } else if (choice.pts === 1) {
+        typeClass = "fb-average";
+        typeLabel = `Average Choice (+${choice.pts} Point)`;
+    }
+
+    pointsText.innerText = typeLabel;
+    fbContent.innerText = choice.fb;
+    fbBox.className = `feedback ${typeClass}`;
+    fbBox.style.display = "block";
+
+    // Emergency Mechanic: Average choice causes emergency repeat 2 scenarios later
+    if (scenarioData.isEmergency && choice.pts === 1) {
+        const currentKey = gameQueue[currentQueueIndex];
+        let insertIndex = currentQueueIndex + 3; // 2 scenarios after current
+        if (insertIndex > gameQueue.length) {
+            insertIndex = gameQueue.length;
+        }
+        gameQueue.splice(insertIndex, 0, currentKey);
+    }
+
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.style.display = 'block';
+    nextBtn.onclick = () => {
+        currentQueueIndex++;
+        if (currentQueueIndex < gameQueue.length) {
+            renderCurrentStep();
+        } else {
+            showFinalResults();
+        }
+    };
+}
+
+function showFinalResults() {
+    showScreen('final');
+    const maxScore = gameQueue.length * 3;
+    document.getElementById('final-stats').innerText = `Final Score: ${score} / ${maxScore}`;
+    
+    const bandResult = document.getElementById('band-result');
+    let title = "";
+    let message = "";
+    let color = "";
+    let bg = "";
+
+    const percentage = (score / maxScore) * 100;
+
+    if (percentage >= 80) {
+        title = "London Cultural Expert 👑";
+        message = "Outstanding achievement! You possess superior practical English skills and a natural understanding of British city navigation and etiquette.";
+        color = "#2e7d32";
+        bg = "#e8f5e9";
+    } else if (percentage >= 55) {
+        title = "Capable City Traveler 🚇";
+        message = "Well done! You navigated London effectively with solid CEFR A2 English comprehension. Review minor etiquette details for even better results.";
+        color = "#1565c0";
+        bg = "#e3f2fd";
+    } else {
+        title = "Inexperienced Visitor 🎒";
+        message = "You completed your trip, but faced challenges along the way. Practice essential A2 travel vocabulary and city safety guidelines to improve!";
+        color = "#b78103";
+        bg = "#fff8e1";
+    }
+
+    bandResult.style.border = `2px solid ${color}`;
+    bandResult.style.backgroundColor = bg;
+    bandResult.innerHTML = `<h3 style="color:${color}; margin-bottom:0.5rem;">${title}</h3><p style="margin:0;">${message}</p>`;
+}
+</script>
+</body>
+</html>
