@@ -16,10 +16,9 @@
       --text-muted: #93c5fd;
       --accent-blue: #38bdf8;
       --accent-hover: #7dd3fc;
-      --badge-a2: #38bdf8;
-      --badge-b1: #818cf8;
-      --badge-b2: #c084fc;
-      --badge-c1: #f472b6;
+      --badge-level-1: #38bdf8;
+      --badge-level-2: #818cf8;
+      --badge-level-3: #c084fc;
       --badge-default: #94a3b8;
       --radius-lg: 16px;
       --radius-md: 10px;
@@ -202,10 +201,9 @@
       white-space: nowrap;
     }
 
-    .tag-a2, .tag-a2-b1 { background: var(--badge-a2); }
-    .tag-b1, .tag-b1-b2 { background: var(--badge-b1); }
-    .tag-b2, .tag-b2-c1 { background: var(--badge-b2); }
-    .tag-c1 { background: var(--badge-c1); }
+    .tag-1 { background: var(--badge-level-1); }
+    .tag-2 { background: var(--badge-level-2); }
+    .tag-3 { background: var(--badge-level-3); }
     .tag-none { background: var(--badge-default); }
 
     .btn-footer {
@@ -265,10 +263,9 @@
         <input id="filter" class="search" type="search" placeholder="Search exercises (press '/' to focus)" aria-label="Search pages" />
         <div class="filter-tags">
           <button class="filter-btn active" data-level="all">All</button>
-          <button class="filter-btn" data-level="a2-b1">A2-B1</button>
-          <button class="filter-btn" data-level="b1-b2">B1-B2</button>
-          <button class="filter-btn" data-level="b2-c1">B2-C1</button>
-          <button class="filter-btn" data-level="c1">C1</button>
+          <button class="filter-btn" data-level="1">Elementary</button>
+          <button class="filter-btn" data-level="2">Independent</button>
+          <button class="filter-btn" data-level="3">Proficient</button>
         </div>
       </div>
     </header>
@@ -301,18 +298,18 @@
       let items = [];
       let currentLevel = 'all';
 
-      const levelMap = {
-        A2: 'A2-B1',
-        B1: 'B1-B2',
-        B2: 'B2-C1',
-        C1: 'C1'
+      const levelLabels = {
+        1: 'Elementary',
+        2: 'Independent',
+        3: 'Proficient'
       };
 
       function rewriteBadgesInDOM() {
         document.querySelectorAll('.tag').forEach(tagEl => {
-          const txt = tagEl.textContent.trim().toUpperCase();
-          if (levelMap[txt]) {
-            tagEl.textContent = levelMap[txt];
+          const txt = tagEl.textContent.trim();
+          const num = txt.replace(/[^0-9]/g, '');
+          if (num && levelLabels[num]) {
+            tagEl.textContent = levelLabels[num];
           }
         });
       }
@@ -330,15 +327,16 @@
           const tag = li.querySelector('.tag');
 
           if (tag) {
-            const txt = tag.textContent.trim().toUpperCase();
-            if (levelMap[txt]) {
-              tag.textContent = levelMap[txt];
+            const txt = tag.textContent.trim();
+            const num = txt.replace(/[^0-9]/g, '');
+            if (num && levelLabels[num]) {
+              tag.textContent = levelLabels[num];
             }
           }
 
-          const level = tag ? tag.textContent.trim().toLowerCase() : '';
+          const level = tag ? tag.getAttribute('data-level') || '' : '';
           const matchesQuery = query === '' || text.includes(query);
-          const matchesLevel = currentLevel === 'all' || level.includes(currentLevel.toLowerCase());
+          const matchesLevel = currentLevel === 'all' || level === currentLevel;
 
           li.style.display = (matchesQuery && matchesLevel) ? '' : 'none';
         });
@@ -374,7 +372,7 @@
 
       function buildTitleFromPath(filePath) {
         const fileName = filePath.split('/').pop().replace(/\.html?$/i, '');
-        const withoutLevelSuffix = fileName.replace(/-(a2|b1\+|b1|b2|c1)$/i, '');
+        const withoutLevelSuffix = fileName.replace(/-(\d)(?:[a-z])?$/i, '');
         return withoutLevelSuffix
           .replace(/[-_]+/g, ' ')
           .split(' ')
@@ -384,10 +382,10 @@
       }
 
       function getLevelFromPath(filePath) {
-        const baseName = filePath.split('/').pop().replace(/\.html?$/i, '');
-        const match = baseName.match(/-(a2|b1\+|b1|b2|c1)$/i);
-        const rawLevel = match ? match[1].toUpperCase().replace('+', '') : null;
-        return rawLevel ? (levelMap[rawLevel] || rawLevel) : null;
+        const fileName = filePath.split('/').pop().replace(/\.html?$/i, '');
+        const match = fileName.match(/-(\d)(?:[a-z])?$/i);
+        if (!match) return null;
+        return match[1];
       }
 
       function escapeHtml(str) {
@@ -413,14 +411,10 @@
 
           htmlFiles.forEach(file => {
             const filePath = file.path;
-            const rawLevel = (function () {
-              const match = filePath.split('/').pop().match(/-(a2|b1\+|b1|b2|c1)$/i);
-              return match ? match[1].toUpperCase().replace('+', '') : null;
-            })();
-
-            const displayLevel = rawLevel ? (levelMap[rawLevel] || rawLevel) : null;
-            const tagClass = rawLevel ? `tag-${rawLevel.toLowerCase()}` : 'tag-none';
-            const tagText = displayLevel || '—';
+            const levelNumber = getLevelFromPath(filePath);
+            const levelName = levelNumber ? levelLabels[levelNumber] : null;
+            const tagClass = levelNumber ? `tag-${levelNumber}` : 'tag-none';
+            const tagText = levelName || '—';
             const title = buildTitleFromPath(filePath);
             const href = `./${encodeURI(filePath)}`;
 
@@ -432,7 +426,7 @@
             a.innerHTML = `
               <div class="btn-header">
                 <span class="title">${escapeHtml(title)}</span>
-                <span class="tag ${tagClass}">${escapeHtml(tagText)}</span>
+                <span class="tag ${tagClass}" data-level="${levelNumber || 'none'}">${escapeHtml(tagText)}</span>
               </div>
               <div class="btn-footer">Open &rarr;</div>
             `;
