@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restaurant Manager: B1 Workplace Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #1e293b;
+        --accent: #e11d48;
+        --accent-hover: #be123c;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text: #334155;
+        --text-dark: #0f172a;
+        --green: #16a34a;
+        --green-bg: #f0fdf4;
+        --amber: #d97706;
+        --amber-bg: #fffbeb;
+        --red: #dc2626;
+        --red-bg: #fef2f2;
+        --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        padding-bottom: 3rem;
+    }
+
+    header {
+        background: var(--primary);
+        color: white;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 5px solid var(--accent);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .score-badge {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 0.4rem 1rem;
+        border-radius: 9999px;
+        font-weight: 700;
+        font-size: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .container {
+        max-width: 820px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .card {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
+        border: 1px solid var(--border);
+        display: none;
+    }
+
+    .card.active { display: block; }
+
+    h2 {
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-dark);
+        margin-bottom: 0.75rem;
+        font-size: 1.5rem;
+    }
+
+    .day-tag {
+        display: inline-block;
+        background: #e0f2fe;
+        color: #0369a1;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .emergency-badge {
+        background: var(--red-bg);
+        color: var(--red);
+        border: 1px solid #fecaca;
+        padding: 0.35rem 0.85rem;
+        font-size: 0.85rem;
+        font-weight: 800;
+        border-radius: 6px;
+        display: inline-block;
+        margin-bottom: 0.75rem;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    p { margin-bottom: 1.25rem; color: #475569; font-size: 1.05rem; }
+
+    .rules-list {
+        background: #f1f5f9;
+        padding: 1.25rem 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        list-style-type: none;
+    }
+
+    .rules-list li {
+        margin-bottom: 0.5rem;
+        position: relative;
+        padding-left: 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .rules-list li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-weight: bold;
+    }
+
+    .choices-grid {
+        display: grid;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .choice-btn {
+        background: white;
+        border: 2px solid var(--border);
+        padding: 1.1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.98rem;
+        font-weight: 500;
+        color: var(--text-dark);
+        text-align: left;
+        transition: all 0.2s ease;
+        line-height: 1.4;
+    }
+
+    .choice-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background-color: #fff1f2;
+        transform: translateY(-1px);
+    }
+
+    .choice-btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .choice-btn.selected-bad {
+        border-color: var(--amber);
+        background-color: var(--amber-bg);
+    }
+
+    .feedback {
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        display: none;
+    }
+
+    .fb-vg, .fb-g {
+        background: var(--green-bg);
+        border-left: 5px solid var(--green);
+        color: #14532d;
+    }
+
+    .fb-a {
+        background: var(--amber-bg);
+        border-left: 5px solid var(--amber);
+        color: #78350f;
+    }
+
+    .fb-p {
+        background: var(--red-bg);
+        border-left: 5px solid var(--red);
+        color: #7f1d1d;
+    }
+
+    .points-tag {
+        font-weight: 800;
+        font-size: 1.1rem;
+        display: block;
+        margin-bottom: 0.4rem;
+    }
+
+    .primary-btn {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+        transition: background 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.3);
+    }
+
+    .primary-btn:hover {
+        background: var(--accent-hover);
+    }
+
+    .discussion-box {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .discussion-box h3 {
+        color: #0369a1;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .discussion-box ol {
+        padding-left: 1.25rem;
+    }
+
+    .discussion-box li {
+        margin-bottom: 0.75rem;
+        color: #0c4a6e;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>🍽️ Restaurant Manager Simulation</h1>
+    <div class="score-badge">Score: <span id="scoreDisplay">0</span> / 20</div>
+</header>
+
+<div class="container">
+    <!-- LANDING PAGE -->
+    <div class="card active" id="screen-start">
+        <h2>Shift Start: Operational Management Challenge</h2>
+        <p>Welcome to <strong>La Riviera Bistro</strong>. As General Manager, your responsibility is to lead the restaurant through a busy week from Monday morning to Friday night rush.</p>
+        
+        <p>Your goal is to make smart operational decisions that protect food safety, maintain customer satisfaction, and lead your team effectively.</p>
+
+        <ul class="rules-list">
+            <li><strong>8 Core Decisions:</strong> 2 options win points (+2 or +1), 1 acceptable option (0 pts), and 1 poor option (-1 pt, forces retry).</li>
+            <li><strong>Branching Narrative:</strong> Your choices directly influence follow-up scenarios throughout the week.</li>
+            <li><strong>2 Emergency Situations:</strong> Test your immediate safety protocols under extreme pressure!</li>
+            <li><strong>Bonus Opportunity:</strong> Available after Decision 8 if your score is under 20 points.</li>
+        </ul>
+
+        <button class="primary-btn" onclick="startGame()">Start Shift (Monday Morning) →</button>
+    </div>
+
+    <!-- GAMEPLAY SCREEN -->
+    <div class="card" id="screen-game">
+        <div id="step-badge"></div>
+        <h2 id="step-title"></h2>
+        <p id="step-desc"></p>
+        
+        <div class="choices-grid" id="choices-container"></div>
+        
+        <div class="feedback" id="feedback-box">
+            <span class="points-tag" id="points-label"></span>
+            <p id="feedback-text" style="margin: 0;"></p>
+        </div>
+
+        <button class="primary-btn" id="btn-next" style="display: none; margin-top: 1.5rem;">Continue Shift →</button>
+    </div>
+
+    <!-- DEBRIEFING PAGE -->
+    <div class="card" id="screen-final">
+        <h2>Weekly Operational Report</h2>
+        <div id="final-score" style="font-size: 1.8rem; font-weight: 800; color: var(--accent); margin: 1rem 0;"></div>
+        
+        <div id="final-band-card" style="padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <h3 id="band-title" style="font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem;"></h3>
+            <p id="band-message" style="margin: 0; font-size: 1.05rem; line-height: 1.6;"></p>
+        </div>
+
+        <div class="discussion-box">
+            <h3>🗣️ Post-Simulation Discussion Questions</h3>
+            <ol>
+                <li>How do you balance maintaining strict food safety and quality standards with keeping service fast during an unexpected peak rush?</li>
+                <li>When staff conflicts happen during high-pressure situations, what communication strategies work best to resolve tension without affecting customers?</li>
+                <li>Which decision in this week's simulation was the most difficult for you to make, and what would you do differently in a real restaurant setting?</li>
+            </ol>
+        </div>
+
+        <button class="primary-btn" style="margin-top: 2rem;" onclick="location.reload()">Replay Weekly Simulation ↺</button>
+    </div>
+</div>
+
+<script>
+const scenarios = {
+    "s1": {
+        "day": "Monday Morning (08:30)",
+        "title": "Scenario 1: Raw Ingredient Delay",
+        "desc": "Your primary supplier calls to report that the fresh morning produce delivery is delayed by four hours due to vehicle trouble. Breakfast prep cannot continue as planned.",
+        "choices": [
+            {
+                "text": "Call alternative local markets immediately to purchase essential ingredients and adjust the morning prep menu.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "You proactively solved the supply shortage by sourcing fresh local produce. Breakfast service started on schedule, keeping early guests happy and preserving daily revenue."
+            },
+            {
+                "text": "Negotiate an express delivery with the current supplier while requesting a discounted price for the inconvenience.",
+                "pts": 1,
+                "type": "g",
+                "fb": "You secured a useful discount from your vendor, but breakfast prep was slightly delayed. Customers waited longer than usual, though overall operations remained functional."
+            },
+            {
+                "text": "Wait for the late delivery and apologize politely to early morning customers as they arrive.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Waiting delayed service significantly during peak morning hours. While polite communication helped slightly, several frustrated customers left without dining, costing the restaurant income."
+            },
+            {
+                "text": "Cancel all morning dining reservations and close the main dining room doors until afternoon.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Closing the dining room ruined customer goodwill and lost morning profits entirely. This extreme action was unnecessary and damaged the restaurant reputation. Please choose again."
+            }
+        ],
+        "next_vg_g": "s2_a",
+        "next_a": "s2_b"
+    },
+    "s2_a": {
+        "day": "Monday Lunch (12:30)",
+        "title": "Scenario 2: Peak Lunch Rush & Staff Shortage (Quality Path)",
+        "desc": "Thanks to your smooth morning operation, lunch traffic is unusually heavy. However, one key line cook unexpectedly called in sick just as orders started arriving.",
+        "choices": [
+            {
+                "text": "Cross-train a skilled prep cook to assist on the main line and simplify complex menu items.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Excellent leadership. Reassigning the prep cook maintained fast kitchen performance. Simplifying complex dishes prevented bottlenecking, keeping food quality high and ticket times very low."
+            },
+            {
+                "text": "Call off-duty kitchen staff to request immediate overtime support while offering bonus pay.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Calling extra help resolved the lunch rush effectively, though labor costs increased slightly today. The kitchen managed to fulfill all orders with acceptable wait times."
+            },
+            {
+                "text": "Ask the remaining kitchen team to work faster while slowing down front-of-house table seating.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Slowing down seating prevented kitchen overload, but customers waited longer in the lobby. The staff felt stressed, resulting in minor plating mistakes on several dishes."
+            },
+            {
+                "text": "Ignore the shortage and push the kitchen crew to work without taking essential rest breaks.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Overworking the staff caused angry arguments and delayed customer orders significantly. Poor morale creates dangerous kitchen hazards and ruins service quality. Please choose again."
+            }
+        ],
+        "next_vg": "s3_a",
+        "next_g_a": "s3_b"
+    },
+    "s2_b": {
+        "day": "Monday Lunch (12:30)",
+        "title": "Scenario 2: Unhappy Lunch Customers (Recovery Path)",
+        "desc": "Morning delays left the kitchen disorganized. As lunch customers arrive, wait times are rising and several diners are complaining about slow service.",
+        "choices": [
+            {
+                "text": "Greet waiting diners personally, offer complimentary beverages, and explain the current situation honestly.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Your genuine hospitality converted dissatisfied customers into understanding guests. Free drinks calmed the waiting crowd, protecting the restaurant brand during a difficult shift."
+            },
+            {
+                "text": "Provide ten percent discount vouchers to affected guests for their next restaurant visit.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Discount vouchers pacified most unhappy diners, though immediate wait times remained long. This gesture helped retain customer loyalty despite the disorganized afternoon kitchen operation."
+            },
+            {
+                "text": "Apologize verbally to waiting guests without offering any compensation or timeline updates.",
+                "pts": 0,
+                "type": "a",
+                "fb": "A basic apology showed courtesy, but guests remained annoyed by long delays. Several diners left negative online reviews regarding slow service and poor communication."
+            },
+            {
+                "text": "Blame the delivery supplier publicly and argue with customers who complain about waiting times.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Arguing with guests destroyed professional credibility and caused two parties to walk out angrily. Blaming external factors shows poor managerial responsibility. Please choose again."
+            }
+        ],
+        "next_vg": "s3_a",
+        "next_g_a": "s3_b"
+    },
+    "s3_a": {
+        "day": "Tuesday Morning (09:00)",
+        "title": "Scenario 3: Walk-in Refrigerator Temperature Warning",
+        "desc": "During morning opening checks, you notice the main walk-in cooler temperature has risen to 8\u00b0C (46\u00b0F), endangering expensive stored meats and dairy products.",
+        "choices": [
+            {
+                "text": "Call emergency refrigeration repair immediately and move perishable items to back-up freezer units.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Immediate action saved thousands of dollars in valuable food inventory. The technician fixed the compressor quickly, preventing health code violations and securing ingredients safely."
+            },
+            {
+                "text": "Adjust the thermostat setting manually and monitor the cooler temperature closely every hour.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Adjusting the thermostat lowered the temperature gradually, but food safety was temporarily at risk. Luckily no ingredients spoiled, but a technician is still needed."
+            },
+            {
+                "text": "Keep the cooler door tightly closed and hope the temperature drops naturally during food prep.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Ignoring the mechanical warning was risky. The temperature remained elevated for hours, forcing you to discard several delicate dairy products before lunch prep began."
+            },
+            {
+                "text": "Ignore the temperature reading completely and proceed with normal cooking prep routines.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Serving spoiled food causes severe foodborne illness outbreaks and immediate health department closure. Food safety monitoring cannot be neglected. Please choose a safer option."
+            }
+        ],
+        "next_vg_g": "e1",
+        "next_a": "e1"
+    },
+    "s3_b": {
+        "day": "Tuesday Morning (09:00)",
+        "title": "Scenario 3: Stock Management & Cooler Issues",
+        "desc": "After yesterday's difficulties, storage space is disorganized and the secondary refrigeration unit is struggling under a heavy load.",
+        "choices": [
+            {
+                "text": "Reorganize the cooler layout for better airflow and transfer sensitive items to working units.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Proper inventory organization restored proper air circulation and stabilized storage temperatures. You protected perishable goods efficiently without spending additional operational funds on emergency maintenance."
+            },
+            {
+                "text": "Order a portable cooling unit rental to handle overflow stock for the remaining week.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Renting temporary cooling equipment solved the immediate storage problem effectively, although unexpected equipment rental costs reduced your weekly operational profit margin slightly."
+            },
+            {
+                "text": "Discard questionable ingredients immediately and reduce tonight's dinner menu selection.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Throwing away ingredients prevented food safety risks, but menu reductions disappointed evening guests. Proper stock management earlier would have avoided this financial waste."
+            },
+            {
+                "text": "Pack ingredients tightly into defective coolers and ignore temperature safety indicators.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Overcrowded defective coolers lead directly to bacterial growth and food spoilage. Failing to respect cold storage safety rules is extremely dangerous. Please select again."
+            }
+        ],
+        "next_vg_g": "e1",
+        "next_a": "e1"
+    },
+    "e1": {
+        "day": "Tuesday Afternoon (14:30)",
+        "title": "HAZARDOUS EMERGENCY: Kitchen Grease Fire!",
+        "isEmergency: true": true,
+        "desc": "A flare-up on the grill ignites accumulated grease in the exhaust hood! Flames spread rapidly along the cooking line.",
+        "choices": [
+            {
+                "text": "Use the Class K wet-chemical fire extinguisher immediately and shut off the main kitchen gas valve.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Flawless emergency response! Using the correct Class K extinguisher and isolating the gas line extinguished the fire instantly, preventing structural damage and keeping staff safe."
+            },
+            {
+                "text": "Pull the automated fire suppression system and order an immediate evacuation of all occupants.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Evacuating was safe and compliant, though the chemical suppressant system required extensive clean-up. Production stopped for the day, but everyone remained completely unharmed."
+            },
+            {
+                "text": "Throw a large bucket of water onto the grease fire to douse the flames.",
+                "pts": 0,
+                "type": "bad_e",
+                "gameOver": true,
+                "fb": "FATAL ERROR! Throwing water on a grease fire caused a massive explosive fireball, destroying the kitchen and severely injuring staff. Game over!"
+            },
+            {
+                "text": "Attempt to smother the flaming hood grease using cloth kitchen aprons.",
+                "pts": 0,
+                "type": "bad_e",
+                "gameOver": true,
+                "fb": "FATAL ERROR! The cloth aprons caught fire instantly, spreading flames across the entire building. The kitchen was destroyed. Game over!"
+            }
+        ],
+        "next": "s4_a"
+    },
+    "s4_a": {
+        "day": "Wednesday Lunch (12:00)",
+        "title": "Scenario 4: Serious Customer Complaint",
+        "desc": "A high-profile food critic dining in your restaurant claims their chicken entry is cold and undercooked in the center.",
+        "choices": [
+            {
+                "text": "Apologize sincerely, replace the meal immediately with a freshly cooked dish, and inspect kitchen cook temps.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Outstanding service recovery! Replacing the dish promptly and checking line temperatures satisfied the critic, turning a potential negative review into a glowing praise of professionalism."
+            },
+            {
+                "text": "Remove the item from the bill and offer a complimentary dessert to apologize for the error.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Removing the item compensated the customer fairly. While the customer appreciated the free dessert, the kitchen issue was not investigated thoroughly during service."
+            },
+            {
+                "text": "Re-heat the original chicken plate in the microwave and return it to the guest's table.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Microwaving undercooked poultry is unprofessional and unsafe. The customer noticed the poor texture, accepted the free meal, but expressed disappointment with culinary standards."
+            },
+            {
+                "text": "Insist that the chicken was thoroughly cooked and argue that the temperature is normal.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Arguing with guests regarding food quality destroys reputation. The critic published a scathing review about terrible service and dangerous food safety. Please choose again."
+            }
+        ],
+        "next_vg": "s5_a",
+        "next_g_a": "s5_b"
+    },
+    "s4_b": {
+        "day": "Wednesday Lunch (12:00)",
+        "title": "Scenario 4: Standard Quality Dispute",
+        "desc": "A table of regular guests complains that their lunch entrees are oversalted and not up to standard.",
+        "choices": [
+            {
+                "text": "Recook the meals freshly, adjust kitchen seasoning standards, and offer complimentary coffees.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Recooking the meals satisfied the regulars completely. Adjusting line seasoning prevented future errors, demonstrating excellent operational oversight and commitment to culinary quality."
+            },
+            {
+                "text": "Offer to replace the dishes with alternative menu items of equal monetary value.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Offering replacement dishes satisfied the diners, though meal preparation delayed their lunch schedule. Overall, customer loyalty was preserved through polite manager intervention."
+            },
+            {
+                "text": "Discount the total check by fifteen percent without remaking the salty dishes.",
+                "pts": 0,
+                "type": "a",
+                "fb": "The discount reduced guest frustration slightly, but serving unsatisfactory food left a bad impression. Guests left most of their food uneaten on the plates."
+            },
+            {
+                "text": "Tell the guests that the recipe cannot be altered and refuse any price adjustment.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Refusing to address valid customer feedback caused the regulars to vow never to return. Customer satisfaction is crucial for restaurant success. Please choose again."
+            }
+        ],
+        "next_vg": "s5_a",
+        "next_g_a": "s5_b"
+    },
+    "s5_a": {
+        "day": "Wednesday Evening (19:30)",
+        "title": "Scenario 5: Dishwasher Breakdown During Peak Service",
+        "desc": "The commercial dishwashing machine leaks water and stops operating during busy dinner service, causing plates and glasses to pile up rapidly.",
+        "choices": [
+            {
+                "text": "Set up a temporary three-compartment manual wash system immediately and assign dedicated staff to assist.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Implementing proper manual sanitation kept clean tableware flowing smoothly to the dining room. Your quick crisis management prevented service disruption during peak dinner hours."
+            },
+            {
+                "text": "Switch to high-quality eco-friendly disposable tableware for the rest of the evening service.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Using disposable tableware allowed service to continue without delay, though some fine-dining guests felt the presentation was below expectations for evening service."
+            },
+            {
+                "text": "Rinse dishes quickly in hot water without using chemical sanitizer solutions.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Rinsing without proper sanitization violates basic health regulations. While clean plates reached the dining room, you risked customer safety and sanitation compliance standards."
+            },
+            {
+                "text": "Halt all new table seatings until the automated dishwashing machine can be repaired.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Stopping table seatings during peak hours lost significant revenue and turned away dozens of waiting guests. Manual washing should have been utilized. Please try again."
+            }
+        ],
+        "next_vg_g": "s6_a",
+        "next_a": "s6_b"
+    },
+    "s5_b": {
+        "day": "Wednesday Evening (19:30)",
+        "title": "Scenario 5: Kitchen Backlog & Equipment Fault",
+        "desc": "Plates are piling up in the wash area and kitchen staff are struggling to maintain clean cooking gear during evening service.",
+        "choices": [
+            {
+                "text": "Assign a front-of-house busser to assist dishwashing while managing table turnover efficiently.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Reallocating staff restored order to the dish pit quickly. Cross-department teamwork eliminated the kitchen backlog and ensured smooth dining room operations throughout the evening."
+            },
+            {
+                "text": "Hire an emergency evening dishwasher through a local temp agency for immediate support.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Bringing in temporary labor solved the dish backlog, though agency emergency fees added unbudgeted expense to your weekly operating costs."
+            },
+            {
+                "text": "Ask chefs to reuse unwashed pots by wiping them down with paper towels.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Reusing pots without proper washing risks allergen cross-contamination and flavor transfer. Fortunately no health issues occurred, but cooking quality was compromised today."
+            },
+            {
+                "text": "Leave unwashed dishes piled up on kitchen counters until the morning shift arrives.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Leaving dirty dishes overnight attracts pests, creates foul odors, and violates sanitation codes. Kitchen cleanliness must be maintained daily. Please select another option."
+            }
+        ],
+        "next_vg_g": "s6_a",
+        "next_a": "s6_b"
+    },
+    "s6_a": {
+        "day": "Thursday Lunch (13:00)",
+        "title": "Scenario 6: Suspected Food Allergy Alert",
+        "desc": "A customer informs the waiter that they have a severe peanut allergy after receiving a dish that might contain nut oils.",
+        "choices": [
+            {
+                "text": "Retrieve the dish immediately, sanitize cooking surfaces, and prepare a fresh allergen-free meal safely.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Outstanding allergen safety! Immediate removal of the plate and thorough surface sanitization protected the guest's health and built strong trust in your safety protocols."
+            },
+            {
+                "text": "Verify ingredient labels with the head chef and offer a completely sealed pre-packaged alternative.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Checking ingredient labels prevented cross-contamination. Offering a safe packaged alternative satisfied the customer, though they missed out on a fresh hot main meal."
+            },
+            {
+                "text": "Assure the guest that the dish is fine after just scraping off the top garnish.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Scraping garnishes does not eliminate microscopic allergen traces. The guest wisely declined the meal, leaving unhappy about the lack of allergen awareness."
+            },
+            {
+                "text": "Tell the customer that the restaurant cannot accommodate any severe dietary allergies or restrictions.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Refusing to accommodate dietary needs rudely alienates customers and damages restaurant inclusivity. Allergen protocols are essential in modern food service. Please choose again."
+            }
+        ],
+        "next_vg": "e2",
+        "next_g_a": "e2"
+    },
+    "s6_b": {
+        "day": "Thursday Lunch (13:00)",
+        "title": "Scenario 6: Dietary Special Request Challenge",
+        "desc": "A large corporate booking requests specialized gluten-free and vegan menus upon arrival without prior notice.",
+        "choices": [
+            {
+                "text": "Consult the head chef to quickly adapt existing recipes using certified allergen-safe ingredients.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Flexible culinary leadership! Adapting recipes efficiently satisfied the corporate guests, securing a lucrative future account while maintaining high food preparation standards."
+            },
+            {
+                "text": "Offer a simplified salad and fruit platter options that naturally meet dietary restrictions.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Simple natural options accommodated the dietary requests safely, though guests felt the menu choices were somewhat limited for a premium restaurant establishment."
+            },
+            {
+                "text": "Serve standard dishes while advising guests to eat around ingredients they cannot consume.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Advising guests to 'eat around' restricted ingredients is unsafe and unprofessional. Corporate organizers expressed dissatisfaction with the lack of hospitality."
+            },
+            {
+                "text": "Cancel the corporate group table reservation on the spot due to unexpected complexity.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Canceling a major group booking lost substantial revenue and damaged corporate business relationships. Adapting to guest needs is key. Please choose again."
+            }
+        ],
+        "next_vg": "e2",
+        "next_g_a": "e2"
+    },
+    "e2": {
+        "day": "Thursday Evening (20:00)",
+        "title": "HAZARDOUS EMERGENCY: Suspected Gas Leak!",
+        "isEmergency: true": true,
+        "desc": "A strong smell of natural gas (sulfur/rotten eggs) is detected near the heavy cooking line during dinner service!",
+        "choices": [
+            {
+                "text": "Extinguish open flames, shut main gas supply valve, evacuate premises, and call emergency services.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Textbook safety execution! Shutting the main gas valve and evacuating swiftly eliminated explosion risks. Emergency responders cleared the building safely without injury."
+            },
+            {
+                "text": "Evacuate the kitchen immediately, activate alarm, and await fire department clearance outside.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Evacuating immediately protected lives successfully. Although dinner service was canceled for the evening, safety standards were fully met without casualties."
+            },
+            {
+                "text": "Turn on high-power electrical exhaust fans to clear the gas odor from the kitchen.",
+                "pts": 0,
+                "type": "bad_e",
+                "gameOver": true,
+                "fb": "FATAL ERROR! The electrical fan switch created a tiny spark, igniting gas fumes and triggering a massive explosion. Game over!"
+            },
+            {
+                "text": "Light a handheld gas lighter near pipe joints to locate the leak source visually.",
+                "pts": 0,
+                "type": "bad_e",
+                "gameOver": true,
+                "fb": "FATAL ERROR! Open flame ignited the leaking gas instantly, causing a devastating explosion and total destruction of the restaurant. Game over!"
+            }
+        ],
+        "next": "s7_a"
+    },
+    "s7_a": {
+        "day": "Friday Afternoon (15:00)",
+        "title": "Scenario 7: Overbooked Friday Night Reservations",
+        "desc": "A booking software glitch has double-booked your main dining room for Friday evening peak hours, creating a thirty-seat overlap.",
+        "choices": [
+            {
+                "text": "Contact affected diners in advance, offer priority seating times, and provide complimentary aperitifs upon arrival.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Proactive communication turned a scheduling disaster into a customer service win! Advance notice and complimentary drinks maintained guest goodwill throughout Friday night."
+            },
+            {
+                "text": "Set up temporary elegant dining tables in the covered patio lounge area to expand capacity.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Expanding seating onto the patio accommodated all reservations successfully, though server walking distances increased and food delivery was slightly slower."
+            },
+            {
+                "text": "Do nothing now and deal with table shortages as guests arrive at the restaurant entrance.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Waiting created severe lobby congestion and long delays on Friday evening. Unprepared hosts faced angry crowds, resulting in several lost reservations."
+            },
+            {
+                "text": "Cancel thirty reservations arbitrarily without contacting guests or offering alternative seating times.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Canceling bookings without warning caused furious customers to arrive only to be turned away. Social media reviews tanked immediately. Please choose again."
+            }
+        ],
+        "next_vg_g": "s8_a",
+        "next_a": "s8_b"
+    },
+    "s7_b": {
+        "day": "Friday Afternoon (15:00)",
+        "title": "Scenario 7: Friday Night Prep & Staffing Stress",
+        "desc": "Reservations are high and front-of-house staff are feeling overwhelmed by complex VIP table requests.",
+        "choices": [
+            {
+                "text": "Conduct a structured pre-shift briefing, assign clear table sections, and outline VIP guest preferences.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Clear pre-shift alignment boosted staff confidence and organization. The team executed Friday service smoothly, delivering personalized attention to VIP tables effortlessly."
+            },
+            {
+                "text": "Assign your most experienced server to manage all VIP tables exclusively during the shift.",
+                "pts": 1,
+                "type": "g",
+                "fb": "The senior server handled VIPs well, but remaining staff struggled with general section balance. Service was acceptable overall but slightly uneven."
+            },
+            {
+                "text": "Tell staff to handle seating arrangements flexibly on their own without managerial intervention.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Lack of direction caused section confusion and delayed order taking during peak hours. Staff felt unsupported during a critical service shift."
+            },
+            {
+                "text": "Reprimand staff publicly for showing stress before the Friday evening shift begins.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Harsh criticism destroyed team morale right before peak service. Demotivated staff made frequent mistakes throughout the night. Please select a supportive approach."
+            }
+        ],
+        "next_vg_g": "s8_a",
+        "next_a": "s8_b"
+    },
+    "s8_a": {
+        "day": "Friday Night Rush (20:30)",
+        "title": "Scenario 8: Peak Rush Staff Conflict",
+        "desc": "During the highest volume period of Friday night, a heated argument breaks out between the head chef and the lead server at the pass.",
+        "choices": [
+            {
+                "text": "Step in calmly, step between staff, address ticket order clearly, and defer detailed discussion until post-service.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Masterful conflict resolution! De-escalating tension immediately restored kitchen flow. Post-service debrief resolved interpersonal issues professionally without compromising Friday service quality."
+            },
+            {
+                "text": "Reassign the lead server to another dining section to keep kitchen interactions minimal.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Separating the conflicting staff reduced immediate tension and allowed service to proceed, though underlying communication issues remain unresolved for future shifts."
+            },
+            {
+                "text": "Allow them to argue while you take over food expediting duties yourself at the kitchen pass.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Taking over expediting kept food moving, but ignoring staff conflict allowed bad feelings to linger. Your managerial attention was distracted from overall restaurant operations."
+            },
+            {
+                "text": "Scream at both employees in front of kitchen staff and threaten immediate job termination.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Shouting exacerbated chaos and humiliated staff in a busy kitchen. Creating a hostile environment ruins teamwork during critical operations. Please choose again."
+            }
+        ],
+        "next_vg": "final",
+        "next_g_a": "final"
+    },
+    "s8_b": {
+        "day": "Friday Night Rush (20:30)",
+        "title": "Scenario 8: Service Bottleneck under Pressure",
+        "desc": "Orders are backing up at the bar and dessert station, creating long delays for dining room tables.",
+        "choices": [
+            {
+                "text": "Personally assist at the bar station to speed up drink fulfillment while directing floor flow.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Hands-on leadership cleared the beverage bottleneck fast! Your active support relieved pressure on bartenders and kept Friday night guest satisfaction exceptionally high."
+            },
+            {
+                "text": "Limit dessert and cocktail menu choices temporarily to speed up station preparation times.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Streamlining options reduced preparation times successfully. While a few guests noted missing choices, overall shift flow improved significantly during peak hours."
+            },
+            {
+                "text": "Ask servers to inform guests about long beverage wait times without adjusting station workflow.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Informing guests managed expectations somewhat, but long wait times remained frustrating. Bottlenecks continued until late evening when customer traffic decreased naturally."
+            },
+            {
+                "text": "Blame bartenders publicly in front of guests for slow drink preparation and service delays.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Publicly criticizing staff damages professional atmosphere and demoralizes workers. Effective managers support their team during high-pressure shifts. Please select again."
+            }
+        ],
+        "next_vg": "final",
+        "next_g_a": "final"
+    },
+    "s_bonus": {
+        "day": "Friday Late Night (22:30)",
+        "title": "BONUS SCENARIO: Unexpected VIP Walk-in",
+        "desc": "As kitchen cleanup begins, a famous food critic and party of six arrive asking for a late dinner table.",
+        "choices": [
+            {
+                "text": "Welcome them warmly, offer a curated late-night tasting menu, and incentivize kitchen staff with bonus pay.",
+                "pts": 2,
+                "type": "vg",
+                "fb": "Incredible hospitality! Staff responded enthusiastically to bonus incentives, creating an exquisite dining experience that earned glowing publicity for your restaurant brand."
+            },
+            {
+                "text": "Politely inform them that kitchen burners are off, but offer premium charcuterie, cheese, and wine service.",
+                "pts": 1,
+                "type": "g",
+                "fb": "Offering cold items respected staff cleanup time while still welcoming high-profile guests. The party enjoyed the wine and cheese selection thoroughly."
+            },
+            {
+                "text": "Explain politely that the kitchen is closed and offer to book them a prime table tomorrow night.",
+                "pts": 0,
+                "type": "a",
+                "fb": "Declining late service protected tired kitchen staff from extra work. The critic appreciated the polite offer for tomorrow, maintaining good relations."
+            },
+            {
+                "text": "Refuse entry abruptly and lock the doors while staff continue cleaning inside.",
+                "pts": -1,
+                "type": "p",
+                "fb": "Turning away guests rudely damages restaurant reputation instantly. Hospitality requires courtesy even when closing. Please select a more professional response."
+            }
+        ],
+        "next": "final"
+    }
+};
+
+const BANDS = [
+    {
+        "min": 20,
+        "max": 24,
+        "title": "Master Restaurateur (20\u201324 Points)",
+        "msg": "Outstanding leadership throughout a intense operational week! You demonstrated exceptional decision-making across food safety, staff coordination, and customer care. By balancing immediate crisis control with long-term hospitality standards, you kept profitability high and staff morale strong. Your proactive communication avoided potential operational disasters seamlessly. You possess the strategic judgment and practical skills required to run a world-class restaurant smoothly. Keep inspiring your team toward excellence every single shift!"
+    },
+    {
+        "min": 14,
+        "max": 19,
+        "title": "Senior Shift Manager (14\u201319 Points)",
+        "msg": "Solid performance managing a challenging week on the dining floor! You handled most operational dilemmas calmly and protected customer satisfaction during busy dinner rushes. While a few reactive choices caused minor delays or additional costs, your overall dedication to quality and safety kept the restaurant running successfully. With continued focus on preventive planning and team communication, you are well on your way to mastering top-tier restaurant management. Fantastic effort!"
+    },
+    {
+        "min": 8,
+        "max": 13,
+        "title": "Assistant Manager (8\u201313 Points)",
+        "msg": "A commendable effort navigating unpredictable restaurant scenarios! Running a busy kitchen requires constant adaptability, and you showed great resilience when difficulties arose. Some choices led to temporary service bottlenecks or increased operational stress, but you kept pushing forward and learned valuable operational lessons. Focus on proactive problem-solving, strict health compliance, and supportive staff communication in future shifts. You are building a strong foundation for culinary leadership success!"
+    },
+    {
+        "min": 0,
+        "max": 7,
+        "title": "Trainee Manager (0\u20137 Points)",
+        "msg": "A brave journey through a very demanding operational week! Managing restaurant challenges under peak pressure is tough, and every mistake offers an important learning opportunity. While several decisions created service delays or safety risks, your commitment to complete the week shows determination. Reviewing food safety standards, inventory control, and team de-escalation techniques will greatly boost your managerial confidence. Keep practicing, stay positive, and prepare for your next successful shift!"
+    }
+];
+
+let score = 0;
+let currentStepId = "s1";
+let decisionCount = 0;
+
+// Fisher-Yates Randomization Algorithm
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
+
+function startGame() {
+    showScreen("game");
+    renderStep();
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+}
+
+function updateScore() {
+    document.getElementById('scoreDisplay').innerText = score;
+}
+
+function renderStep() {
+    const data = scenarios[currentStepId];
+    const container = document.getElementById('choices-container');
+    const badgeContainer = document.getElementById('step-badge');
+    
+    if (data["isEmergency: true"] || data.isEmergency) {
+        badgeContainer.innerHTML = `<span class="emergency-badge">⚠️ HAZARDOUS EMERGENCY</span>`;
+    } else {
+        badgeContainer.innerHTML = `<span class="day-tag">${data.day}</span>`;
+    }
+
+    document.getElementById('step-title').innerText = data.title;
+    document.getElementById('step-desc').innerText = data.desc;
+    
+    container.innerHTML = "";
+    document.getElementById('feedback-box').style.display = "none";
+    document.getElementById('btn-next').style.display = "none";
+
+    // Create a copy of choices and shuffle using Fisher-Yates algorithm
+    const shuffledChoices = shuffle([...data.choices]);
+
+    shuffledChoices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = "choice-btn";
+        btn.innerText = choice.text;
+        btn.onclick = () => handleChoice(choice, btn);
+        container.appendChild(btn);
+    });
+}
+
+function handleChoice(choice, btn) {
+    const fbBox = document.getElementById('feedback-box');
+    const label = document.getElementById('points-label');
+    const data = scenarios[currentStepId];
+
+    if (data["isEmergency: true"] || data.isEmergency) {
+        if (choice.gameOver) {
+            label.innerText = "❌ GAME OVER";
+            fbBox.className = "feedback fb-p";
+        } else if (choice.pts > 0) {
+            label.innerText = "+2 Points (Safe Action)";
+            fbBox.className = "feedback fb-vg";
+        } else {
+            label.innerText = "+0 Points (Acceptable Action)";
+            fbBox.className = "feedback fb-a";
+        }
+    } else {
+        if (choice.pts === 2) {
+            label.innerText = "+2 Points (Very Good Choice)";
+            fbBox.className = "feedback fb-vg";
+        } else if (choice.pts === 1) {
+            label.innerText = "+1 Point (Good Choice)";
+            fbBox.className = "feedback fb-g";
+        } else if (choice.pts === 0) {
+            label.innerText = "+0 Points (Acceptable Choice)";
+            fbBox.className = "feedback fb-a";
+        } else {
+            label.innerText = "-1 Point (Poor Choice - Choose Again)";
+            fbBox.className = "feedback fb-p";
+        }
+    }
+
+    document.getElementById('feedback-text').innerText = choice.fb;
+    fbBox.style.display = "block";
+
+    if (choice.gameOver) {
+        document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+        setTimeout(() => {
+            alert(choice.fb + "\n\nRestarting simulation...");
+            location.reload();
+        }, 3500);
+        return;
+    }
+
+    if (choice.pts === -1) {
+        score += choice.pts;
+        updateScore();
+        btn.disabled = true;
+        btn.classList.add('selected-bad');
+        return;
+    }
+
+    score += choice.pts;
+    updateScore();
+    document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+
+    // Track decisions
+    if (!data.isEmergency && currentStepId !== "s_bonus") {
+        decisionCount++;
+    }
+
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.style.display = "block";
+    
+    nextBtn.onclick = () => {
+        // Branching logic handler
+        let nextId = "";
+
+        if (currentStepId === "s1") {
+            nextId = (choice.pts >= 1) ? data.next_vg_g : data.next_a;
+        } else if (currentStepId === "s2_a" || currentStepId === "s2_b") {
+            nextId = (choice.pts === 2) ? data.next_vg : data.next_g_a;
+        } else if (currentStepId === "s3_a" || currentStepId === "s3_b") {
+            nextId = "e1";
+        } else if (currentStepId === "e1") {
+            nextId = "s4_a";
+        } else if (currentStepId === "s4_a" || currentStepId === "s4_b") {
+            nextId = (choice.pts >= 1) ? data.next_vg_g : data.next_g_a;
+        } else if (currentStepId === "s5_a" || currentStepId === "s5_b") {
+            nextId = (choice.pts >= 1) ? data.next_vg_g : data.next_a;
+        } else if (currentStepId === "s6_a" || currentStepId === "s6_b") {
+            nextId = "e2";
+        } else if (currentStepId === "e2") {
+            nextId = "s7_a";
+        } else if (currentStepId === "s7_a" || currentStepId === "s7_b") {
+            nextId = (choice.pts >= 1) ? data.next_vg_g : data.next_a;
+        } else if (currentStepId === "s8_a" || currentStepId === "s8_b") {
+            if (score < 20) {
+                nextId = "s_bonus";
+            } else {
+                nextId = "final";
+            }
+        } else if (currentStepId === "s_bonus") {
+            nextId = "final";
+        }
+
+        currentStepId = nextId;
+
+        if (currentStepId === "final") {
+            showFinal();
+        } else {
+            renderStep();
+        }
+    };
+}
+
+function showFinal() {
+    showScreen("final");
+    document.getElementById('final-score').innerText = `Final Score: ${score} Points`;
+    
+    const band = BANDS.find(b => score >= b.min && score <= b.max) || BANDS[BANDS.length - 1];
+    
+    const card = document.getElementById('final-band-card');
+    card.style.backgroundColor = score >= 14 ? "var(--green-bg)" : "var(--amber-bg)";
+    card.style.border = score >= 14 ? "1px solid #bbf7d0" : "1px solid #fde68a";
+    
+    document.getElementById('band-title').innerText = band.title;
+    document.getElementById('band-title').style.color = score >= 14 ? "#15803d" : "#b45309";
+    document.getElementById('band-message').innerText = band.msg;
+}
+</script>
+</body>
+</html>
