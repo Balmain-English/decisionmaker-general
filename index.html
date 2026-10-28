@@ -405,7 +405,7 @@
           const htmlFiles = (data.tree || [])
             .filter(item => item.type === 'blob' && /\.html?$/i.test(item.path))
             .filter(item => item.path.toLowerCase() !== 'index.html')
-            .sort((a, b) => a.path.localeCompare(b.path));
+            .sort((a, b) => buildTitleFromPath(a.path).localeCompare(buildTitleFromPath(b.path), undefined, { sensitivity: 'base' }));
 
           list.innerHTML = '';
 
