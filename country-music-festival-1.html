@@ -4,15 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Country Music Festival Challenge</title>
-  
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- React & ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  
-  <!-- Babel Standalone for JSX compilation in browser -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-amber-50 antialiased selection:bg-amber-200">
@@ -21,357 +15,385 @@
   <script type="text/babel">
     const { useState } = React;
 
-    // --- Inline Icon Components (Replacing Lucide-React) ---
-    const MapPin = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 10c0 6-8 12-8 12s-8-6-8-10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
-      </svg>
+    // ---------- Inline icons ----------
+    const Icon = ({ className, children }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{children}</svg>
     );
+    const MapPin = p => <Icon {...p}><path d="M20 10c0 6-8 12-8 12s-8-6-8-10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></Icon>;
+    const Mic = p => <Icon {...p}><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></Icon>;
+    const Star = p => <Icon {...p}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></Icon>;
+    const Users = p => <Icon {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>;
+    const Calendar = p => <Icon {...p}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></Icon>;
+    const DollarSign = p => <Icon {...p}><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></Icon>;
+    const Award = p => <Icon {...p}><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></Icon>;
+    const ChevronRight = p => <Icon {...p}><path d="m9 18 6-6-6-6"/></Icon>;
+    const CheckCircle = p => <Icon {...p}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></Icon>;
+    const AlertTriangle = p => <Icon {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></Icon>;
+    const HelpCircle = p => <Icon {...p}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></Icon>;
 
-    const Mic = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>
-      </svg>
-    );
+    // ---------- Helpers ----------
+    const shuffle = arr => {
+      const b = [...arr];
+      for (let i = b.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [b[i], b[j]] = [b[j], b[i]];
+      }
+      return b;
+    };
 
-    const Star = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-      </svg>
-    );
-
-    const Users = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-    );
-
-    const Calendar = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
-      </svg>
-    );
-
-    const DollarSign = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-      </svg>
-    );
-
-    const Award = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
-      </svg>
-    );
-
-    const ChevronRight = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m9 18 6-6-6-6"/>
-      </svg>
-    );
-
-    const CheckCircle = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-      </svg>
-    );
-
-    const AlertTriangle = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>
-      </svg>
-    );
-
-    // --- Scenario Data ---
-    const steps = [
+    // ---------- PHASE 1: PLANNING (6 decisions: 3 / 2 / 1 / -1) ----------
+    const PLANNING = [
       {
-        id: "venue", title: "Q1: Festival Grounds", icon: MapPin, type: "normal",
+        id: "venue", title: "Choosing Your Venue", icon: MapPin,
         question: "Where will your country music festival take place?",
         options: [
-          { text: "An indoor arena with full climate control, premium acoustics, and year-round availability regardless of weather", points: 2, feedback: "Reliable but soulless. Country music lives and breathes outdoors — the sky, the mud, the wide-open air. An arena eliminates weather risk but kills the atmosphere fans pay for." },
-          { text: "A wide open ranch with natural amphitheater slopes, ample camping fields, and genuine countryside scenery", points: 5, feedback: "Perfect. Authentic rural setting is exactly what country fans crave. Natural acoustics, camping space, and that open-sky atmosphere make this the ideal country festival home." },
-          { text: "A city park in a major metropolitan area with good transport links and existing infrastructure", points: 3, feedback: "Practical logistics and easy access help, but the urban setting fights country music's identity at every turn. You'll spend heavily on theming to compensate for what the land doesn't give you for free." },
-          { text: "A beachside events ground with scenic ocean views and strong appeal for social media content", points: 2, feedback: "The scenery photographs beautifully but clashes with country music's heartland soul. Coastal vibes need heavy rebranding to feel authentic, and sand is brutal for production logistics." }
+          { text: "A wide open ranch with natural amphitheatre slopes, ample camping fields, and genuine countryside scenery", points: 3, feedback: "Perfect. An authentic rural setting is exactly what country fans crave. Natural acoustics, camping space and open sky make this the ideal festival home." },
+          { text: "A city park in a major metropolitan area with good transport links and existing infrastructure", points: 2, feedback: "Practical logistics and easy access help, but the urban setting fights country music's identity. You'll spend heavily on theming to make up for what the land doesn't give you for free." },
+          { text: "An indoor arena with full climate control, premium acoustics, and year-round availability", points: 1, feedback: "Reliable but soulless. Country music lives outdoors: the sky, the mud, the wide-open air. An arena removes weather risk but kills the atmosphere fans pay for." },
+          { text: "A riverside meadow on a flood plain: cheap to hire and beautifully scenic", points: -1, feedback: "Pretty, cheap and a disaster waiting to happen. A site that floods is a gamble no organiser should take. Think again." }
         ]
       },
       {
-        id: "stages", title: "Q2: Stage Layout", icon: MapPin, type: "normal",
-        question: "How will you arrange your stages across the venue?",
+        id: "dates", title: "Setting the Dates", icon: Calendar,
+        question: "Your festival will run from Friday evening to Sunday afternoon. When will it take place?",
         options: [
-          { text: "Two large stages facing each other, creating a natural central gathering hub between performances", points: 2, feedback: "The facing configuration causes serious sound bleed between sets. The central hub concept is appealing but the acoustic trade-off creates a poor experience for fans at both stages simultaneously." },
-          { text: "One enormous main stage with maximum production value, keeping crowd energy focused in a single location", points: 2, feedback: "Too much downtime between acts. Festival-goers expect continuous music from multiple directions — a single stage works for a concert tour stop, not a multi-day destination event." },
-          { text: "Three stages staggered so performances never overlap, with clear wayfinding and shuttle buggies connecting them", points: 5, feedback: "Excellent flow. Fans can catch every act without sprinting across a field. Staggered scheduling and transport keep energy high and frustration low throughout the entire weekend." },
-          { text: "Five intimate stages scattered through woodland areas for a surprise discovery experience", points: 3, feedback: "An enchanting idea with strong word-of-mouth potential, but wayfinding becomes a serious challenge at scale. You'd need an outstanding festival app and excellent signage to make it function properly." }
+          { text: "Late June: long summer evenings, school holidays beginning, and the peak of outdoor festival season", points: 3, feedback: "Ideal. Long warm evenings are made for outdoor country shows. Families and students can attend and the summer festival buzz is at its peak." },
+          { text: "September: harvest-season atmosphere, golden countryside light, and fan appetite for a final outdoor event", points: 2, feedback: "A lovely seasonal fit. Harvest themes suit country music, though cooler evenings and shorter days limit the programme a little." },
+          { text: "Early April: spring wildflowers, mild temperatures, and lower venue hire costs in shoulder season", points: 1, feedback: "Pretty and cheap, but April is wildly unpredictable. Expect cold nights, mud and a nervous weather forecast." },
+          { text: "December: a winter edition positioned as a holiday-season destination event", points: -1, feedback: "Camping in freezing conditions is miserable and attendance would collapse. Outdoor winter festivals face serious comfort and safety problems. Choose again." }
         ]
       },
       {
-        id: "lineup", title: "Q3: Artist Lineup Strategy", icon: Mic, type: "normal",
+        id: "budget", title: "Allocating the Budget", icon: DollarSign,
+        question: "How will you distribute your $500,000 festival budget?",
+        options: [
+          { text: "Artist fees 40%, production and staging 25%, marketing 20%, operations and safety 15%", points: 3, feedback: "Textbook. Strong artist investment gives a lineup worth travelling for, solid production delivers a professional show, and safety funding protects everyone on site." },
+          { text: "Equal 25% split across artists, production, marketing and operations", points: 2, feedback: "Balanced and safe, but slightly underpowered where it matters most: artists and production. It won't cause disasters, and it won't create excellence either." },
+          { text: "Infrastructure and production 40%, marketing 30%, artists 20%, operations 10%", points: 1, feedback: "Beautiful grounds and strong visibility, but the thin artist budget means a lineup that can't justify the ticket price." },
+          { text: "70% of the budget on one globally famous celebrity headliner, the rest split across everything else", points: -1, feedback: "Catastrophically risky. One star can't make up for thin production and no support. If that artist cancels, you have nothing. Choose again." }
+        ]
+      },
+      {
+        id: "lineup", title: "Building the Lineup", icon: Mic,
         question: "How will you build your music lineup?",
         options: [
-          { text: "Mainstream country headliners across all three nights with no genre variation, keeping the programming pure and focused", points: 2, feedback: "Artistically consistent but commercially limiting. Without Americana, crossover, or rising acts to draw in newer fans, you're programming for a shrinking pool rather than a growing movement." },
-          { text: "A mix of legendary headliners, credible rising stars, and emerging local acts spread across all three stages", points: 5, feedback: "The gold standard. Legends draw the crowds, rising stars generate social buzz, and local acts give the festival authentic community roots. Something for every generation of country fan." },
-          { text: "Only classic country artists from the seventies and eighties to position the festival as a purist heritage event", points: 2, feedback: "Strong nostalgia appeal but a shrinking audience. Younger fans need something current to engage with, and you'll miss the energy and social media momentum that contemporary acts generate." },
-          { text: "Mainstream country headliners plus crossover pop-country and Americana support acts filling out the full programme", points: 4, feedback: "Smart and inclusive. This attracts diverse fans across sub-genres without alienating purists. Good range — adding genuine local talent would elevate community connection and push this to excellent." }
+          { text: "A mix of legendary headliners, credible rising stars, and emerging local acts spread across all stages", points: 3, feedback: "The gold standard. Legends draw the crowds, rising stars create buzz, and local acts give the festival authentic community roots." },
+          { text: "Mainstream country headliners plus crossover pop-country and Americana support acts", points: 2, feedback: "Smart and inclusive. It attracts fans across sub-genres without alienating purists. Adding local talent would make it excellent." },
+          { text: "Only classic country artists from the seventies and eighties, positioning the festival as a heritage event", points: 1, feedback: "Strong nostalgia but a shrinking audience. Younger fans need something current to engage with." },
+          { text: "Today's biggest pop and hip-hop names with one token country act, to pull in a bigger crowd", points: -1, feedback: "You'd lose the soul of the festival and the people who came for it. Country fans notice instantly. Choose again." }
         ]
       },
       {
-        id: "booking", title: "Q4: Booking Strategy", icon: Mic, type: "normal",
-        question: "How will you secure and announce your headline artists?",
+        id: "stages", title: "Designing the Stage Layout", icon: MapPin,
+        question: "How will you arrange your stages across the venue?",
         options: [
-          { text: "Lock in one confirmed A-list headliner early, then build the rest of the lineup around that anchor name", points: 4, feedback: "Smart anchoring. A confirmed big name gives you credibility and early ticket sales momentum while you negotiate supporting acts. Standard industry practice for a reason — it genuinely works." },
-          { text: "Announce all artists simultaneously once every deal is signed, creating one big launch moment for maximum press impact", points: 3, feedback: "Clean and professional, but you miss weeks of drip-feed social media excitement. Sequential reveals drive sustained engagement — holding everything back leaves considerable marketing value unused." },
-          { text: "Only book artists willing to perform exclusively at your festival that entire season, guaranteeing unique appearances", points: 1, feedback: "Exclusivity deals sound glamorous but inflate costs dramatically and shrink your options to almost nothing. Unless the budget is enormous, you'll end up with exclusive artists that audiences haven't heard of." },
-          { text: "Prioritise viral social media artists over established country names in order to attract a younger demographic", points: 2, feedback: "A risky pivot that can alienate your core audience. Genre credibility is hard to rebuild once lost — viral acts fade within months while country music traditions endure for generations." }
+          { text: "Three stages staggered so performances never overlap, with clear wayfinding and shuttle buggies connecting them", points: 3, feedback: "Excellent flow. Fans can catch every act without sprinting across a field, keeping energy high and frustration low." },
+          { text: "Five intimate stages scattered through woodland for a surprise-discovery experience", points: 2, feedback: "Enchanting, but wayfinding becomes a challenge at scale. You'd need an outstanding festival app and signage." },
+          { text: "One enormous main stage with maximum production value", points: 1, feedback: "Too much downtime between acts. A single stage suits a tour stop, not a multi-day destination event." },
+          { text: "Two large stages facing each other, creating a central gathering hub", points: -1, feedback: "Serious sound bleed between sets ruins the experience at both stages. Choose again." }
         ]
       },
       {
-        id: "emergency1", type: "emergency",
-        title: "🚨 EMERGENCY: Flash Flood Warning", icon: AlertTriangle,
-        question: "During Day 1, weather services issue a flash flood warning. Rain is already heavy and the main field is starting to waterlog. 35,000 fans are on site. What do you do?",
-        options: [
-          { text: "Delay all performances by two hours and send an SMS update, hoping conditions improve before rescheduled start times", points: 0, feedback: "The rain intensifies. Fans stand in a waterlogged field for two hours with no shelter, no music, and mounting anger. A crowd surge toward the exits injures eleven people. Authorities shut the festival. Game over.", emergency: true },
-          { text: "Activate your pre-planned wet weather protocol — pause outdoor stages, move acts to covered structures, and deploy drainage teams", points: 0, feedback: "Your preparation pays off. Fans are inconvenienced but safe and informed. The festival continues under cover with minimal disruption and your reputation for professionalism is genuinely enhanced. +3 bonus points awarded.", bonus: 3 },
-          { text: "Cancel the entire day as a precaution and issue partial refunds, prioritising fan safety above all else", points: 0, feedback: "Safe and responsible, but over-cautious. A solid contingency plan could have kept the festival running. Fans accept the decision but ticket sales for next year take a hit from the reputation for poor planning." },
-          { text: "Continue as normal and trust that country fans are resilient enough to handle challenging outdoor conditions", points: 0, feedback: "A fan is struck by lightning near the main stage. The festival is shut down immediately by authorities, two lawsuits are filed, and your operating licence is permanently revoked. Game over.", emergency: true }
-        ]
-      },
-      {
-        id: "schedule", title: "Q5: Headline Slot Scheduling", icon: Mic, type: "normal",
-        question: "How will you schedule your headline performances across the festival?",
-        options: [
-          { text: "Put the strongest headliner on opening night to create a powerful first impression and maximise early media coverage", points: 2, feedback: "Bold opening, but the festival ends with a whimper. Momentum in programming should build, not peak and decline. Sunday's headline will feel like an anti-climax no matter how good the act is." },
-          { text: "Let artists negotiate their own preferred slots to keep relationships smooth and contracts straightforward to close", points: 1, feedback: "Absolute chaos in practice. Every artist wants the Saturday headline slot. You'll face scheduling conflicts, wounded egos, and a timetable built on contractual compromise rather than audience experience." },
-          { text: "Escalating energy across all three days, with the strongest headliner closing Saturday night under a fireworks finale", points: 5, feedback: "Textbook festival scheduling. Saturday night is the emotional peak of any multi-day event. Closing with fireworks creates a shared moment that fans talk about for years and return to recreate." },
-          { text: "Spread the biggest names equally across all three nights to maintain consistent crowd attendance each day", points: 3, feedback: "Commercially sensible — equal star power supports three-day ticket sales. You lose the dramatic Saturday peak but gain predictable crowd numbers and less of the typical Sunday attendance drop-off." }
-        ]
-      },
-      {
-        id: "experience", title: "Q6: Non-Music Experiences", icon: Star, type: "normal",
-        question: "What non-music activities will you offer festival-goers?",
-        options: [
-          { text: "Line dancing lessons, a rodeo show, craft beer and BBQ village, artisan market stalls, and hayrides at dusk", points: 5, feedback: "Outstanding. You've built a full cultural experience, not just a music event. Hands-on activities, authentic food, and living country traditions make this a destination people actively return to year after year." },
-          { text: "Country music history exhibition, songwriting workshops, and acoustic sessions in a converted barn setting", points: 3, feedback: "Creatively rich and genuinely engaging for music lovers. These activities deepen connection to the genre and create shareable content. Adding some livelier entertainment would balance the more cerebral programming well." },
-          { text: "Just the music stages and a wide variety of food trucks covering multiple cuisines and dietary requirements", points: 2, feedback: "Functional but bare. Modern festival-goers expect rich experiences beyond the music. Interactive activities drive longer stays, higher spending per head, and stronger social media sharing that builds next year's audience." },
-          { text: "VIP glamping spa, gourmet chef dining, premium cocktail bars, and luxury brand activations throughout the site", points: 2, feedback: "High margins on a small audience. Country music has always been about community and togetherness — a purely elite experience feels at odds with the genre's working-class roots and alienates the majority of fans." }
-        ]
-      },
-      {
-        id: "food", title: "Q7: Food & Drink Programme", icon: Star, type: "normal",
-        question: "How will you manage food and drink across the festival site?",
-        options: [
-          { text: "Full cashless payment system throughout, with premium artisan food only and no budget-friendly options on site", points: 2, feedback: "Cashless is operationally smart, but all-premium pricing alienates budget-conscious fans. Country music's audience spans all income levels — offering affordable staples alongside quality food is the right balance." },
-          { text: "Exclusive contract with one established large catering company, covering the entire site for operational simplicity", points: 2, feedback: "Easy to manage but typically produces generic, overpriced festival food. Fans expect quality and variety — a single catering monopoly is one of the fastest ways to generate negative social media coverage." },
-          { text: "Local BBQ pitmasters, craft beer from regional breweries, and a curated selection of international food options", points: 5, feedback: "Superb. Local sourcing creates authentic atmosphere and supports the community. Regional craft beer builds genuine partnerships. Variety ensures every fan eats well. This lineup gets talked about as much as the music." },
-          { text: "Open application for any food vendor to trade, maximising variety with minimal curation or quality control", points: 2, feedback: "Good variety in theory but quality control becomes your biggest weekend headache. Without curation you risk ten burger vans and no vegetarian options. A light application process prevents most of this grief." }
-        ]
-      },
-      {
-        id: "wellbeing", title: "Q8: Fan Wellbeing & Safety", icon: Users, type: "normal",
-        question: "What wellbeing and safety measures will you put in place for fans?",
-        options: [
-          { text: "On-site medical team, a mental health support tent, free water stations every two hundred metres, and a reunification point for lost groups", points: 5, feedback: "Gold standard. Experienced festival-goers notice and appreciate every one of these provisions. The mental health tent in particular is increasingly expected and sends a powerful signal about your values as an organiser." },
-          { text: "Standard first aid stations at each stage entrance — compliant with legal requirements and familiar to festival-goers", points: 2, feedback: "Legal but inadequate for a large multi-day event. Heat, alcohol, and exhaustion create complex medical situations. Under-resourced first aid leads to delayed responses and significant incident risk by day two." },
-          { text: "Hire a specialist events safety company to design and manage all wellbeing provision across the entire site", points: 4, feedback: "Professional and thorough. Specialists bring experience from dozens of similar events and know exactly what tends to go wrong. Slightly more expensive but significantly reduces liability and emergency response times." },
-          { text: "Partner with a local hospital to provide medical volunteers, supplemented by free water and sunscreen distribution points", points: 4, feedback: "Excellent community partnership. Hospital involvement brings genuine expertise and credibility. Free water and sunscreen demonstrate that you take fan wellbeing seriously rather than treating it as a revenue opportunity." }
-        ]
-      },
-      {
-        id: "dates", title: "Q9: Festival Dates", icon: Calendar, type: "normal",
-        question: "When will your festival take place?",
-        options: [
-          { text: "Late June — long summer evenings, school holidays beginning, and the full peak of outdoor festival season energy", points: 5, feedback: "Ideal. Long warm evenings are made for outdoor country shows. Families can attend, students are free, and the summer festival buzz is at its absolute peak. Perfect boots-and-worn-denim weather." },
-          { text: "Early April — spring wildflowers in bloom, mild temperatures, and lower venue hire costs in shoulder season", points: 3, feedback: "Lovely setting with blooming countryside and manageable temperatures. Lower costs in shoulder season help margins. Have a solid wet weather contingency — April is genuinely unpredictable in most regions." },
-          { text: "December — a special winter country music edition positioned as a holiday season destination event", points: 1, feedback: "Cold outdoor conditions make camping genuinely miserable and sharply reduce attendance. Unless you move entirely indoors, winter outdoor festivals face serious comfort and logistical challenges that erode the experience." },
-          { text: "September — harvest season atmosphere, golden countryside light, and fan appetite for a final outdoor event", points: 4, feedback: "Brilliant seasonal fit. Harvest season connects naturally to country music themes. Cooler evenings, stunning golden light, and strong audience appetite after a gap in the festival calendar make this a compelling choice." }
-        ]
-      },
-      {
-        id: "tickets", title: "Q10: Ticket Sale Strategy", icon: Calendar, type: "normal",
+        id: "tickets", title: "Launching Ticket Sales", icon: Star,
         question: "How will you structure and sell your festival tickets?",
         options: [
-          { text: "Flat pricing across all purchase dates — the same ticket cost regardless of when fans buy", points: 3, feedback: "Fair and simple. Fans appreciate no time pressure, but you miss out on early cash flow that helps you confirm artists and pay production deposits months before the event actually takes place." },
-          { text: "Dynamic pricing that rises and falls based on real-time demand data, maximising revenue at peak interest moments", points: 2, feedback: "Maximises revenue in theory but country music fans are deeply loyal and deeply suspicious of being exploited. Dynamic pricing triggers PR storms and genuine brand damage that takes multiple years to repair." },
-          { text: "Three transparent tiers — early bird, standard, and late — with no hidden booking fees at any stage", points: 5, feedback: "Fans appreciate you for this. Tiered pricing rewards early commitment, creates natural urgency at each stage, and eliminating hidden booking fees removes the resentment that plagues so many competing events." },
-          { text: "Release all tickets at once on announcement day at a single price to create one explosive sales moment", points: 2, feedback: "Bold but operationally chaotic. Server crashes, disappointed fans who miss out, and no early financial runway to plan and confirm the rest of the festival. Early bird schemes exist because cash flow genuinely matters." }
-        ]
-      },
-      {
-        id: "duration", title: "Q11: Festival Duration", icon: Calendar, type: "normal",
-        question: "How many days will your festival run?",
-        options: [
-          { text: "Five full days of programming — a total country music immersion experience with a deep and varied lineup", points: 2, feedback: "Ambitious. Five days works for established mega-festivals but is extremely hard to sustain in year one. Artist costs, staffing requirements, and crowd energy all become serious challenges by day four." },
-          { text: "Three days with full camping — the classic multi-day festival format that defines the genre", points: 5, feedback: "The sweet spot. Three days builds genuine community, supports the full camping experience, and provides enough programme space to mix legends, rising stars, and cultural experiences across a proper dramatic arc." },
-          { text: "Two days without camping — a weekend event where fans travel home each night", points: 3, feedback: "A solid middle ground for a first event. Lower infrastructure costs than full camping, simpler logistics to manage, and still long enough for real lineup depth. Missing the camping magic but carrying far less financial risk." },
-          { text: "One day only — the lowest-risk, easiest-to-manage format for a debut festival", points: 3, feedback: "Sensible debut strategy with lower financial exposure and manageable complexity. You'll validate the concept but leave significant revenue on the table — camping culture is where the deep loyalty and repeat attendance live." }
-        ]
-      },
-      {
-        id: "emergency2", type: "emergency",
-        title: "🚨 EMERGENCY: Stage Invasion", icon: AlertTriangle,
-        question: "During your Saturday headline performance, six protesters rush the main stage, chain themselves to speaker rigs, and unfurl banners. 40,000 fans are watching. The artist has stopped. What do you do?",
-        options: [
-          { text: "Give the lead protester two minutes on the mic to state their cause calmly, then resume — a gesture of magnanimity", points: 0, feedback: "The crowd's divided reaction creates a tense standoff that runs to twelve minutes, not two. Two sponsors pull out by Sunday morning. The artist refuses to return to the stage. The headline story is the protest, not the music." },
-          { text: "Have security calmly remove the protesters while your MC engages the crowd, restarting the full set within ten minutes", points: 0, feedback: "Textbook crisis management. The crowd cheers the safe removal, the artist returns to a genuine hero's welcome, and your social team turns a minor incident into a story about the festival's professionalism. +3 bonus points awarded.", bonus: 3 },
-          { text: "Cut all stage power immediately to prevent any further use of your platform or equipment by the protesters", points: 0, feedback: "Cutting power plunges 40,000 people into sudden darkness and triggers a crowd surge toward the exits. Three fans are seriously injured in the crush. Police shut the site and your insurance refuses to cover crowd-induced incidents. Game over.", emergency: true },
-          { text: "Call the police immediately and wait for them to manage the situation without engaging directly yourself", points: 0, feedback: "Safe from a liability standpoint but passive. A twenty-five minute delay while officers attend kills the atmosphere entirely. The artist walks off, the crowd disperses early, and the protest dominates all coverage of your festival." }
-        ]
-      },
-      {
-        id: "audience", title: "Q12: Audience Strategy", icon: Users, type: "normal",
-        question: "How will you structure attendance and ticketing for different types of fan?",
-        options: [
-          { text: "Three-day camping passes plus day tickets, with dedicated family areas and full accessibility provisions throughout", points: 5, feedback: "Comprehensive and inclusive. Multi-day camping builds the community spirit country fans live for. Family zones and accessibility demonstrate you welcome everyone — broadening the market and building fierce year-on-year loyalty." },
-          { text: "Day tickets only to simplify operations and remove the cost and complexity of camping infrastructure entirely", points: 2, feedback: "Manageable but you sacrifice what makes country festivals special. The midnight jams, shared campfires, the community spirit — that's what fans pay a premium for and what they return to recreate annually." },
-          { text: "Free entry with all revenue generated through sponsorship deals, merchandise sales, and premium food and drink pricing", points: 2, feedback: "Community-driven and admirable in principle but financially precarious without ironclad sponsorship structures in place. Works beautifully as a small boutique event — extremely difficult to scale into something sustainable." },
-          { text: "Invite-only VIP festival with a limited public ticket release, positioning the event as exclusive and aspirational", points: 1, feedback: "Too exclusive for a genre built on working-class roots and shared community. Country music fans value authenticity above almost everything — a velvet-rope festival feels deeply tone-deaf to the culture it claims to celebrate." }
-        ]
-      },
-      {
-        id: "accessibility", title: "Q13: Accessibility Provision", icon: Users, type: "normal",
-        question: "How will you ensure the festival is accessible to all fans?",
-        options: [
-          { text: "Hire a specialist accessibility consultant to audit the entire site and design all relevant provisions before build begins", points: 4, feedback: "Smart investment. Specialists identify issues you would never anticipate and ensure you exceed expectations rather than merely meet them. The cost is minor compared to the reputational and human value delivered." },
-          { text: "Accessible viewing areas at the main stage only, meeting the minimum legal requirements for a public event", points: 1, feedback: "Legal compliance but nothing more. Fans with accessibility needs will notice and discuss what is missing. In the social media age, bare-minimum accessibility rapidly becomes a PR liability and a story in itself." },
-          { text: "Dedicated viewing platforms at every stage, BSL interpreters, accessible camping with ground-level facilities, and a daily sensory-friendly quiet hour", points: 5, feedback: "Exemplary. You have considered every type of attendee. The BSL interpreters and sensory hour are rare in the festival world and generate enormous goodwill from communities too often overlooked by event organisers." },
-          { text: "Publish a detailed accessibility guide before tickets go on sale so fans can make fully informed purchase decisions", points: 3, feedback: "Hugely appreciated by the disability community. Transparency before purchase removes anxiety and builds real trust. This works best paired with excellent on-site provision rather than standing alone as your primary action." }
-        ]
-      },
-      {
-        id: "security", title: "Q14: Crowd Security", icon: Users, type: "normal",
-        question: "How will you approach crowd security across the festival?",
-        options: [
-          { text: "Volunteer-based security team recruited from the local community to keep costs low and foster community involvement", points: 2, feedback: "Community-spirited and cost-effective for stewarding roles, but risky for actual crowd security. Managing large audiences requires professional training and experience that well-meaning volunteers cannot reliably provide." },
-          { text: "Minimum legally required security staffing ratios in order to keep overheads down and maximise budget for the programme", points: 1, feedback: "A dangerous false economy. Under-staffed security at a forty-thousand person event is a serious incident waiting to occur. One crowd surge or backstage breach and the human and financial costs become catastrophic." },
-          { text: "Experienced events security firm with clear crowd management zones, plain-clothes officers, and a dedicated festival control room", points: 5, feedback: "Professional and thorough. Visible security deters incidents before they develop, plain-clothes officers handle sensitive situations discreetly, and a control room enables real-time response to anything that arises on site." },
-          { text: "Off-duty police officers serving as the primary security team — experienced, respected, and carrying genuine authority", points: 3, feedback: "Strong choice with real crowd management expertise. Can occasionally feel slightly heavy-handed compared to specialist events security culture, but a solidly safe option that commands respect and deters most problems effectively." }
-        ]
-      },
-      {
-        id: "budget", title: "Q15: Budget Allocation", icon: DollarSign, type: "normal",
-        question: "How will you distribute your $500,000 festival budget across core areas?",
-        options: [
-          { text: "Artist fees 40%, production and staging 25%, marketing 20%, operations and safety 15%", points: 5, feedback: "Textbook. Strong artist investment ensures a lineup worth travelling to see, solid production delivers a professional show, smart marketing fills the grounds, and proper safety funding protects everyone on site." },
-          { text: "Spend 70% of the entire budget on one globally recognised celebrity headliner and divide the remainder across everything else", points: 1, feedback: "Catastrophically risky. One star cannot compensate for thin production, a weak support lineup, and almost no marketing budget. If that artist cancels — which does happen — you have nothing at all to fall back on." },
-          { text: "Infrastructure and production 40%, marketing 30%, artists 20%, operations 10%", points: 2, feedback: "Beautiful grounds and strong visibility, but the underpowered artist budget means a lineup that cannot justify the ticket price. People come for the music first — the tent is impressive but the stage disappoints." },
-          { text: "Equal 25% split across artists, production, marketing, and operations to ensure nothing is neglected", points: 3, feedback: "Balanced and safe across every area. Slightly underpowered where it matters most — artists and production — but a manageable strategy that won't produce disasters while leaving limited room for excellence." }
-        ]
-      },
-      {
-        id: "contingency", title: "Q16: Financial Contingency", icon: DollarSign, type: "normal",
-        question: "How will you protect the festival financially against unexpected events?",
-        options: [
-          { text: "Reserve 15% of the total budget as a contingency fund and take out comprehensive event cancellation insurance", points: 5, feedback: "Essential and professional. The contingency fund handles the unexpected without panic, and cancellation insurance covers catastrophic scenarios — floods, force majeure, headline cancellations — that genuinely do occur." },
-          { text: "Invest everything in making the event as strong as possible and rely on contingency plans to resolve issues as they arise", points: 1, feedback: "This is how festivals go bankrupt. One generator failure, one headline cancellation, one weather event and you have zero resources to respond. Deposits are lost, legal action follows, and fans go home early." },
-          { text: "Keep 10% in cash reserve but skip insurance to save on what can feel like an unnecessary premium cost", points: 3, feedback: "The reserve handles small surprises reasonably well but leaves you dangerously exposed to larger catastrophic events. Event insurance premiums are modest compared to the existential risk of operating a major event without cover." },
-          { text: "Take out comprehensive insurance only, with no separate cash contingency reserve kept back from the operating budget", points: 2, feedback: "Insurance covers major disasters but not the constant stream of small unexpected costs that arise at every festival. Without a cash reserve, minor surprises become crises while you wait for insurance claims to process." }
-        ]
-      },
-      {
-        id: "revenue", title: "Q17: Additional Revenue Streams", icon: DollarSign, type: "normal",
-        question: "Beyond ticket sales, how will you generate additional festival revenue?",
-        options: [
-          { text: "Ticket sales only — keep the commercial model simple and avoid any perception of nickel-and-diming loyal fans", points: 2, feedback: "Principled but financially fragile. Festivals with a single revenue stream have almost no margin for error. Ancillary revenue typically allows ticket prices to stay lower while funding the experiences that drive return attendance." },
-          { text: "Tiered sponsorship packages for regional and national brands, with a strict visible branding policy that preserves festival atmosphere", points: 5, feedback: "The gold standard. Sponsorship revenue is substantial, partner brands receive genuine value, and your atmosphere remains carefully intact. Fans appreciate that sponsors have been curated rather than plastered across every available surface." },
-          { text: "Aggressive corporate sponsorship across every surface — every stage name, barrier, wristband, and cup branded with partner logos", points: 2, feedback: "Revenue-generating but atmosphere-destroying. Over-commercialisation is among the most common and persistent fan complaints about modern festivals. Selective and well-matched sponsorship is far more valuable than total saturation." },
-          { text: "Merchandise, premium bar areas, artist meet-and-greet packages, branded camping gear hire, and on-site photography print services", points: 4, feedback: "Diverse and creative. Multiple revenue streams reduce dependence on ticket sales and offer fans meaningful ways to deepen their connection to the event. Festival merchandise in particular creates walking advertising that outlasts the weekend." }
-        ]
-      },
-      {
-        id: "branding", title: "Q18: Festival Identity & Brand", icon: Award, type: "normal",
-        question: "What brand identity will make your festival memorable and iconic?",
-        options: [
-          { text: "A distinctive name, signature annual traditions, a best-dressed contest, and a local charity partnership the community rallies behind", points: 5, feedback: "You have built a cultural institution, not just a festival. Traditions create returning fans, the style contest generates organic social content, and the charity tie gives the event genuine purpose beyond profit." },
-          { text: "Focus on viral social media and influencer marketing to build the brand digitally before the first edition even takes place", points: 2, feedback: "Good for initial reach but shallow on lasting identity. Influencer content fades within weeks. Festival legends are built on traditions, shared memories, and stories that fans carry and retell for decades." },
-          { text: "Generic broad-appeal branding under a descriptive name like Country Music Fest to maximise search visibility and clarity", points: 1, feedback: "Completely forgettable in a crowded market. A clear identity answers the question: why this festival? Without that answer you will always be someone else's second choice when fans have options to consider." },
-          { text: "A strong regional identity celebrating local music heritage, landscape, and folklore — a festival that could only exist here", points: 4, feedback: "Powerful and deeply authentic. Rooting the festival in a specific place creates genuine local pride, fierce loyalty, and a unique story that national media loves to cover and international visitors are willing to travel for." }
-        ]
-      },
-      {
-        id: "community", title: "Q19: Community Engagement", icon: Award, type: "normal",
-        question: "How will you engage the local community before and during the festival?",
-        options: [
-          { text: "Pay the local council a premium rate, comply with all regulations, and keep community engagement to a minimum", points: 1, feedback: "Short-sighted. Communities that feel bypassed become actively hostile. Planning battles, noise complaints, and local media campaigns have derailed multiple festivals that treated neighbourhoods as obstacles rather than partners." },
-          { text: "Offer free day tickets to all residents within a five kilometre radius of the festival site", points: 2, feedback: "A generous gesture that converts potential complainants into supporters. Slightly blunt as an instrument — a broader community programme creates deeper goodwill and more genuine advocacy for far less cost per person reached." },
-          { text: "Appoint a dedicated Community Liaison Officer attending local meetings, managing concerns, and championing community benefits throughout", points: 4, feedback: "Professional and thorough. A dedicated person signals genuine commitment rather than tokenism. This role pays for itself many times over in goodwill generated, planning support received, and conflicts quietly avoided." },
-          { text: "Local trader preferential spots, a schools poster competition, a volunteer programme, and a community preview night before opening", points: 5, feedback: "Exceptional community building. Local buy-in transforms potential opposition into fierce advocates. The schools competition creates emotional investment from families and generates free media coverage in the week before the festival opens." }
-        ]
-      },
-      {
-        id: "environment", title: "Q20: Environmental Responsibility", icon: Award, type: "normal",
-        question: "What environmental commitments will your festival make?",
-        options: [
-          { text: "Carbon offset the full event, ban single-use plastics, incentivise car-sharing, and plant one tree for every ticket sold", points: 5, feedback: "Comprehensive and credible. You have addressed emissions, waste, transport, and long-term legacy simultaneously. The tree-per-ticket scheme is a genuine headline that earns media coverage and that fans actively want to share." },
-          { text: "No formal environmental policy — focus all available resources on the music and fan experience instead", points: 1, feedback: "Increasingly unacceptable to modern audiences, particularly younger fans. An event in 2025 with no environmental commitment is a reputational liability. Expect sustained critical social media coverage from the moment tickets go on sale." },
-          { text: "Partner with an established environmental NGO to independently audit, certify, and publicly report on the festival's full impact", points: 4, feedback: "Third-party verification is genuinely valuable. Fans trust independent certification far more than self-reported claims. The NGO gains visibility, you gain credibility, and the partnership generates ongoing content throughout the year." },
-          { text: "Ban single-use plastics and install clearly labelled recycling stations across the entire site — clear, achievable, and visible", points: 3, feedback: "A solid baseline commitment that fans will notice and appreciate. Does not go far enough to be a genuine differentiator, but honest and deliverable — which is more valuable than ambitious pledges that prove impossible to keep." }
+          { text: "Three transparent tiers (early bird, standard, late) with no hidden booking fees at any stage", points: 3, feedback: "Fans appreciate this. Tiers reward early commitment, create natural urgency, and no hidden fees removes resentment." },
+          { text: "Flat pricing across all purchase dates", points: 2, feedback: "Fair and simple, but you miss the early cash flow that helps confirm artists and pay deposits." },
+          { text: "Release all tickets at once on announcement day at a single price", points: 1, feedback: "Bold but chaotic: server crashes, disappointed fans, and no early financial runway." },
+          { text: "Dynamic pricing that rises with real-time demand to maximise revenue", points: -1, feedback: "Country fans are deeply loyal and deeply suspicious of being exploited. This triggers PR storms and lasting brand damage. Choose again." }
         ]
       }
     ];
 
-    const pointColor = p => p >= 5 ? "text-green-600" : p >= 4 ? "text-blue-600" : p >= 3 ? "text-yellow-600" : "text-red-500";
-    const pointLabel = p => p >= 5 ? "Excellent!" : p >= 4 ? "Good" : p >= 3 ? "Okay" : "Poor choice";
+    // ---------- PHASE 3: POST-FESTIVAL (2 decisions) ----------
+    const POST = [
+      {
+        id: "cleanup", title: "Site Clean-up & Restoration", icon: Award,
+        question: "The final act has left the stage and the crowds have gone home. How will you handle the clean-up and environmental legacy?",
+        options: [
+          { text: "Full site restoration with a volunteer litter pick, an independent environmental audit, and a published sustainability report", points: 3, feedback: "Exemplary. The land is returned in better condition than you found it, and third-party verification earns lasting trust from fans, landowners and locals." },
+          { text: "Hire a waste contractor to clear the whole site promptly", points: 2, feedback: "Solid and professional. The site is left tidy, though you miss the credibility of independent reporting." },
+          { text: "Clear the main arena and car parks only, leaving the camping fields for the landowner", points: 1, feedback: "Half a job. The landowner will notice, and so will the local press." },
+          { text: "Walk away once the gates close: the landowner can sort out the rubbish", points: -1, feedback: "Reputation-destroying. Litter-strewn fields and furious neighbours will follow you into every future planning meeting. Choose again." }
+        ]
+      },
+      {
+        id: "legacy", title: "Feedback & Next Year", icon: Star,
+        question: "The festival is over. How will you follow up with fans and plan for the future?",
+        options: [
+          { text: "Survey all ticket holders, publish a 'you said, we did' report, and open early-bird tickets for next year", points: 3, feedback: "Textbook. Listening shows respect, publishing changes builds loyalty, and early-bird sales fund next year while enthusiasm is at its peak." },
+          { text: "Post a thank-you video and photo gallery, and review social media comments", points: 2, feedback: "Warm and cheap, but social media gives only a partial picture. A proper survey would reveal far more." },
+          { text: "Announce a bigger, longer festival for next year before reviewing the numbers", points: 1, feedback: "Enthusiasm is great, but expansion before analysing what worked is how promising festivals overreach." },
+          { text: "Go silent until next year's lineup is ready", points: -1, feedback: "Fans feel forgotten and the momentum evaporates. Silence is the fastest way to lose a community. Choose again." }
+        ]
+      }
+    ];
+
+    // ---------- PHASE 2: FESTIVAL WEEKEND EMERGENCIES (2 choices: +2 or game over) ----------
+    const EMERGENCIES = [
+      {
+        id: "flood", when: "Friday night", title: "EMERGENCY: Flash Flood Warning", icon: AlertTriangle,
+        question: "Friday night, Day 1. Weather services issue a flash flood warning. Rain is already heavy and the main field is starting to waterlog. 35,000 fans are on site. What do you do?",
+        options: [
+          { text: "Activate your wet weather protocol: pause outdoor stages, move acts to covered structures, and deploy drainage teams", points: 2, feedback: "Your preparation pays off. Fans are inconvenienced but safe and informed, and the festival continues under cover with minimal disruption." },
+          { text: "Continue as normal and trust that country fans are resilient enough for challenging conditions", points: 0, gameOver: true, feedback: "A fan is struck by lightning near the main stage. Authorities shut the festival down immediately, two lawsuits are filed, and your operating licence is permanently revoked." }
+        ]
+      },
+      {
+        id: "invasion", when: "Saturday night", title: "EMERGENCY: Stage Invasion", icon: AlertTriangle,
+        question: "Saturday night, during your headline performance. Six protesters rush the main stage, chain themselves to speaker rigs, and unfurl banners. 40,000 fans are watching and the artist has stopped playing. What do you do?",
+        options: [
+          { text: "Have security calmly remove the protesters while your MC engages the crowd, restarting the set within ten minutes", points: 2, feedback: "Textbook crisis management. The crowd cheers the safe removal, the artist returns to a hero's welcome, and the incident becomes a story about your professionalism." },
+          { text: "Cut all stage power immediately to stop the protesters using your platform", points: 0, gameOver: true, feedback: "Plunging 40,000 people into sudden darkness triggers a crowd surge toward the exits. Fans are seriously injured in the crush, police shut the site, and your insurer refuses to cover crowd-induced incidents." }
+        ]
+      }
+    ];
+
+
+    // ---------- PHASE 2: FESTIVAL WEEKEND DECISIONS (6 decisions: 3 / 2 / 1 / -1) ----------
+    const FESTIVAL = [
+      {
+        id: "gates", when: "Friday, 5pm", title: "Gates Open: Crowd Security", icon: Users,
+        question: "The gates open and a queue a kilometre long is building. Tens of thousands of fans are arriving and tempers are fraying in the sun. How do you run the entry?",
+        options: [
+          { text: "Open extra entry lanes, stagger arrivals through the festival app, and let your control room redirect stewards, with water and shade for the queue", points: 3, feedback: "Professional and calm. Visible security, real-time control room decisions and small comforts for people in the queue deter trouble before it starts." },
+          { text: "Ask your off-duty police team to hold the queue back and clear it lane by lane", points: 2, feedback: "Effective and authoritative, but the queue stays long and the atmosphere feels heavy-handed on opening night." },
+          { text: "Leave the system as it is and let the queue ease once the first rush is over", points: 1, feedback: "Hopeful rather than planned. Fans wait in the heat, the crush at the barriers grows, and the first social media posts are about the queue, not the music." },
+          { text: "Wave everyone through with no bag checks to clear the queue quickly", points: -1, feedback: "Dangerous. Skipping searches invites glass, weapons and banned substances onto the site. Choose again." }
+        ]
+      },
+      {
+        id: "wellbeing", when: "Saturday, 10am", title: "Fan Wellbeing", icon: Users,
+        question: "After a wet first night the fields are muddy, the sun is out and the temperature is climbing. The medical tent queue is growing and fans look exhausted. How do you respond?",
+        options: [
+          { text: "Open a mental health and welfare tent, add free water stations every two hundred metres, deploy extra medics, and set up a reunification point for lost groups", points: 3, feedback: "Gold standard. Experienced festival-goers notice every one of these provisions, and the welfare tent in particular sends a powerful signal about your values." },
+          { text: "Call in your hospital partner for extra medical volunteers and hand out free water and sunscreen", points: 2, feedback: "Excellent community partnership that brings genuine expertise, though it takes time to arrive and doesn't cover mental health or lost groups." },
+          { text: "Stick with the standard first aid stations at the stage entrances", points: 1, feedback: "Legal but inadequate. Heat, alcohol and exhaustion create complex medical situations, and delays are building by day two." },
+          { text: "Charge for water refills to cover the extra costs and keep the medical tent for emergencies only", points: -1, feedback: "Charging for water in a heatwave is a PR disaster and a safety risk. Choose again." }
+        ]
+      },
+      {
+        id: "food", when: "Saturday, 1pm", title: "Food & Drink Village", icon: Star,
+        question: "It's Saturday lunchtime and the food village has to feed 40,000 people. How are you managing food and drink across the site?",
+        options: [
+          { text: "Local BBQ pitmasters, craft beer from regional breweries, and a curated mix of international food at a range of prices", points: 3, feedback: "Superb. Local sourcing creates authentic atmosphere and supports the community. Variety ensures every fan eats well, and the food gets talked about as much as the music." },
+          { text: "Open application to food vendors, with a light quality check before they trade", points: 2, feedback: "Good variety with some curation, but without tight control you risk ten burger vans and no vegetarian options." },
+          { text: "A single exclusive contract with one large catering company for the whole site", points: 1, feedback: "Easy to manage but typically produces generic, overpriced food. A catering monopoly is one of the fastest ways to attract negative social media coverage." },
+          { text: "Cashless only, with premium artisan food at premium prices and no budget options", points: -1, feedback: "Country music's audience spans every income level. All-premium pricing alienates the majority of fans. Choose again." }
+        ]
+      },
+      {
+        id: "experience", when: "Saturday, 3pm", title: "Beyond the Music", icon: Star,
+        question: "There's a lull between the big acts and thousands of fans are wandering the site looking for something to do. What non-music experiences do you offer?",
+        options: [
+          { text: "Line dancing lessons, a rodeo show, a craft beer and BBQ village, artisan market stalls, and hayrides at dusk", points: 3, feedback: "Outstanding. You've built a full cultural experience, not just a music event. Hands-on activities and living country traditions make this a destination people return to." },
+          { text: "A country music history exhibition, songwriting workshops, and acoustic sessions in a converted barn", points: 2, feedback: "Creatively rich and engaging for music lovers. Some livelier entertainment would balance the more cerebral programme." },
+          { text: "Nothing beyond the music stages and food trucks", points: 1, feedback: "Functional but bare. Interactive activities drive longer stays, higher spending and stronger social sharing." },
+          { text: "Point everyone towards the VIP glamping spa, gourmet dining and luxury brand activations", points: -1, feedback: "High margins on a small audience. Country music is about community and togetherness, and a purely elite experience alienates most fans. Choose again." }
+        ]
+      },
+      {
+        id: "community", when: "Sunday, 9am", title: "Noise Complaints", icon: Award,
+        question: "After Saturday night's headline set and fireworks, the council has received dozens of noise complaints from neighbouring villages and the local paper is calling for comment. How do you respond?",
+        options: [
+          { text: "Send your Community Liaison Officer to visit the affected villages, apologise in person, lower bass levels and finish earlier tonight, and invite residents to the Sunday finale", points: 3, feedback: "Exceptional. Local buy-in turns potential opposition into advocates, and the changes show you are listening rather than defending." },
+          { text: "Issue a public apology and promise a lower sound level for the rest of the weekend", points: 2, feedback: "Sensible and quick, but without personal contact the goodwill is limited." },
+          { text: "Post a short apology on social media and carry on as planned", points: 1, feedback: "Thin and likely to read as insincere. The complaints will resurface in next year's licensing hearing." },
+          { text: "Point out that you hold a licence and comply with all regulations, and take no further action", points: -1, feedback: "Short-sighted. Communities that feel dismissed become actively hostile, with planning battles and press campaigns. Choose again." }
+        ]
+      },
+      {
+        id: "closing", when: "Sunday, 4pm", title: "The Grand Finale", icon: Award,
+        question: "The final act is about to take the stage. How do you close the festival?",
+        options: [
+          { text: "A charity cheque ceremony with your local partner, the best-dressed contest winners, a final singalong, and a staggered exit with next year's date announced from the stage", points: 3, feedback: "You've built a cultural institution. Traditions create returning fans, the charity tie gives the festival a purpose beyond profit, and the staggered exit keeps everyone safe." },
+          { text: "Close with a headline finale and a thank-you speech, with extra shuttles for the exit", points: 2, feedback: "Warm and well organised, but you miss the chance to create a signature moment fans will remember and retell." },
+          { text: "Let the last act finish and open all the gates with no ceremony", points: 1, feedback: "An anticlimax. The weekend ends with a whimper and a traffic jam." },
+          { text: "Cut the sound the moment the last song ends and send 40,000 fans out through a single gate", points: -1, feedback: "Dangerous and disrespectful. A single exit point creates a crush risk and a bitter final memory. Choose again." }
+        ]
+      }
+    ];
+
+    // ---------- COUNTRY MUSIC TRIVIA POOL (20, pick 2 per game, 2 pts each) ----------
+    const TRIVIA_POOL = [
+      { q: "Which US city is known as 'Music City' and is the home of country music?", a: "Nashville", w: ["Chicago", "Las Vegas"], fact: "Nashville, Tennessee is the home of country music." },
+      { q: "Which singer was nicknamed 'The Man in Black'?", a: "Johnny Cash", w: ["Elvis Presley", "Willie Nelson"], fact: "Johnny Cash was famous for his all-black stage outfits." },
+      { q: "What is the name of Dolly Parton's famous theme park?", a: "Dollywood", w: ["Partonland", "Jolene World"], fact: "Dollywood is in Pigeon Forge, Tennessee." },
+      { q: "Which instrument is most closely associated with bluegrass music?", a: "Banjo", w: ["Bagpipes", "Saxophone"], fact: "The banjo is a hallmark of bluegrass and old-time country." },
+      { q: "In which city is the Grand Ole Opry?", a: "Nashville", w: ["Dallas", "New Orleans"], fact: "The Grand Ole Opry is a legendary weekly country radio show and stage in Nashville." },
+      { q: "Which country star sang 'Jolene'?", a: "Dolly Parton", w: ["Reba McEntire", "Shania Twain"], fact: "Dolly Parton wrote and recorded 'Jolene' in 1973." },
+      { q: "Who sang the 1992 hit 'Achy Breaky Heart'?", a: "Billy Ray Cyrus", w: ["Garth Brooks", "Kenny Rogers"], fact: "Billy Ray Cyrus is also the father of Miley Cyrus." },
+      { q: "Which pop superstar began her career as a country singer?", a: "Taylor Swift", w: ["Lady Gaga", "Adele"], fact: "Taylor Swift released her country debut album in 2006." },
+      { q: "Who sang 'Friends in Low Places'?", a: "Garth Brooks", w: ["George Strait", "Luke Bryan"], fact: "Garth Brooks released the song in 1990." },
+      { q: "What is the name of Willie Nelson's famous battered guitar?", a: "Trigger", w: ["Lucille", "Old Betsy"], fact: "Trigger is a nylon-string guitar that Willie Nelson has played for decades." },
+      { q: "Which US state is mentioned in 'Take Me Home, Country Roads'?", a: "West Virginia", w: ["Texas", "Montana"], fact: "John Denver's classic celebrates West Virginia." },
+      { q: "Which country is Shania Twain from?", a: "Canada", w: ["Australia", "Ireland"], fact: "Shania Twain was born in Windsor, Ontario." },
+      { q: "What is the title of Beyoncé's 2024 country-influenced album?", a: "Cowboy Carter", w: ["Texas Hold Em", "Lone Star"], fact: "Cowboy Carter was released in March 2024." },
+      { q: "Which singer is famous for the song 'Crazy' (1961)?", a: "Patsy Cline", w: ["Loretta Lynn", "Tammy Wynette"], fact: "'Crazy' was written by Willie Nelson." },
+      { q: "Carrie Underwood first shot to fame by winning which TV show?", a: "American Idol", w: ["The Voice", "Nashville Star"], fact: "Carrie Underwood won American Idol in 2005." },
+      { q: "Who wrote and sang 'Hey, Good Lookin''?", a: "Hank Williams", w: ["Merle Haggard", "Waylon Jennings"], fact: "Hank Williams is one of the most influential country songwriters ever." },
+      { q: "Which country legend sang 'The Gambler'?", a: "Kenny Rogers", w: ["Charley Pride", "Conway Twitty"], fact: "Kenny Rogers released 'The Gambler' in 1978." },
+      { q: "Which prison did Johnny Cash sing about in a famous song and concert?", a: "Folsom Prison", w: ["Alcatraz", "Sing Sing"], fact: "'Folsom Prison Blues' and the live prison album made Cash a legend." },
+      { q: "Whose life story is told in 'Coal Miner's Daughter'?", a: "Loretta Lynn", w: ["Dolly Parton", "Emmylou Harris"], fact: "Loretta Lynn's story became a 1980 Oscar-winning film." },
+      { q: "Which dance is most closely associated with country music events?", a: "Line dancing", w: ["Tango", "Breakdancing"], fact: "Line dancing is a country music staple, from honky-tonks to festivals." }
+    ];
+
+    // ---------- Build a fresh randomised game ----------
+    const buildGame = () => {
+      const pool = shuffle(TRIVIA_POOL);
+      const toTrivia = (t, slot, when) => ({
+        id: "trivia-" + slot, type: "trivia", icon: HelpCircle, phase: "Festival Weekend",
+        when: when, title: "Trivia Tent", question: t.q,
+        options: [
+          { text: t.a, points: 2, correct: true, feedback: "Correct! " + t.fact },
+          { text: t.w[0], points: 0, feedback: "Not quite. The answer is " + t.a + ". " + t.fact },
+          { text: t.w[1], points: 0, feedback: "Not quite. The answer is " + t.a + ". " + t.fact }
+        ]
+      });
+      const raw = [
+        ...PLANNING.map(q => ({ ...q, type: "normal", phase: "Planning" })),
+        { ...FESTIVAL[0], type: "normal", phase: "Festival Weekend" },
+        { ...EMERGENCIES[0], type: "emergency", phase: "Festival Weekend" },
+        { ...FESTIVAL[1], type: "normal", phase: "Festival Weekend" },
+        { ...FESTIVAL[2], type: "normal", phase: "Festival Weekend" },
+        { ...FESTIVAL[3], type: "normal", phase: "Festival Weekend" },
+        toTrivia(pool[0], 1, "Saturday, 5pm"),
+        { ...EMERGENCIES[1], type: "emergency", phase: "Festival Weekend" },
+        { ...FESTIVAL[4], type: "normal", phase: "Festival Weekend" },
+        toTrivia(pool[1], 2, "Sunday, 11am"),
+        { ...FESTIVAL[5], type: "normal", phase: "Festival Weekend" },
+        ...POST.map(q => ({ ...q, type: "normal", phase: "Post-Festival" }))
+      ];
+      let n = 0;
+      return raw.map(s => ({
+        ...s,
+        label: s.type === "normal" ? "Decision " + (++n) + " of 14" : null,
+        options: shuffle(s.options)
+      }));
+    };
+
+    const MAX_SCORE = 50; // 14 x 3 + 2 emergencies x 2 + 2 trivia x 2
+
+    const phaseStyle = {
+      "Planning": "bg-amber-100 text-amber-800",
+      "Festival Weekend": "bg-purple-100 text-purple-800",
+      "Post-Festival": "bg-teal-100 text-teal-800"
+    };
+
+    const normalColor = p => p >= 3 ? "green" : p === 2 ? "blue" : p === 1 ? "yellow" : "red";
+    const normalLabel = p => p >= 3 ? "Excellent!" : p === 2 ? "Good" : p === 1 ? "Poor choice" : "Mistake";
+    const textColor = { green: "text-green-600", blue: "text-blue-600", yellow: "text-yellow-600", red: "text-red-600", gray: "text-gray-500", orange: "text-orange-600" };
+    const boxColor = {
+      green: "border-green-300 bg-green-50", blue: "border-blue-300 bg-blue-50",
+      yellow: "border-yellow-300 bg-yellow-50", red: "border-red-300 bg-red-50",
+      orange: "border-orange-300 bg-orange-50", gray: "border-gray-200 bg-gray-50"
+    };
+    const btnColor = {
+      green: "border-green-400 bg-green-50", blue: "border-blue-400 bg-blue-50",
+      yellow: "border-yellow-400 bg-yellow-50", red: "border-red-400 bg-red-50",
+      orange: "border-orange-400 bg-orange-50", gray: "border-gray-400 bg-gray-50"
+    };
+
+    // colour for a given step + option
+    const colorFor = (step, opt) => {
+      if (step.type === "trivia") return opt.correct ? "green" : "orange";
+      if (step.type === "emergency") return "green";
+      return normalColor(opt.points);
+    };
 
     function App() {
+      const [started, setStarted] = useState(false);
+      const [steps, setSteps] = useState(() => buildGame());
       const [currentStep, setCurrentStep] = useState(0);
       const [score, setScore] = useState(0);
       const [selections, setSelections] = useState({});
       const [chosen, setChosen] = useState(null);
+      const [penalties, setPenalties] = useState([]); // [{idx, feedback}]
       const [gameOver, setGameOver] = useState(false);
-      const [showResults, setShowResults] = useState(false);
       const [gameOverMsg, setGameOverMsg] = useState("");
-      const [bonusMsg, setBonusMsg] = useState(null);
+      const [showResults, setShowResults] = useState(false);
 
       const step = steps[currentStep];
-      const StepIcon = step?.icon;
-      const isEmergency = step?.type === "emergency";
+      const StepIcon = step.icon;
+      const isEmergency = step.type === "emergency";
+      const isTrivia = step.type === "trivia";
 
       const handleSelect = idx => {
-        if (chosen !== null) return;
+        if (chosen !== null || penalties.some(p => p.idx === idx)) return;
         const opt = step.options[idx];
-        setChosen(idx);
-        if (opt.emergency) {
+
+        if (opt.gameOver) {
+          setChosen(idx);
           setGameOverMsg(opt.feedback);
           setGameOver(true);
-        } else if (isEmergency) {
-          if (opt.bonus) {
-            setScore(s => s + opt.bonus);
-            setBonusMsg(`+${opt.bonus} bonus points! ${opt.feedback}`);
-          } else {
-            setBonusMsg(opt.feedback);
-          }
-          setSelections(prev => ({ ...prev, [currentStep]: { points: opt.bonus || 0, feedback: opt.feedback, emergency: true } }));
-        } else {
-          setScore(s => s + opt.points);
-          setSelections(prev => ({ ...prev, [currentStep]: { points: opt.points, feedback: opt.feedback } }));
+          return;
         }
+        if (opt.points < 0) {
+          // -1 penalty: apply it and force the player to choose again
+          setScore(s => s + opt.points);
+          setPenalties(p => [...p, { idx, feedback: opt.feedback, points: opt.points }]);
+          return;
+        }
+        setChosen(idx);
+        setScore(s => s + opt.points);
+        setSelections(prev => ({
+          ...prev,
+          [currentStep]: {
+            points: opt.points, feedback: opt.feedback,
+            penalty: penalties.reduce((a, p) => a + p.points, 0),
+            correct: !!opt.correct
+          }
+        }));
       };
 
       const handleNext = () => {
-        setBonusMsg(null);
         if (currentStep < steps.length - 1) {
           setCurrentStep(s => s + 1);
           setChosen(null);
+          setPenalties([]);
         } else {
           setShowResults(true);
         }
       };
 
       const restart = () => {
+        setSteps(buildGame());
         setCurrentStep(0); setScore(0); setSelections({});
-        setChosen(null); setGameOver(false); setShowResults(false);
-        setGameOverMsg(""); setBonusMsg(null);
+        setChosen(null); setPenalties([]); setGameOver(false);
+        setShowResults(false); setGameOverMsg(""); setStarted(true);
       };
 
       const getFinalResult = s => {
-        if (s >= 88) return { title: "🤠 Festival Legend!", msg: "Your country music festival has become a national institution. Fans book a year in advance, artists beg for slots, and the press cannot stop writing about you.", color: "text-green-600", bg: "from-green-50 to-emerald-50" };
-        if (s >= 70) return { title: "🎸 Solid Season", msg: "A genuine success. Happy fans, strong performances, and a profitable run. A few sharper decisions and you will be in legendary territory next year.", color: "text-blue-600", bg: "from-blue-50 to-sky-50" };
-        if (s >= 52) return { title: "🪕 Promising Start", msg: "Some real highlights but an inconsistent experience. Fans had a decent time — the ones who stayed. The bones of something good are clearly here.", color: "text-yellow-600", bg: "from-yellow-50 to-amber-50" };
+        if (s >= 44) return { title: "🤠 Festival Legend!", msg: "Your country music festival has become a national institution. Fans book a year in advance, artists beg for slots, and the press cannot stop writing about you.", color: "text-green-600", bg: "from-green-50 to-emerald-50" };
+        if (s >= 34) return { title: "🎸 Solid Season", msg: "A genuine success. Happy fans, strong performances and a profitable run. A few sharper decisions and you'll be in legendary territory next year.", color: "text-blue-600", bg: "from-blue-50 to-sky-50" };
+        if (s >= 22) return { title: "🪕 Promising Start", msg: "Some real highlights but an inconsistent experience. The bones of something good are clearly here.", color: "text-yellow-600", bg: "from-yellow-50 to-amber-50" };
         return { title: "😰 Back to the Drawing Board", msg: "The festival struggled on almost every front. Poor planning and missed opportunities left fans disappointed. Study what the greats do and start fresh.", color: "text-red-600", bg: "from-red-50 to-rose-50" };
       };
 
-      const normalQCount = steps.filter(s => s.type === "normal").length;
-      const answeredNormal = steps.filter((s, i) => s.type === "normal" && selections[i] !== undefined).length;
+      // ---------- Start screen ----------
+      if (!started) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-100 flex items-center justify-center p-6">
+            <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8 sm:p-10">
+              <div className="text-center mb-6">
+                <div className="text-6xl mb-3">🤠</div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Country Music Festival Challenge</h1>
+                <p className="text-gray-500">Plan it. Survive it. Learn from it.</p>
+                <p className="text-gray-400 text-sm mt-1">Your festival runs from Friday evening to Sunday afternoon</p>
+              </div>
+              <div className="space-y-3 text-sm text-gray-700 mb-8">
+                <div className="flex gap-3 bg-amber-50 rounded-xl p-4"><span className="text-xl">📋</span><p><b>14 decisions</b>: 6 in planning, 6 during the festival weekend and 2 afterwards. Each choice scores <b>3, 2, 1 or −1</b>. Pick a −1 and you lose a point, then you must choose again.</p></div>
+                <div className="flex gap-3 bg-red-50 rounded-xl p-4"><span className="text-xl">🚨</span><p><b>2 emergencies</b> during the festival weekend. Two choices only: <b>+2 points</b> or <b>game over</b>.</p></div>
+                <div className="flex gap-3 bg-purple-50 rounded-xl p-4"><span className="text-xl">🎤</span><p><b>2 trivia questions</b> in the Trivia Tent, chosen at random from a pool of 20. <b>+2 points</b> for each correct answer.</p></div>
+                <p className="text-center text-gray-400 pt-1">Maximum score: {MAX_SCORE}</p>
+              </div>
+              <button onClick={() => setStarted(true)} className="w-full bg-amber-600 text-white py-3 rounded-xl font-semibold hover:bg-amber-700 transition-colors text-lg">🎵 Start Planning</button>
+            </div>
+          </div>
+        );
+      }
 
+      // ---------- Game over ----------
       if (gameOver) {
         return (
           <div className="min-h-screen bg-gradient-to-br from-red-950 to-red-900 flex items-center justify-center p-8">
@@ -380,24 +402,25 @@
               <h2 className="text-3xl font-bold text-red-700 mb-2">Festival Terminated</h2>
               <div className="w-16 h-1 bg-red-400 mx-auto rounded my-4" />
               <p className="text-gray-700 text-lg leading-relaxed mb-8">{gameOverMsg}</p>
-              <p className="text-gray-400 text-sm mb-6 italic">Score at termination: {score} / 100</p>
+              <p className="text-gray-400 text-sm mb-6 italic">Score at termination: {score} / {MAX_SCORE}</p>
               <button onClick={restart} className="bg-red-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-red-700 transition-colors text-lg">Try Again</button>
             </div>
           </div>
         );
       }
 
+      // ---------- Final results ----------
       if (showResults) {
         const res = getFinalResult(score);
         return (
-          <div className={`min-h-screen bg-gradient-to-br ${res.bg} p-8`}>
+          <div className={`min-h-screen bg-gradient-to-br ${res.bg} p-6 sm:p-8`}>
             <div className="max-w-3xl mx-auto">
-              <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
                 <div className="text-center mb-8">
                   <h2 className={`text-3xl font-bold mb-3 ${res.color}`}>{res.title}</h2>
-                  <div className="text-5xl font-bold text-amber-600 mb-2">{score} / 100</div>
+                  <div className="text-5xl font-bold text-amber-600 mb-2">{score} / {MAX_SCORE}</div>
                   <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                    <div className="bg-amber-500 h-3 rounded-full transition-all" style={{ width: `${Math.min(score, 100)}%` }} />
+                    <div className="bg-amber-500 h-3 rounded-full transition-all" style={{ width: `${Math.max(0, Math.min(100, (score / MAX_SCORE) * 100))}%` }} />
                   </div>
                   <p className="text-lg text-gray-700 leading-relaxed">{res.msg}</p>
                 </div>
@@ -406,16 +429,26 @@
                   {steps.map((s, i) => {
                     const sel = selections[i];
                     if (!sel) return null;
+                    const SIcon = s.icon;
+                    const net = sel.points + sel.penalty;
                     return (
                       <div key={s.id} className="bg-gray-50 rounded-xl p-4 flex gap-3">
-                        <s.icon className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <SIcon className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                         <div>
+                          <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1 ${phaseStyle[s.phase]}`}>{s.phase}{s.when ? " · " + s.when : ""}</span>
                           <p className="font-semibold text-gray-800 text-sm">{s.title}</p>
+                          {s.type === "trivia" && <p className="text-xs text-gray-500 mt-0.5 italic">{s.question}</p>}
                           <p className="text-sm text-gray-600 mt-1">{sel.feedback}</p>
-                          {sel.emergency
-                            ? <p className="text-sm font-bold mt-1 text-purple-600">{sel.points > 0 ? `+${sel.points} bonus pts` : "No points — emergency handled"}</p>
-                            : <p className={`text-sm font-bold mt-1 ${pointColor(sel.points)}`}>+{sel.points} pts — {pointLabel(sel.points)}</p>
-                          }
+                          <p className={`text-sm font-bold mt-1 ${
+                            s.type === "emergency" ? "text-green-600"
+                            : s.type === "trivia" ? (sel.correct ? "text-green-600" : "text-orange-600")
+                            : textColor[normalColor(sel.points)]
+                          }`}>
+                            {s.type === "emergency" ? "+2 pts: emergency handled"
+                              : s.type === "trivia" ? (sel.correct ? "+2 pts: correct" : "0 pts: incorrect")
+                              : `+${sel.points} pts: ${normalLabel(sel.points)}`}
+                            {sel.penalty < 0 && <span className="text-red-500 font-semibold"> ({sel.penalty} for a first mistake, net {net})</span>}
+                          </p>
                         </div>
                       </div>
                     );
@@ -428,95 +461,104 @@
         );
       }
 
+      // ---------- Main question screen ----------
+      const chosenOpt = chosen !== null ? step.options[chosen] : null;
+      const lastPenalty = penalties.length > 0 ? penalties[penalties.length - 1] : null;
+      const bg = isEmergency ? "from-red-50 to-orange-50" : isTrivia ? "from-purple-50 to-fuchsia-50" : "from-amber-50 to-yellow-50";
+      const accentBg = isEmergency ? "bg-red-100" : isTrivia ? "bg-purple-100" : "bg-amber-100";
+      const accentText = isEmergency ? "text-red-600" : isTrivia ? "text-purple-600" : "text-amber-600";
+
       return (
-        <div className={`min-h-screen p-8 ${isEmergency ? "bg-gradient-to-br from-red-50 to-orange-50" : "bg-gradient-to-br from-amber-50 to-yellow-50"}`}>
+        <div className={`min-h-screen p-6 sm:p-8 bg-gradient-to-br ${bg}`}>
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-6">
-              <div className="text-4xl mb-2">{isEmergency ? "🚨" : "🤠"}</div>
+              <div className="text-4xl mb-2">{isEmergency ? "🚨" : isTrivia ? "🎤" : "🤠"}</div>
               <h1 className="text-3xl font-bold text-gray-900 mb-1">Country Music Festival Challenge</h1>
-              <p className="text-gray-500 text-sm">From dusty fields to legendary stages — every decision counts</p>
-              <div className="mt-4 flex items-center justify-center gap-1">
-                {steps.map((s, i) => (
-                  <div key={i} className={`h-2 rounded-full transition-all ${
-                    s.type === "emergency"
-                      ? i < currentStep ? "bg-red-400" : i === currentStep ? "bg-red-500" : "bg-red-200"
-                      : i < currentStep ? "bg-amber-500" : i === currentStep ? "bg-amber-600" : "bg-gray-300"
-                  } ${i === currentStep ? "w-6" : "w-2"}`} />
-                ))}
+              <p className="text-gray-500 text-sm">From dusty fields to legendary stages: every decision counts</p>
+              <div className="mt-4 flex items-center justify-center gap-1 flex-wrap">
+                {steps.map((s, i) => {
+                  const base = s.type === "emergency" ? ["bg-red-400", "bg-red-500", "bg-red-200"]
+                    : s.type === "trivia" ? ["bg-purple-400", "bg-purple-500", "bg-purple-200"]
+                    : ["bg-amber-500", "bg-amber-600", "bg-gray-300"];
+                  const c = i < currentStep ? base[0] : i === currentStep ? base[1] : base[2];
+                  return <div key={i} className={`h-2 rounded-full transition-all ${c} ${i === currentStep ? "w-6" : "w-2"}`} />;
+                })}
               </div>
               <p className="text-sm text-gray-400 mt-2">
-                {isEmergency ? "⚠️ Emergency Situation" : `Question ${answeredNormal + 1} of ${normalQCount}`} · Score: {score} / 100
+                Step {currentStep + 1} of {steps.length} · Score: {score} / {MAX_SCORE}
               </p>
             </div>
 
-            <div className={`bg-white rounded-2xl shadow-xl p-8 ${isEmergency ? "border-2 border-red-300" : ""}`}>
+            <div className={`bg-white rounded-2xl shadow-xl p-6 sm:p-8 ${isEmergency ? "border-2 border-red-300" : ""}`}>
+              <div className="mb-4 flex items-center gap-2 flex-wrap">
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${phaseStyle[step.phase]}`}>{step.phase}</span>
+                {step.when && <span className="text-xs font-semibold text-gray-500">{step.when}</span>}
+                {step.label && <span className="text-xs font-semibold text-gray-400">{step.label}</span>}
+                {isTrivia && <span className="text-xs font-semibold text-purple-500">Country Trivia · +2 pts</span>}
+              </div>
+
               {isEmergency && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-5 flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                  <span className="text-red-700 font-semibold text-sm">WARNING: Some options will end your festival immediately.</span>
+                  <span className="text-red-700 font-semibold text-sm">WARNING: One of these options ends your festival immediately.</span>
                 </div>
               )}
+
               <div className="flex items-center gap-3 mb-6">
-                <div className={`p-3 rounded-xl ${isEmergency ? "bg-red-100" : "bg-amber-100"}`}>
-                  <StepIcon className={`w-7 h-7 ${isEmergency ? "text-red-600" : "text-amber-600"}`} />
+                <div className={`p-3 rounded-xl ${accentBg}`}>
+                  <StepIcon className={`w-7 h-7 ${accentText}`} />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900">{step.title}</h2>
               </div>
 
               <p className="text-gray-700 font-medium mb-5 leading-relaxed">{step.question}</p>
 
+              {lastPenalty && chosen === null && (
+                <div className="mb-5 p-4 rounded-xl border-2 border-red-300 bg-red-50">
+                  <p className="font-bold text-sm text-red-600 mb-1">−1 point! You must choose again.</p>
+                  <p className="text-sm text-gray-700 leading-relaxed">{lastPenalty.feedback}</p>
+                </div>
+              )}
+
               <div className="space-y-3">
                 {step.options.map((opt, idx) => {
                   const isChosen = chosen === idx;
+                  const isPenalised = penalties.some(p => p.idx === idx);
                   const isDisabled = chosen !== null && !isChosen;
-                  const isKiller = isChosen && opt.emergency;
+                  const isKiller = isChosen && opt.gameOver;
+                  let cls;
+                  if (isKiller) cls = "border-red-500 bg-red-50";
+                  else if (isPenalised) cls = "border-red-300 bg-red-50 opacity-50 line-through cursor-not-allowed";
+                  else if (isChosen) cls = btnColor[colorFor(step, opt)];
+                  else if (isDisabled) cls = "border-gray-100 bg-gray-50 opacity-40 cursor-not-allowed";
+                  else if (isEmergency) cls = "border-orange-200 hover:border-red-400 hover:bg-red-50 cursor-pointer";
+                  else if (isTrivia) cls = "border-gray-200 hover:border-purple-400 hover:bg-purple-50 cursor-pointer";
+                  else cls = "border-gray-200 hover:border-amber-400 hover:bg-amber-50 cursor-pointer";
                   return (
-                    <button key={idx} onClick={() => handleSelect(idx)} disabled={chosen !== null}
-                      className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                        isKiller ? "border-red-500 bg-red-50" :
-                        isChosen && !isEmergency ? (
-                          opt.points >= 5 ? "border-green-400 bg-green-50" :
-                          opt.points >= 4 ? "border-blue-400 bg-blue-50" :
-                          opt.points >= 3 ? "border-yellow-400 bg-yellow-50" :
-                          "border-orange-400 bg-orange-50"
-                        ) :
-                        isChosen && isEmergency ? (opt.bonus ? "border-green-400 bg-green-50" : "border-gray-400 bg-gray-50") :
-                        isDisabled ? "border-gray-100 bg-gray-50 opacity-40 cursor-not-allowed" :
-                        isEmergency ? "border-orange-200 hover:border-red-400 hover:bg-red-50 cursor-pointer" :
-                        "border-gray-200 hover:border-amber-400 hover:bg-amber-50 cursor-pointer"
-                      }`}>
+                    <button key={step.id + "-" + idx} onClick={() => handleSelect(idx)} disabled={chosen !== null || isPenalised}
+                      className={`w-full text-left p-4 rounded-xl border-2 transition-all ${cls}`}>
                       <p className="text-gray-800 text-sm font-medium leading-relaxed">{opt.text}</p>
                     </button>
                   );
                 })}
               </div>
 
-              {chosen !== null && !step.options[chosen].emergency && (
-                <div className={`mt-6 p-5 rounded-xl border-2 ${
-                  isEmergency
-                    ? step.options[chosen].bonus ? "border-green-300 bg-green-50" : "border-gray-200 bg-gray-50"
-                    : step.options[chosen].points >= 5 ? "border-green-300 bg-green-50"
-                    : step.options[chosen].points >= 4 ? "border-blue-300 bg-blue-50"
-                    : step.options[chosen].points >= 3 ? "border-yellow-300 bg-yellow-50"
-                    : "border-orange-300 bg-orange-50"
-                }`}>
+              {chosenOpt && !chosenOpt.gameOver && (
+                <div className={`mt-6 p-5 rounded-xl border-2 ${boxColor[colorFor(step, chosenOpt)]}`}>
                   <div className="flex items-start gap-3">
-                    <CheckCircle className={`w-5 h-5 mt-0.5 flex-shrink-0 ${isEmergency ? "text-gray-500" : pointColor(step.options[chosen].points)}`} />
+                    <CheckCircle className={`w-5 h-5 mt-0.5 flex-shrink-0 ${textColor[colorFor(step, chosenOpt)]}`} />
                     <div className="flex-1">
-                      {!isEmergency && (
-                        <p className={`font-bold text-sm mb-1 ${pointColor(step.options[chosen].points)}`}>
-                          {pointLabel(step.options[chosen].points)} · +{step.options[chosen].points} / 5 points
-                        </p>
-                      )}
-                      {isEmergency && step.options[chosen].bonus && (
-                        <p className="font-bold text-sm mb-1 text-green-600">+{step.options[chosen].bonus} bonus points!</p>
-                      )}
-                      <p className="text-gray-700 text-sm leading-relaxed">{step.options[chosen].feedback}</p>
+                      <p className={`font-bold text-sm mb-1 ${textColor[colorFor(step, chosenOpt)]}`}>
+                        {isEmergency ? "Crisis handled · +2 points"
+                          : isTrivia ? (chosenOpt.correct ? "Correct! · +2 points" : "Not quite · +0 points")
+                          : `${normalLabel(chosenOpt.points)} · +${chosenOpt.points} / 3 points`}
+                      </p>
+                      <p className="text-gray-700 text-sm leading-relaxed">{chosenOpt.feedback}</p>
                     </div>
                   </div>
                   <button onClick={handleNext}
                     className="mt-4 w-full flex items-center justify-center gap-2 bg-amber-600 text-white py-2.5 rounded-xl font-semibold hover:bg-amber-700 transition-colors">
-                    {currentStep < steps.length - 1 ? "Next Decision" : "See Final Results"}
+                    {currentStep < steps.length - 1 ? "Continue" : "See Final Results"}
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -527,8 +569,7 @@
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
