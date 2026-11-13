@@ -1,434 +1,1962 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grandmaster Challenge: Chess Tournament Manager</title>
-    <style>
-        :root {
-            --wood-dark: #5d4037;
-            --wood-light: #d7ccc8;
-            --board-black: #795548;
-            --board-white: #f5f5f5;
-            --success: #2e7d32;
-            --danger: #c62828;
-            --text: #212121;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Grandmaster Challenge: Chess Tournament Manager</title>
+  <style>
+    :root {
+      --wood-dark: #4e342e;
+      --wood-mid: #6d4c41;
+      --wood-light: #efebe9;
+      --board-tan: #d7ccc8;
+      --board-cream: #faf8f5;
+      --gold: #b8860b;
+      --gold-light: #fef9e7;
+      --success: #2e7d32;
+      --danger: #c62828;
+      --warning: #ef6c00;
+      --text: #212121;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e0e0e0;
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        #game-container {
-            width: 100%;
-            max-width: 700px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            border: 4px solid var(--wood-dark);
-            overflow: hidden;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e5e0db;
+      background-image:
+        linear-gradient(45deg, rgba(78, 52, 46, 0.045) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(78, 52, 46, 0.045) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(78, 52, 46, 0.045) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(78, 52, 46, 0.045) 75%);
+      background-size: 40px 40px;
+      background-position: 0 0, 0 20px, 20px -20px, -20px 0;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+      line-height: 1.55;
+    }
 
-        .header {
-            background: var(--wood-dark);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+    /* =========================================================
+       MAIN CHESSBOARD & OLD LIBRARY CONTAINER
+       ========================================================= */
+    #game-container {
+      width: 100%;
+      max-width: 780px;
+      background-color: var(--board-cream);
+      border-radius: 12px;
+      box-shadow: 0 14px 36px rgba(46, 29, 24, 0.22);
+      border: 4px solid var(--wood-dark);
+      overflow: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 25px;
-            background: var(--wood-light);
-            font-weight: bold;
-            border-bottom: 2px solid #bcaaa4;
-        }
+    /* Subtle Top Checkerboard Trim Accent */
+    .checker-trim {
+      height: 12px;
+      width: 100%;
+      background-image:
+        linear-gradient(45deg, var(--wood-dark) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--wood-dark) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--wood-dark) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--wood-dark) 75%);
+      background-color: var(--board-tan);
+      background-size: 12px 12px;
+      background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+      border-bottom: 2px solid var(--wood-dark);
+    }
 
-        .content { padding: 30px; }
+    /* Typography for Grandmaster Headings */
+    h1, h2, h3, .serif-heading {
+      font-family: 'Georgia', serif;
+    }
 
-        .story-box {
-            background: #fdfdfd;
-            border-left: 5px solid var(--board-black);
-            padding: 20px;
-            margin-bottom: 25px;
-            font-style: italic;
-            line-height: 1.6;
-        }
+    .screen {
+      display: none;
+    }
 
-        .question {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+    .screen.active {
+      display: block;
+    }
 
-        .options-grid {
-            display: grid;
-            gap: 12px;
-        }
+    .content {
+      padding: 28px 30px 32px;
+    }
 
-        .option-btn {
-            background: var(--board-white);
-            border: 2px solid #ccc;
-            padding: 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            transition: 0.2s;
-        }
+    /* =========================================================
+       BUTTONS (WOOD & GOLD CHESS PALETTE)
+       ========================================================= */
+    .btn-primary {
+      width: 100%;
+      padding: 14px 22px;
+      background-color: var(--wood-dark);
+      color: #ffffff;
+      border: 2px solid var(--wood-dark);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.03rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
-        .option-btn:hover:not(:disabled) {
-            background: #fff;
-            border-color: var(--wood-dark);
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-        }
+    .btn-primary:hover {
+      background-color: var(--wood-mid);
+      border-color: var(--wood-mid);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(78, 52, 46, 0.25);
+    }
 
-        .letter {
-            background: var(--wood-dark);
-            color: white;
-            width: 28px;
-            height: 28px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            margin-right: 15px;
-            font-weight: bold;
-        }
+    .btn-secondary {
+      width: 100%;
+      padding: 12px 20px;
+      background-color: #ffffff;
+      color: var(--wood-dark);
+      border: 2px solid var(--wood-mid);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 6px;
-            display: none;
-        }
+    .btn-secondary:hover {
+      background-color: var(--wood-light);
+      border-color: var(--wood-dark);
+    }
 
-        .fb-positive { background: #e8f5e9; border: 1px solid var(--success); color: var(--success); }
-        .fb-negative { background: #ffebee; border: 1px solid var(--danger); color: var(--danger); }
+    /* =========================================================
+       SCREEN 1: LANDING PAGE (#landing-screen)
+       ========================================================= */
+    .landing-hero {
+      text-align: center;
+    }
 
-        .sudden-death {
-            background: #212121 !important;
-            color: white !important;
-        }
+    .esl-badge {
+      display: inline-block;
+      background-color: var(--gold-light);
+      color: #7c5800;
+      border: 1.5px solid var(--gold);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      letter-spacing: 0.3px;
+    }
 
-        .action-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--wood-dark);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            margin-top: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
+    .landing-title {
+      font-size: clamp(1.9rem, 4.5vw, 2.55rem);
+      color: var(--wood-dark);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
 
-        .action-btn:hover { opacity: 0.9; }
+    .landing-subtitle {
+      font-family: 'Georgia', serif;
+      font-size: 1.08rem;
+      color: var(--wood-mid);
+      font-style: italic;
+      margin-bottom: 22px;
+    }
 
-        #result-screen { text-align: center; display: none; padding: 40px; }
-    </style>
+    .story-box {
+      background-color: #ffffff;
+      border: 1px solid var(--board-tan);
+      border-left: 5px solid var(--wood-dark);
+      border-radius: 8px;
+      padding: 20px 22px;
+      margin-bottom: 24px;
+      text-align: left;
+      font-size: 1.02rem;
+      line-height: 1.65;
+      color: var(--text);
+      box-shadow: 0 3px 10px rgba(78, 52, 46, 0.06);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 26px;
+      text-align: left;
+    }
+
+    .summary-card {
+      background-color: #ffffff;
+      border: 1.5px solid var(--board-tan);
+      border-top: 4px solid var(--gold);
+      border-radius: 8px;
+      padding: 16px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(78, 52, 46, 0.1);
+    }
+
+    .summary-icon {
+      font-size: 1.45rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .summary-card h3 {
+      font-size: 1.02rem;
+      color: var(--wood-dark);
+      margin-bottom: 6px;
+    }
+
+    .summary-card p {
+      font-size: 0.91rem;
+      color: #4e4440;
+      line-height: 1.45;
+    }
+
+    .landing-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       SCREEN 2: INTERACTIVE WARMER PAGE (#warmer-screen)
+       ========================================================= */
+    .warmer-topbar {
+      background-color: var(--wood-dark);
+      color: #ffffff;
+      padding: 16px 26px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .warmer-topbar h2 {
+      font-size: 1.25rem;
+      color: #ffffff;
+    }
+
+    .btn-back-intro {
+      background-color: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-back-intro:hover {
+      background-color: rgba(255, 255, 255, 0.26);
+    }
+
+    .warmer-section {
+      background-color: #ffffff;
+      border: 1.5px solid var(--board-tan);
+      border-radius: 10px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .section-pill {
+      display: inline-block;
+      background-color: var(--wood-light);
+      color: var(--wood-dark);
+      border: 1px solid var(--board-tan);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .warmer-section h3 {
+      font-size: 1.3rem;
+      color: var(--wood-dark);
+      margin-bottom: 6px;
+    }
+
+    .warmer-intro {
+      font-size: 0.95rem;
+      color: #5a4e4a;
+      margin-bottom: 16px;
+    }
+
+    .discussion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .discussion-card {
+      background-color: var(--board-cream);
+      border: 1px solid var(--board-tan);
+      border-left: 4px solid var(--wood-mid);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .discussion-num {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .discussion-card p {
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .phrases-box {
+      background-color: var(--gold-light);
+      border: 1px solid #e6cfa3;
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      padding: 14px 18px;
+    }
+
+    .phrases-box h4 {
+      font-family: 'Georgia', serif;
+      font-size: 0.98rem;
+      color: var(--wood-dark);
+      margin-bottom: 8px;
+    }
+
+    .phrases-list {
+      padding-left: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 6px 18px;
+    }
+
+    .phrases-list li {
+      font-size: 0.92rem;
+      color: #3e3430;
+      font-style: italic;
+    }
+
+    /* Interactive Clickable Word Bank */
+    .word-bank-box {
+      background-color: var(--board-cream);
+      border: 2px dashed var(--wood-mid);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+    }
+
+    .word-bank-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .word-bank-label {
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--wood-dark);
+    }
+
+    .word-bank-status {
+      font-size: 0.83rem;
+      color: var(--wood-mid);
+    }
+
+    .word-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .word-chip {
+      background-color: #ffffff;
+      color: var(--wood-dark);
+      border: 1.5px solid var(--wood-mid);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .word-chip:hover {
+      background-color: var(--wood-light);
+      border-color: var(--wood-dark);
+    }
+
+    .word-chip.chip-active {
+      background-color: var(--wood-dark);
+      color: #ffffff;
+      border-color: var(--wood-dark);
+      box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.35);
+    }
+
+    .word-chip.chip-assigned {
+      background-color: var(--wood-light);
+      color: #796b66;
+      border-color: var(--board-tan);
+    }
+
+    .word-chip.chip-assigned.chip-active {
+      background-color: var(--wood-dark);
+      color: #ffffff;
+    }
+
+    /* 8 Vocabulary Definition Cards */
+    .vocab-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .vocab-card {
+      background-color: var(--board-cream);
+      border: 1.5px solid var(--board-tan);
+      border-radius: 8px;
+      padding: 13px 15px;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .vocab-card.is-correct {
+      background-color: #e8f5e9;
+      border-color: var(--success);
+    }
+
+    .vocab-card.is-incorrect {
+      background-color: #ffebee;
+      border-color: var(--danger);
+    }
+
+    .vocab-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .vocab-def {
+      flex: 1 1 320px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .vocab-idx {
+      font-weight: 800;
+      color: var(--wood-dark);
+      margin-right: 6px;
+    }
+
+    .vocab-select {
+      flex: 0 1 205px;
+      min-width: 185px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      border: 1.5px solid var(--wood-mid);
+      background-color: #ffffff;
+      color: var(--text);
+      font-size: 0.93rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .vocab-select:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.25);
+    }
+
+    .vocab-feedback {
+      display: none;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      font-size: 0.9rem;
+    }
+
+    .vocab-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn-check {
+      background-color: var(--wood-dark);
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.93rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-check:hover {
+      background-color: var(--wood-mid);
+    }
+
+    .btn-reset {
+      background-color: #ffffff;
+      color: var(--wood-dark);
+      border: 1.5px solid var(--wood-mid);
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-reset:hover {
+      background-color: var(--wood-light);
+    }
+
+    .vocab-score-pill {
+      margin-left: auto;
+      background-color: var(--gold-light);
+      color: #7c5800;
+      border: 1.5px solid var(--gold);
+      font-weight: 800;
+      font-size: 0.91rem;
+      padding: 7px 14px;
+      border-radius: 999px;
+    }
+
+    /* =========================================================
+       SCREEN 3: EXPANDED TOURNAMENT GAMEPLAY (#game-play)
+       ========================================================= */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 28px;
+      background-color: var(--wood-light);
+      font-weight: 800;
+      color: var(--wood-dark);
+      border-bottom: 2px solid var(--board-tan);
+      font-size: 0.98rem;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background-color: var(--board-tan);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--wood-mid), var(--gold));
+      transition: width 0.35s ease;
+    }
+
+    /* Context Vocabulary Pills Strip */
+    .vocab-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background-color: #ffffff;
+      border: 1px solid var(--board-tan);
+      border-radius: 8px;
+    }
+
+    .vocab-strip-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--wood-mid);
+      margin-right: 4px;
+    }
+
+    .ctx-pill {
+      background-color: var(--gold-light);
+      color: #6d4c00;
+      border: 1px solid #e2c06d;
+      border-radius: 999px;
+      padding: 3px 11px;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .question {
+      font-family: 'Georgia', serif;
+      font-size: 1.28rem;
+      font-weight: 700;
+      color: var(--wood-dark);
+      margin-bottom: 20px;
+      line-height: 1.45;
+    }
+
+    .options-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background-color: #ffffff;
+      border: 2px solid var(--board-tan);
+      padding: 14px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all 0.2s ease;
+      line-height: 1.45;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background-color: var(--wood-light);
+      border-color: var(--wood-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(78, 52, 46, 0.12);
+    }
+
+    .option-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .letter {
+      background-color: var(--wood-dark);
+      color: #ffffff;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Option Button Selected Highlight States */
+    .option-btn.opt-masterstroke {
+      opacity: 1 !important;
+      background-color: #e8f5e9;
+      border-color: var(--success);
+      font-weight: 700;
+    }
+    .option-btn.opt-masterstroke .letter {
+      background-color: var(--success);
+    }
+
+    .option-btn.opt-solid {
+      opacity: 1 !important;
+      background-color: #f1f8e9;
+      border-color: #558b2f;
+      font-weight: 700;
+    }
+    .option-btn.opt-solid .letter {
+      background-color: #558b2f;
+    }
+
+    .option-btn.opt-acceptable {
+      opacity: 1 !important;
+      background-color: var(--gold-light);
+      border-color: var(--warning);
+      font-weight: 700;
+    }
+    .option-btn.opt-acceptable .letter {
+      background-color: var(--warning);
+    }
+
+    .option-btn.opt-wrong {
+      opacity: 0.72 !important;
+      background-color: #ffebee;
+      border-color: var(--danger);
+      color: var(--danger);
+      text-decoration: line-through;
+    }
+    .option-btn.opt-wrong .letter {
+      background-color: var(--danger);
+    }
+
+    /* Rich Multi-Sentence Feedback Card + Organizer's Insight */
+    .feedback-card {
+      margin-top: 22px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+      border: 2px solid var(--board-tan);
+      background-color: #ffffff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      animation: fadeSlide 0.25s ease;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fb-header {
+      padding: 12px 18px;
+      font-weight: 800;
+      font-size: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fb-body {
+      padding: 18px;
+      color: var(--text);
+    }
+
+    .fb-narrative {
+      font-size: 1rem;
+      line-height: 1.62;
+      margin-bottom: 14px;
+    }
+
+    .insight-box {
+      background-color: var(--board-cream);
+      border: 1px solid var(--board-tan);
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      padding: 13px 16px;
+      font-size: 0.94rem;
+      line-height: 1.55;
+      color: #2e2623;
+    }
+
+    .insight-title {
+      font-family: 'Georgia', serif;
+      font-weight: 700;
+      color: var(--wood-dark);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .fb-actions {
+      padding: 0 18px 18px;
+    }
+
+    /* Feedback Card Color Themes */
+    .feedback-card.fb-masterstroke {
+      border-color: var(--success);
+    }
+    .feedback-card.fb-masterstroke .fb-header {
+      background-color: #e8f5e9;
+      color: var(--success);
+      border-bottom: 1px solid #c8e6c9;
+    }
+
+    .feedback-card.fb-solid {
+      border-color: #558b2f;
+    }
+    .feedback-card.fb-solid .fb-header {
+      background-color: #f1f8e9;
+      color: #33691e;
+      border-bottom: 1px solid #dcedc8;
+    }
+
+    .feedback-card.fb-acceptable {
+      border-color: var(--warning);
+    }
+    .feedback-card.fb-acceptable .fb-header {
+      background-color: #fff3e0;
+      color: #e65100;
+      border-bottom: 1px solid #ffe0b2;
+    }
+
+    .feedback-card.fb-negative {
+      border-color: var(--danger);
+    }
+    .feedback-card.fb-negative .fb-header {
+      background-color: #ffebee;
+      color: var(--danger);
+      border-bottom: 1px solid #ffcdd2;
+    }
+
+    /* =========================================================
+       SUDDEN-DEATH DRAMATIC MODE
+       ========================================================= */
+    #game-container.sudden-death {
+      background-color: #1c1917 !important;
+      color: #f5f5f4 !important;
+      border-color: var(--danger);
+    }
+
+    #game-container.sudden-death .stats-bar {
+      background-color: #292524;
+      color: #fca5a5;
+      border-bottom-color: #44403c;
+    }
+
+    #game-container.sudden-death .vocab-strip {
+      background-color: #292524;
+      border-color: #44403c;
+    }
+
+    #game-container.sudden-death .vocab-strip-title {
+      color: #d6d3d1;
+    }
+
+    #game-container.sudden-death .ctx-pill {
+      background-color: #3f2e18;
+      color: #fde68a;
+      border-color: #92400e;
+    }
+
+    #game-container.sudden-death .question {
+      color: #fecaca;
+    }
+
+    #game-container.sudden-death .option-btn {
+      background-color: #292524;
+      border-color: #57534e;
+      color: #f5f5f4;
+    }
+
+    #game-container.sudden-death .option-btn:hover:not(:disabled) {
+      background-color: #3c3633;
+      border-color: #f87171;
+    }
+
+    #game-container.sudden-death .feedback-card {
+      background-color: #292524;
+      color: #f5f5f4;
+    }
+
+    #game-container.sudden-death .fb-body {
+      color: #f5f5f4;
+    }
+
+    #game-container.sudden-death .insight-box {
+      background-color: #1c1917;
+      border-color: #44403c;
+      color: #e7e5e4;
+    }
+
+    #game-container.sudden-death .insight-title {
+      color: #fcd34d;
+    }
+
+    /* =========================================================
+       SCREEN 4: FINAL EVALUATION & DEBRIEFING (#result-screen)
+       ========================================================= */
+    #result-screen {
+      text-align: center;
+      padding: 34px 30px;
+    }
+
+    .result-badge {
+      display: inline-block;
+      background-color: var(--gold-light);
+      color: #7c5800;
+      border: 1.5px solid var(--gold);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      margin-bottom: 12px;
+    }
+
+    #res-title {
+      font-size: clamp(1.75rem, 4vw, 2.3rem);
+      color: var(--wood-dark);
+      margin-bottom: 10px;
+    }
+
+    .final-score-pill {
+      display: inline-block;
+      background-color: var(--wood-dark);
+      color: #ffffff;
+      padding: 8px 22px;
+      border-radius: 8px;
+      font-size: 1.18rem;
+      font-weight: 800;
+      margin-bottom: 22px;
+      border: 2px solid var(--gold);
+    }
+
+    .debrief-card {
+      background-color: #ffffff;
+      border: 1.5px solid var(--board-tan);
+      border-left: 5px solid var(--gold);
+      border-radius: 10px;
+      padding: 22px;
+      text-align: left;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(78, 52, 46, 0.08);
+    }
+
+    .debrief-card p {
+      font-size: 1.03rem;
+      line-height: 1.65;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .result-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 640px) {
+      .content {
+        padding: 22px 18px 26px;
+      }
+      .summary-grid,
+      .result-actions {
+        grid-template-columns: 1fr;
+      }
+      .vocab-score-pill {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+      }
+      .vocab-select {
+        width: 100%;
+        flex: 1 1 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div id="game-container">
-    <div id="start-screen" class="content">
-        <h1 style="text-align:center; color: var(--wood-dark);">♟️ The Grandmaster Challenge</h1>
+  <div id="game-container">
+    <!-- Subtle Classic Chessboard Top Trim -->
+    <div class="checker-trim"></div>
+
+    <!-- =========================================================
+         SCREEN 1: LANDING PAGE (#landing-screen)
+         ========================================================= -->
+    <div id="landing-screen" class="screen active">
+      <div class="content landing-hero">
+        <div class="esl-badge">♟️ ESL Strategy &amp; Event Management Simulation</div>
+        <h1 class="landing-title">The Grandmaster Challenge</h1>
+        <div class="landing-subtitle">Chess Tournament Manager — Old City Library Edition</div>
+
         <div class="story-box">
-            "Welcome, Organizer! Our city's old library is famous for its quiet rooms. We want to host the biggest Chess Tournament of the year here. People are coming from many different towns. They expect focus, silence, and good games. Can you make the right choices and lead us to a checkmate victory?"
+          Welcome, Organizer! Our city's historic Old Library is famous for its quiet reading rooms and grand wooden tables. The Library Committee has chosen <strong>YOU</strong> to host the biggest Chess Tournament of the year. Players are arriving from neighboring towns expecting absolute silence, fair pairings, and checkmate-level hospitality. Manage your budget, solve unexpected crises, and earn up to <strong>30 points</strong> to achieve <strong>Grandmaster Status</strong>!
         </div>
-        <button class="action-btn" onclick="startGame()">START TOURNAMENT</button>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span class="summary-icon">🗣️</span>
+            <h3>Pre-Match Warm-Up</h3>
+            <p>Discuss strategy &amp; master 8 key tournament vocabulary terms.</p>
+          </div>
+          <div class="summary-card">
+            <span class="summary-icon">♟️</span>
+            <h3>10 Strategic Decisions</h3>
+            <p>Manage acoustics, equipment, fees, pairings &amp; library etiquette.</p>
+          </div>
+          <div class="summary-card">
+            <span class="summary-icon">⚡</span>
+            <h3>2 Sudden-Death Crises</h3>
+            <p>React under pressure when unexpected emergencies strike.</p>
+          </div>
+        </div>
+
+        <div class="landing-actions">
+          <button class="btn-primary" onclick="openWarmer()">Start Pre-Tournament Briefing (Warm-Up) →</button>
+          <button class="btn-secondary" onclick="startGame()">Skip Directly to Tournament →</button>
+        </div>
+      </div>
     </div>
 
-    <div id="game-play" style="display:none;">
-        <div class="stats-bar">
-            <span>Decision: <span id="step-count">1</span>/10</span>
-            <span id="score-display">Points: 0</span>
-        </div>
-        <div class="content">
-            <div id="q-text" class="question"></div>
-            <div id="options-container" class="options-grid"></div>
-            
-            <div id="feedback-box" class="feedback">
-                <p id="feedback-msg" style="margin:0; font-weight: bold;"></p>
-                <button id="next-btn" class="action-btn" onclick="nextStep()">Next Decision →</button>
-                <button id="restart-btn" class="action-btn" style="display:none; background: #555;" onclick="location.reload()">START AGAIN</button>
+    <!-- =========================================================
+         SCREEN 2: INTERACTIVE WARMER PAGE (#warmer-screen)
+         ========================================================= -->
+    <div id="warmer-screen" class="screen">
+      <div class="warmer-topbar">
+        <h2>Pre-Tournament Briefing: Warm-Up &amp; Vocabulary</h2>
+        <button class="btn-back-intro" onclick="showScreen('landing-screen')">← Back to Intro</button>
+      </div>
+
+      <div class="content">
+        <!-- Part 1: Discussion Questions (Speaking Warm-Up) -->
+        <div class="warmer-section">
+          <span class="section-pill">Part 1 • Speaking Warm-Up</span>
+          <h3>Discussion Questions</h3>
+          <p class="warmer-intro">Discuss these four questions with a partner or group before opening the Old Library doors to players.</p>
+
+          <div class="discussion-grid">
+            <div class="discussion-card">
+              <span class="discussion-num">Question 1</span>
+              <p>Have you ever played chess or another strategy board game? What skills do you think a strong player needs most?</p>
             </div>
+            <div class="discussion-card">
+              <span class="discussion-num">Question 2</span>
+              <p>Why are silence and concentration so important during a serious match or an important exam?</p>
+            </div>
+            <div class="discussion-card">
+              <span class="discussion-num">Question 3</span>
+              <p>Imagine you are organizing a public event inside a quiet library. What rules would you set for visitors and players?</p>
+            </div>
+            <div class="discussion-card">
+              <span class="discussion-num">Question 4</span>
+              <p>How should a fair organizer or referee handle a disagreement between two competitive players?</p>
+            </div>
+          </div>
+
+          <div class="phrases-box">
+            <h4>💬 Useful Speaking Phrases</h4>
+            <ul class="phrases-list">
+              <li>"In my opinion, the most essential factor is..."</li>
+              <li>"To keep the atmosphere fair, an organizer should..."</li>
+              <li>"If a disturbance happens mid-game, I would..."</li>
+              <li>"On the one hand..., on the other hand..."</li>
+            </ul>
+          </div>
         </div>
+
+        <!-- Part 2: Chess & Tournament Vocabulary Match-Up -->
+        <div class="warmer-section">
+          <span class="section-pill">Part 2 • Vocabulary Match-Up</span>
+          <h3>Chess &amp; Tournament Vocabulary Match-Up</h3>
+          <p class="warmer-intro">Match all 8 target words to their definitions. Click a chip in the Word Bank to highlight it (then click any card), or select directly from each dropdown menu.</p>
+
+          <div class="word-bank-box">
+            <div class="word-bank-top">
+              <span class="word-bank-label">♟️ Interactive Word Bank</span>
+              <span class="word-bank-status" id="bank-status">Click a word chip to select it, or use any dropdown</span>
+            </div>
+            <div class="word-chips" id="word-chips-container"></div>
+          </div>
+
+          <div class="vocab-cards" id="vocab-cards-container"></div>
+
+          <div class="vocab-controls">
+            <button class="btn-check" onclick="checkVocabAnswers()">Check Answers</button>
+            <button class="btn-reset" onclick="resetVocabExercise()">Reset Exercise</button>
+            <div class="vocab-score-pill" id="vocab-score-badge">Score: 0 / 8 Correct</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="startGame()">Begin Chess Tournament →</button>
+      </div>
     </div>
 
-    <div id="result-screen">
-        <h1 id="res-title"></h1>
-        <p id="res-desc" style="font-size: 1.2rem;"></p>
-        <h2 id="res-score"></h2>
-        <button class="action-btn" onclick="location.reload()">START AGAIN</button>
+    <!-- =========================================================
+         SCREEN 3: EXPANDED TOURNAMENT GAMEPLAY (#game-play)
+         ========================================================= -->
+    <div id="game-play" class="screen">
+      <div class="stats-bar">
+        <span id="step-label">Decision: <span id="step-count">1</span> / 10</span>
+        <span id="score-display">Points: 0 / 30</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-bar"></div>
+      </div>
+
+      <div class="content">
+        <!-- Context Vocabulary Pills Strip -->
+        <div class="vocab-strip" id="vocab-strip"></div>
+
+        <div id="q-text" class="question"></div>
+        <div id="options-container" class="options-grid"></div>
+
+        <!-- Expanded Multi-Sentence Feedback Card + Organizer's Insight -->
+        <div id="feedback-box" class="feedback-card">
+          <div class="fb-header">
+            <span id="fb-title">Masterstroke!</span>
+            <span id="fb-points">+3 Points</span>
+          </div>
+          <div class="fb-body">
+            <p id="feedback-msg" class="fb-narrative"></p>
+            <div class="insight-box">
+              <span class="insight-title">♟️ Organizer's Insight:</span>
+              <span id="feedback-insight"></span>
+            </div>
+          </div>
+          <div class="fb-actions" id="fb-actions">
+            <button id="next-btn" class="btn-primary" onclick="nextStep()">Next Decision →</button>
+            <button id="restart-btn" class="btn-primary" style="display: none; background-color: var(--danger); border-color: var(--danger);" onclick="startGame()">START AGAIN</button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
-<script>
-let score = 0;
-let currentStep = 0;
-let isSuddenDeath = false;
+    <!-- =========================================================
+         SCREEN 4: FINAL EVALUATION & DEBRIEFING (#result-screen)
+         ========================================================= -->
+    <div id="result-screen" class="screen">
+      <div class="result-badge">🏛️ Old City Library Committee • Official Evaluation</div>
+      <h1 id="res-title">🏆 GRANDMASTER STATUS</h1>
+      <div class="final-score-pill" id="res-score">Final Score: 0 / 30</div>
 
-const DECISIONS = [
-    {
+      <div class="debrief-card">
+        <p id="res-desc"></p>
+        <div class="insight-box">
+          <span class="insight-title">♟️ Library Committee Closing Commendation:</span>
+          <span id="res-commendation"></span>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-primary" onclick="startGame()">Play New Tournament</button>
+        <button class="btn-secondary" onclick="openWarmer()">Review Warm-Up &amp; Vocab</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * =========================================================
+     * WARMER VOCABULARY DATA (8 TARGET TERMS)
+     * =========================================================
+     */
+    const VOCAB_ITEMS = [
+      {
+        id: 1,
+        word: "Checkmate",
+        def: "The winning position in chess where a player's king is trapped and cannot escape capture.",
+        hint: "Think of the famous word a chess player announces at the very end of a winning game."
+      },
+      {
+        id: 2,
+        word: "Entry fee",
+        def: "The amount of money each participant pays to enter a competition or tournament.",
+        hint: "Look for the two-word noun phrase describing the registration cost paid by each player."
+      },
+      {
+        id: 3,
+        word: "Refreshments",
+        def: "Light food and drinks served to guests or players during a break.",
+        hint: "This plural noun refers to water, tea, fruit, and quiet snacks offered during an event."
+      },
+      {
+        id: 4,
+        word: "Distracting",
+        def: "Preventing someone from giving their full attention or concentration to a task.",
+        hint: "Loud music, ringing phones, or crunchy crisp bags are all examples of this adjective."
+      },
+      {
+        id: 5,
+        word: "Etiquette",
+        def: "The set of polite rules and respectful behavior expected in a social or sporting setting.",
+        hint: "Shaking hands before a match and staying silent in a library are parts of good tournament manners."
+      },
+      {
+        id: 6,
+        word: "Pairing",
+        def: "The process of matching two players to compete against each other in a tournament round.",
+        hint: "Notice the root word 'pair' (two people matched together for a game)."
+      },
+      {
+        id: 7,
+        word: "Arbiter",
+        def: "The official referee in a chess tournament who enforces the rules and settles disputes.",
+        hint: "In international chess (FIDE), the official referee or judge has this formal title."
+      },
+      {
+        id: 8,
+        word: "Prize fund",
+        def: "The money collected from tickets or fees that is set aside to reward the winners.",
+        hint: "Look for the two-word phrase combining 'prize' with a pool of money ('fund')."
+      }
+    ];
+
+    let selectedBankWord = null;
+
+    /**
+     * Build the Interactive Warmer Word Bank & 8 Definition Cards
+     */
+    function initWarmer() {
+      const chipsContainer = document.getElementById("word-chips-container");
+      const cardsContainer = document.getElementById("vocab-cards-container");
+
+      chipsContainer.innerHTML = VOCAB_ITEMS.map(item => `
+        <button type="button" class="word-chip" data-word="${item.word}" onclick="selectWordChip('${item.word}')">
+          <span class="chip-mark"></span>${item.word}
+        </button>
+      `).join("");
+
+      const dropdownOptions = VOCAB_ITEMS
+        .map(item => `<option value="${item.word}">${item.word}</option>`)
+        .join("");
+
+      cardsContainer.innerHTML = VOCAB_ITEMS.map((item, idx) => `
+        <div class="vocab-card" id="vocab-card-${item.id}" onclick="handleCardClick(${item.id}, event)">
+          <div class="vocab-row">
+            <div class="vocab-def">
+              <span class="vocab-idx">${idx + 1}.</span>${item.def}
+            </div>
+            <select class="vocab-select" id="vocab-select-${item.id}" aria-label="Select vocabulary word for item ${idx + 1}" onchange="handleDropdownChange()">
+              <option value="">-- Choose term --</option>
+              ${dropdownOptions}
+            </select>
+          </div>
+          <div class="vocab-feedback" id="vocab-fb-${item.id}"></div>
+        </div>
+      `).join("");
+    }
+
+    function selectWordChip(word) {
+      selectedBankWord = (selectedBankWord === word) ? null : word;
+      const statusEl = document.getElementById("bank-status");
+      statusEl.textContent = selectedBankWord
+        ? `Selected "${selectedBankWord}" — click any definition card or choose from its dropdown`
+        : "Click a word chip to select it, or use any dropdown";
+      updateWordChipStates();
+    }
+
+    function handleCardClick(cardId, event) {
+      if (!selectedBankWord) return;
+      if (event && event.target && event.target.tagName === "SELECT") return;
+
+      const selectEl = document.getElementById(`vocab-select-${cardId}`);
+      selectEl.value = selectedBankWord;
+      selectedBankWord = null;
+      document.getElementById("bank-status").textContent = "Click a word chip to select it, or use any dropdown";
+      updateWordChipStates();
+    }
+
+    function handleDropdownChange() {
+      selectedBankWord = null;
+      document.getElementById("bank-status").textContent = "Click a word chip to select it, or use any dropdown";
+      updateWordChipStates();
+    }
+
+    function updateWordChipStates() {
+      const assignedWords = new Set();
+      VOCAB_ITEMS.forEach(item => {
+        const val = document.getElementById(`vocab-select-${item.id}`).value;
+        if (val) assignedWords.add(val);
+      });
+
+      document.querySelectorAll(".word-chip").forEach(chip => {
+        const w = chip.getAttribute("data-word");
+        const isAssigned = assignedWords.has(w);
+        chip.classList.toggle("chip-active", w === selectedBankWord);
+        chip.classList.toggle("chip-assigned", isAssigned);
+        const mark = chip.querySelector(".chip-mark");
+        mark.textContent = isAssigned ? "✓ " : "";
+      });
+    }
+
+    function checkVocabAnswers() {
+      let correctCount = 0;
+
+      VOCAB_ITEMS.forEach(item => {
+        const card = document.getElementById(`vocab-card-${item.id}`);
+        const select = document.getElementById(`vocab-select-${item.id}`);
+        const fb = document.getElementById(`vocab-fb-${item.id}`);
+        const userVal = select.value;
+
+        card.classList.remove("is-correct", "is-incorrect");
+        fb.style.display = "block";
+
+        if (userVal === item.word) {
+          correctCount++;
+          card.classList.add("is-correct");
+          fb.innerHTML = `<strong style="color: var(--success);">✅ Correct!</strong> <strong>${item.word}</strong> matches this definition accurately.`;
+        } else {
+          card.classList.add("is-incorrect");
+          fb.innerHTML = `<strong style="color: var(--danger);">❌ Not quite — Hint:</strong> ${item.hint}`;
+        }
+      });
+
+      const badge = document.getElementById("vocab-score-badge");
+      badge.textContent = correctCount === 8
+        ? "Score: 8 / 8 Correct 🏆"
+        : `Score: ${correctCount} / 8 Correct`;
+    }
+
+    function resetVocabExercise() {
+      selectedBankWord = null;
+      document.getElementById("bank-status").textContent = "Click a word chip to select it, or use any dropdown";
+
+      VOCAB_ITEMS.forEach(item => {
+        const card = document.getElementById(`vocab-card-${item.id}`);
+        const select = document.getElementById(`vocab-select-${item.id}`);
+        const fb = document.getElementById(`vocab-fb-${item.id}`);
+
+        select.value = "";
+        card.classList.remove("is-correct", "is-incorrect");
+        fb.style.display = "none";
+        fb.innerHTML = "";
+      });
+
+      updateWordChipStates();
+      document.getElementById("vocab-score-badge").textContent = "Score: 0 / 8 Correct";
+    }
+
+    /**
+     * =========================================================
+     * 10 STRATEGIC DECISIONS & 2 SUDDEN-DEATH CRISES
+     * All 44 options include multi-sentence `fb` + `insight`
+     * =========================================================
+     */
+    let score = 0;
+    let currentStep = 0;
+    let isSuddenDeath = false;
+
+    const DECISIONS = [
+      {
         q: "1. What is the most important thing for a chess room?",
+        vocab: ["Acoustics", "Concentration", "Lighting", "Distracting"],
         opts: [
-            { t: "Perfect silence and good lighting.", pts: 3, fb: "Excellent! Chess players need to focus." },
-            { t: "Comfortable chairs for everyone.", pts: 2, fb: "Good! Players often sit for many hours." },
-            { t: "A big clock on the wall.", pts: 1, fb: "Okay, but players usually have their own small clocks." },
-            { t: "Loud music to make it exciting.", pts: -1, fb: "Oh no! Chess players hate loud noise. Try again!" }
+          {
+            t: "Perfect silence and good lighting.",
+            pts: 3,
+            fb: "As soon as the players step into the Old Library's main reading hall, they nod with appreciation at the tranquil hush and bright, glare-free lamps. Every competitor can calculate complex tactical variations without eye strain or background chatter.",
+            insight: "Official FIDE chess tournament regulations require quiet playing halls and uniform lighting so players can calculate deep combinations over several hours without visual fatigue."
+          },
+          {
+            t: "Comfortable chairs for everyone.",
+            pts: 2,
+            fb: "Players gratefully test the cushioned wooden library chairs and settle in comfortably for long endgames. However, without checking the room's acoustics and lighting first, a few corner boards still sit in dim shadows.",
+            insight: "Ergonomic seating prevents back fatigue during four-hour classical matches, though silence and clear board visibility remain the top priorities for serious play."
+          },
+          {
+            t: "A big clock on the wall.",
+            pts: 1,
+            fb: "Spectators at the back of the hall glance at the large wall clock to track the afternoon schedule, while the players barely notice it. Because competitors manage individual move times at their own boards, a wall clock alone does little to improve playing conditions.",
+            insight: "In English, notice the difference between a general 'wall clock' (which shows the time of day) and a 'chess clock' (a twin timer that measures each player's thinking time)."
+          },
+          {
+            t: "Loud music to make it exciting.",
+            pts: -1,
+            fb: "The moment upbeat music blasts from the speakers, visiting players cover their ears and the Head Librarian rushes over in shock! Competitive chess demands deep silence, so you must turn off the speakers and choose a calmer priority.",
+            insight: "In a quiet library environment, loud audio is considered 'distracting' and violates basic tournament etiquette—always prioritize silence over background entertainment."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "2. How should we set up the chess boards?",
+        vocab: ["Playing hall", "Spacing", "Table numbers", "Layout"],
         opts: [
-            { t: "Put them all in one big, messy pile.", pts: -1, fb: "No! Players can't find their games. Try again." },
-            { t: "On long tables with lots of space between them.", pts: 3, fb: "Perfect! Players don't want to hit each other's elbows." },
-            { t: "On small coffee tables.", pts: 1, fb: "It's a bit tight, but it works for a small game." },
-            { t: "In neat rows with numbers for each table.", pts: 2, fb: "Very organized! This helps people find their seats." }
+          {
+            t: "Put them all in one big, messy pile.",
+            pts: -1,
+            fb: "Players crowd around the heap of tangled boards and mixed-up pawns, causing immediate confusion and delaying the opening round! An organizer must create an orderly playing hall, so rearrange the room properly.",
+            insight: "Disorganized equipment creates bottlenecks at the start of Round 1; clear spatial layout is essential for both safety and punctuality in public events."
+          },
+          {
+            t: "On long tables with lots of space between them.",
+            pts: 3,
+            fb: "Competitors walk smoothly down the wide aisles and take their seats with plenty of elbow room for score sheets, chess clocks, and captured pieces. Even spectators can observe the games quietly without bumping into players' chairs.",
+            insight: "Generous spacing between boards prevents accidental knocks to pieces and stops players from peeking at neighboring games—a standard requirement in rated tournaments."
+          },
+          {
+            t: "On small coffee tables.",
+            pts: 1,
+            fb: "Players manage to squeeze onto the low café tables, though several taller competitors have to hunch forward uncomfortably and struggle to find room for their clocks. It works for casual blitz games, yet feels cramped for a championship.",
+            insight: "Standard tournament boards measure 50–55 cm wide, meaning small coffee tables leave almost no margin for captured pieces or notation pads."
+          },
+          {
+            t: "In neat rows with numbers for each table.",
+            pts: 2,
+            fb: "Players check the pairing sheet at the door and walk straight to Board 1, Board 2, and Board 3 without asking a single question. The tidy rows look impressive, even though the boards sit slightly close together.",
+            insight: "Numbering every board ('Board 1', 'Board 2', etc.) allows players to locate their assigned match quickly once round pairings are posted."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "3. What entry fee should we charge the players?",
+        vocab: ["Entry fee", "Prize fund", "Budget", "Affordable"],
         opts: [
-            { t: "£2.00 per person.", pts: 1, fb: "It's cheap, but we might not have money for prizes." },
-            { t: "£1,000.00 per person.", pts: -1, fb: "Too expensive! Nobody will come. Try again." },
-            { t: "£10.00 per person.", pts: 3, fb: "Excellent. This is fair and pays for the room." },
-            { t: "£20.00 per person.", pts: 2, fb: "A bit high, but players get a free pen and paper." }
+          {
+            t: "£2.00 per person.",
+            pts: 1,
+            fb: "Local students and casual hobbyists sign up eagerly at the bargain £2 rate, filling the registration desk in minutes. Unfortunately, once you subtract printing and refreshment costs, almost nothing remains in the prize fund.",
+            insight: "When budgeting an event, setting an 'entry fee' too low covers basic administration but leaves no surplus for trophies, arbiter fees, or winner prizes."
+          },
+          {
+            t: "£1,000.00 per person.",
+            pts: -1,
+            fb: "Visiting players stare at the £1,000 sign in disbelief, laugh thinking it is a misprint, and turn back toward the train station! Unless you are hosting a World Championship match, choose a realistic fee for a town tournament.",
+            insight: "A 'prohibitive' price is one so high that ordinary participants cannot afford it—balancing accessibility with event costs is a core management skill."
+          },
+          {
+            t: "£10.00 per person.",
+            pts: 3,
+            fb: "Players gladly pay the fair £10 registration fee at the door, praising the great value for a full day of library tournament play. Your budget cleanly covers hall expenses, refreshments, and an attractive prize fund.",
+            insight: "A moderate £10 entry fee hits the sweet spot for community tournaments: affordable enough to attract 40–60 players while generating a healthy prize pool."
+          },
+          {
+            t: "£20.00 per person.",
+            pts: 2,
+            fb: "Serious club players pay the £20 fee without complaint, especially when they receive a complimentary tournament pen and official scorebook at check-in. A few younger players hesitate at the price, yet the budget looks solid.",
+            insight: "Including small extras—like a branded pen and notation pad—adds perceived value when charging a slightly higher tournament entry fee."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "4. Which chess sets should we use?",
+        vocab: ["Staunton design", "Tournament-grade", "Durability", "Pieces"],
         opts: [
-            { t: "Expensive glass sets that break easily.", pts: 1, fb: "They look pretty, but they are not practical." },
-            { t: "Standard plastic sets (white and black).", pts: 2, fb: "Good. These are the most common sets in the world." },
-            { t: "No sets. Players must bring their own.", pts: -1, fb: "Many people forgot theirs! The room is empty. Try again." },
-            { t: "High-quality wooden sets.", pts: 3, fb: "Beautiful! The players feel like professionals." }
+          {
+            t: "Expensive glass sets that break easily.",
+            pts: 1,
+            fb: "Visitors admire how the translucent glass knights sparkle under the library lamps, though players move nervously for fear of chipping a fragile rook during time pressure. One dropped bishop nearly ends a match early.",
+            insight: "Decorative glass or novelty sets create visual glare and break easily during fast 'time-scramble' finishes—pretty to display, risky to play on."
+          },
+          {
+            t: "Standard plastic sets (white and black).",
+            pts: 2,
+            fb: "Club veterans immediately recognize the classic weighted plastic Staunton pieces and start setting up their openings effortlessly. While not luxurious, the sets are durable, clear, and familiar to every competitor.",
+            insight: "Weighted plastic Staunton sets are the everyday workhorse of school and local club tournaments worldwide because every piece silhouette is instantly recognizable."
+          },
+          {
+            t: "No sets. Players must bring their own.",
+            pts: -1,
+            fb: "Half the out-of-town guests arrive expecting the organizer to provide boards, leaving dozens of empty tables and frustrated players pacing the lobby! A host must supply reliable equipment, so choose an option with sets.",
+            insight: "In English, 'to provide' or 'to supply' equipment is a core responsibility of an event host—never assume traveling guests will carry bulky boards."
+          },
+          {
+            t: "High-quality wooden sets.",
+            pts: 3,
+            fb: "Players run their fingers admiringly over the polished boxwood and rosewood Staunton pieces, remarking that the Old Library feels like a grandmaster championship venue. The weighted felt bases glide silently across the squares.",
+            insight: "Carved wooden Staunton sets with green felt bases reduce board noise in a quiet library and give competitors an authentic championship experience."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "5. What refreshments (food/drink) should we provide?",
+        vocab: ["Refreshments", "Hydration", "Distracting", "Spill-proof"],
         opts: [
-            { t: "Bottled water and quiet snacks like bananas.", pts: 3, fb: "Perfect! These don't make noise when people eat." },
-            { t: "Hot coffee and tea.", pts: 2, fb: "Nice, but be careful not to spill on the boards!" },
-            { t: "Crunchy crisps in loud plastic bags.", pts: -1, fb: "The 'crunch' sound is disturbing the players! Try again." },
-            { t: "A small chocolate bar for energy.", pts: 1, fb: "Okay, but some players get sticky fingers!" }
+          {
+            t: "Bottled water and quiet snacks like bananas.",
+            pts: 3,
+            fb: "Players stay hydrated and energized throughout long afternoon rounds without a single wrapper rustling or drink spilling near the boards. The Library Committee applauds how clean and silent the refreshment station stays.",
+            insight: "Capped bottled water and silent, non-sticky foods like bananas are ideal tournament 'refreshments' because they boost brain energy without noise or mess."
+          },
+          {
+            t: "Hot coffee and tea.",
+            pts: 2,
+            fb: "Competitors warmly welcome the free tea and coffee during round breaks, though you have to keep mugs on a side table so nobody knocks a hot cup across a wooden chessboard. It is a thoughtful touch with minor spill risk.",
+            insight: "In British venues, offering tea and coffee is classic hospitality—just designate a separate refreshment zone away from wooden boards and library books."
+          },
+          {
+            t: "Crunchy crisps in loud plastic bags.",
+            pts: -1,
+            fb: "CRINKLE-CRUNCH! Every time a hungry spectator opens a foil crisp bag, ten players glare up from their boards in annoyance! Loud packaging ruins library concentration, so pick a quieter refreshment option.",
+            insight: "Notice the British English word 'crisps' (called 'potato chips' in American English)—noisy foil bags are banned inside serious chess halls."
+          },
+          {
+            t: "A small chocolate bar for energy.",
+            pts: 1,
+            fb: "Players enjoy the quick sugar boost between rounds, though warm library lights soon melt the chocolate onto several players' fingertips and white pawns. You spend extra time wiping down boards afterward.",
+            insight: "Quick sugars give a short energy spike followed by a crash, whereas fruit and water provide steady focus for multi-hour mental games."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "6. How do we keep the time for each game?",
+        vocab: ["Chess clock", "Time control", "Increment", "Precision"],
         opts: [
-            { t: "The players use their phones.", pts: 1, fb: "Phones are a bit distracting, but it's better than nothing." },
-            { t: "Professional digital chess clocks.", pts: 3, fb: "Brilliant! These are the best for tournaments." },
-            { t: "The players count out loud to ten.", pts: -1, fb: "That is way too loud and annoying! Try again." },
-            { t: "Old mechanical 'ticking' clocks.", pts: 2, fb: "Classic! Some players like the old style." }
+          {
+            t: "The players use their phones.",
+            pts: 1,
+            fb: "A few players download clock apps, but incoming text notifications and glowing screens quickly distract neighboring boards. Worse still, having active smartphones on the table raises fairness concerns.",
+            insight: "Modern tournament rules prohibit smartphones at the board because chess engines on phones could be used to cheat."
+          },
+          {
+            t: "Professional digital chess clocks.",
+            pts: 3,
+            fb: "Players press the sleek digital clock buttons with soft, silent taps, knowing that every second and move increment is tracked with split-second accuracy. There is zero confusion when matches reach tense final seconds.",
+            insight: "Digital chess clocks are mandatory in modern FIDE events because they support 'increment' (adding extra seconds after each move) without loud ticking."
+          },
+          {
+            t: "The players count out loud to ten.",
+            pts: -1,
+            fb: "'One, two, three, four...' echoes across the library as twenty pairs chant numbers simultaneously, turning the reading room into total chaos! Stop the chanting immediately and choose a real timing method.",
+            insight: "Chess games are played in complete silence—verbal counting violates basic tournament etiquette and disrupts every match in the room."
+          },
+          {
+            t: "Old mechanical 'ticking' clocks.",
+            pts: 2,
+            fb: "Traditional club players smile fondly at the vintage analog clocks with their falling red flags, though thirty clocks ticking together creates a noticeable steady hum across the hall. Still, the games run smoothly and fairly.",
+            insight: "Before digital timers, mechanical wind-up clocks used a little red 'flag' that dropped when a player's hour expired—giving rise to the chess phrase 'flagging' an opponent."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "7. A player is using their phone during a game. What do you do?",
+        vocab: ["Arbiter", "Fair play", "Discretion", "Regulations"],
         opts: [
-            { t: "Tell them to put it away immediately.", pts: 2, fb: "Good. Phones are usually not allowed to prevent cheating." },
-            { t: "Take the phone and throw it away.", pts: -1, fb: "That is too aggressive! Be professional. Try again." },
-            { t: "Explain the 'No Phone' rule calmly.", pts: 3, fb: "Excellent. You are a very fair manager." },
-            { t: "Ignore it and walk away.", pts: 1, fb: "The other player is unhappy because it's not fair." }
+          {
+            t: "Tell them to put it away immediately.",
+            pts: 2,
+            fb: "The player looks startled, switches off the phone right away, and apologizes to their opponent. Your firm instruction solves the problem quickly, even if your slightly sharp tone draws a few glances from nearby tables.",
+            insight: "Direct commands ('Put it away immediately') work in urgent moments, though polite, calm authority maintains better library decorum."
+          },
+          {
+            t: "Take the phone and throw it away.",
+            pts: -1,
+            fb: "Grabbing a guest's personal property and tossing it into a bin causes a loud scene and risks damaging an expensive device! As tournament manager, you must act with calm professionalism—try another approach.",
+            insight: "An 'arbiter' or event manager enforces rules through official warnings and penalties, never by seizing or damaging personal belongings."
+          },
+          {
+            t: "Explain the 'No Phone' rule calmly.",
+            pts: 3,
+            fb: "You step quietly beside the table and explain in a calm, respectful whisper why active phones are prohibited during tournament play. The player nods gratefully, powers the phone completely off, and the match resumes without disturbing a single neighbor.",
+            insight: "Calm, private communication is the hallmark of a skilled tournament arbiter: it upholds fair play while preserving silence for surrounding boards."
+          },
+          {
+            t: "Ignore it and walk away.",
+            pts: 1,
+            fb: "The opponent raises a hand in frustration, feeling that you failed to protect fair play while the phone remained visible on the table. Avoiding a small rule check creates bigger tension later in the round.",
+            insight: "Ignoring rule infractions undermines trust in the organizer—consistent, polite enforcement keeps every competitor confident in the results."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "8. What should the winner of the tournament receive?",
+        vocab: ["Prize fund", "Trophy", "Recognition", "Champion"],
         opts: [
-            { t: "A small rock from the garden.", pts: 1, fb: "The winner looks very confused. It's a boring prize." },
-            { t: "A silver trophy and a cash prize.", pts: 3, fb: "Fantastic! This is what everyone is playing for." },
-            { t: "A chess book signed by a master.", pts: 2, fb: "Very cool! Players love to learn more." },
-            { t: "The keys to the library.", pts: -1, fb: "We can't give the building away! Try again." }
+          {
+            t: "A small rock from the garden.",
+            pts: 1,
+            fb: "When you present a plain grey pebble during the closing ceremony, the champion blinks in bewilderment while the audience stifles polite chuckles. Players appreciate memorable recognition after hours of intense mental effort.",
+            insight: "In English, 'recognition' means public praise or a meaningful award honoring achievement—symbolic trophies carry lasting pride for competitors."
+          },
+          {
+            t: "A silver trophy and a cash prize.",
+            pts: 3,
+            fb: "Cameras flash as the champion lifts the engraved silver cup alongside the prize envelope, drawing warm applause from every player in the Old Library. Competitors already ask when next year's registration will open!",
+            insight: "Combining a permanent keepsake (an engraved trophy) with a cash reward from the 'prize fund' is the classic gold standard for chess tournaments."
+          },
+          {
+            t: "A chess book signed by a master.",
+            pts: 2,
+            fb: "The winner's eyes light up upon receiving a classic endgame manual autographed by a visiting Grandmaster, eagerly flipping through the annotated games. It is an inspiring, thoughtful reward for any dedicated student of chess.",
+            insight: "Signed strategy books are deeply valued in chess culture because they help winners continue improving long after tournament day ends."
+          },
+          {
+            t: "The keys to the library.",
+            pts: -1,
+            fb: "The Head Librarian gasps and snatches the brass library keys back from the podium—you cannot give away municipal property! Choose an appropriate tournament prize for the champion.",
+            insight: "Event organizers manage a venue on trust; awards must come from the event's designated prize budget rather than venue assets."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "9. How do we decide who plays against whom?",
+        vocab: ["Pairing", "Swiss system", "Standings", "Round"],
         opts: [
-            { t: "The oldest people play the youngest.", pts: 1, fb: "A bit strange, but the games are starting." },
-            { t: "Pair people with the same number of points.", pts: 3, fb: "Perfect! This makes the games very even and exciting." },
-            { t: "Let people choose their own friends.", pts: 2, fb: "Friendly, but it's not very professional." },
-            { t: "Toss a coin for every single player.", pts: -1, fb: "This takes too long! Everyone is waiting. Try again." }
+          {
+            t: "The oldest people play the youngest.",
+            pts: 1,
+            fb: "Spectators find the generational matchups charming, though several beginner children get checkmated in ten moves by retired club masters while strong adults wait around with lopsided games. It is fun, yet hardly balanced.",
+            insight: "In competitive events, 'lopsided' matches (where one side is vastly stronger) are less exciting than pairings based on current tournament performance."
+          },
+          {
+            t: "Pair people with the same number of points.",
+            pts: 3,
+            fb: "Winners face fellow winners on the top boards while players on equal scores battle for a comeback, keeping every single round suspenseful right up to the final move! Competitors praise how fair and competitive every match feels.",
+            insight: "Matching players with identical scores is the foundation of the 'Swiss System'—used in nearly all chess tournaments so everyone plays every round without elimination."
+          },
+          {
+            t: "Let people choose their own friends.",
+            pts: 2,
+            fb: "Friends enjoy a relaxed, sociable afternoon playing familiar rivals, though serious out-of-town competitors note that self-selected matches feel more like a casual club night than an official championship.",
+            insight: "Neutral, objective 'pairings' prevent bias and ensure that every participant has an equal path to the top boards."
+          },
+          {
+            t: "Toss a coin for every single player.",
+            pts: -1,
+            fb: "Twenty minutes later you are still flipping a penny in the middle of the hall while restless players check their watches and ask when Round 1 will actually start! Pick an organized pairing method.",
+            insight: "Manual coin tosses do not scale to large groups—clear pairing rules keep tournament rounds running strictly on schedule."
+          }
         ]
-    },
-    {
+      },
+      {
         q: "10. The tournament is over. What is your final task?",
+        vocab: ["Hospitality", "Standings", "Stewardship", "Debrief"],
         opts: [
-            { t: "Say 'goodbye' and leave the mess.", pts: 1, fb: "The library is dirty, but the games were good." },
-            { t: "Help clean the room and thank the players.", pts: 3, fb: "Perfect! You are a world-class organizer." },
-            { t: "Lock everyone inside the library.", pts: -1, fb: "That is a crime! Let them go home. Try again." },
-            { t: "Post the final scores on the library board.", pts: 2, fb: "Good job. Everyone wants to see the results." }
+          {
+            t: "Say 'goodbye' and leave the mess.",
+            pts: 1,
+            fb: "You wave farewell at the library doors while empty water bottles, scattered score sheets, and crooked chairs remain behind. The games went well, yet the Library Committee looks disappointed by the untidy hall.",
+            insight: "Leaving a borrowed venue clean ('venue stewardship') determines whether the Library Committee invites your tournament back next year."
+          },
+          {
+            t: "Help clean the room and thank the players.",
+            pts: 3,
+            fb: "You box up every wooden chess set neatly, restore the Old Library tables to spotless condition, and personally thank every competitor and librarian for a memorable day. The Committee immediately invites you to host next year's championship!",
+            insight: "True event leadership shines at closing time: expressing gratitude to participants and leaving the venue spotless builds lasting community goodwill."
+          },
+          {
+            t: "Lock everyone inside the library.",
+            pts: -1,
+            fb: "Banging on the heavy oak doors, players and librarians demand to know why you turned the deadbolt with fifty people still inside! Unlock the doors right away and choose a proper closing task.",
+            insight: "Fire safety laws strictly prohibit locking occupied public exits—always ensure every guest has exited safely before securing a building."
+          },
+          {
+            t: "Post the final scores on the library board.",
+            pts: 2,
+            fb: "Players gather enthusiastically around the bulletin board to check their final rankings, tie-break points, and tournament ratings before heading home. It is a helpful, professional finishing touch.",
+            insight: "Publishing clear final 'standings' (the official ranking table) gives every competitor closure and transparent proof of their results."
+          }
         ]
-    }
-];
+      }
+    ];
 
-const SUDDEN_DEATHS = [
-    {
+    const SUDDEN_DEATHS = [
+      {
         triggerAfter: 6,
-        q: "💀 SUDDEN DEATH: A group of children starts a loud birthday party in the next room!",
+        done: false,
+        q: "⚡ SUDDEN DEATH CRISIS: A group of children starts a loud birthday party in the next room!",
+        vocab: ["Diplomacy", "Disturbance", "Courtyard", "Etiquette"],
         opts: [
-            { t: "Politely ask them to move to the garden to save the peace.", fail: false, fb: "Great work! You saved the tournament with your kindness! The players can focus again." },
-            { t: "Start shouting at the children.", fail: true, fb: "Game Over! You were too loud and everyone left. Better luck next time!" }
+          {
+            t: "Politely ask them to move to the garden to save the peace.",
+            fail: false,
+            fb: "You step into the hallway with a warm smile, greet the parents politely, and suggest the sunny library garden where the children can celebrate freely without indoor noise rules. The parents happily move outside, and silence immediately returns to the tournament hall!",
+            insight: "Diplomatic problem-solving works best when you offer a win-win alternative ('the sunny garden') rather than simply saying 'no'—a key skill in English hospitality."
+          },
+          {
+            t: "Start shouting at the children.",
+            fail: true,
+            fb: "Your angry shouting echoes louder than the party itself, frightening the children, upsetting their parents, and disrupting every single chess match in the building! The Head Librarian immediately cancels the tournament.",
+            insight: "Losing your temper in a quiet venue creates a bigger disturbance than the original noise—a tournament manager must always model calm self-control."
+          }
         ]
-    },
-    {
+      },
+      {
         triggerAfter: 9,
-        q: "💀 SUDDEN DEATH: The main light in the room breaks and it is dark!",
+        done: false,
+        q: "⚡ SUDDEN DEATH CRISIS: The main light in the room breaks and it is dark!",
+        vocab: ["Contingency", "Composure", "Reading lamps", "Championship"],
         opts: [
-            { t: "Cancel the final and go home.", fail: true, fb: "Game Over! You gave up too soon. Better luck next time!" },
-            { t: "Use the small reading lamps on every table to finish the game.", fail: false, fb: "Incredible! The players love the atmosphere. You saved the final match!" }
+          {
+            t: "Cancel the final and go home.",
+            fail: true,
+            fb: "You throw up your hands and declare the championship abandoned just as the final round is reaching its climax! Dozens of disappointed travelers pack their bags in frustration after coming all this way for nothing.",
+            insight: "In event management, abandoning an event prematurely without checking backup options wastes everyone's preparation and entry fees."
+          },
+          {
+            t: "Use the small reading lamps on every table to finish the game.",
+            fail: false,
+            fb: "Keeping total composure, you switch on the classic green-shaded brass reading lamps along every library table, bathing each chessboard in dramatic, focused pools of warm light. Players call it the most unforgettable final atmosphere they have ever experienced!",
+            insight: "Great organizers stay calm under pressure and use existing venue resources creatively—turning an unexpected power hitch into a memorable highlight."
+          }
         ]
-    }
-];
+      }
+    ];
 
-// Fisher-Yates Shuffle Function
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
+    // Fisher-Yates Shuffle Function
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
     }
-    return array;
-}
 
-function startGame() {
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('game-play').style.display = 'block';
-    renderStep();
-}
+    /**
+     * Switch Between the 4 Screens
+     */
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
 
-function renderStep() {
-    document.getElementById('feedback-box').style.display = 'none';
-    const container = document.getElementById('options-container');
-    container.innerHTML = '';
-    
-    const death = SUDDEN_DEATHS.find(d => d.triggerAfter === currentStep && !isSuddenDeath);
-    
-    if (death && !death.done) {
+      if (screenId !== 'game-play') {
+        document.getElementById('game-container').classList.remove('sudden-death');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openWarmer() {
+      showScreen('warmer-screen');
+    }
+
+    /**
+     * Start or Restart a Fresh Tournament
+     */
+    function startGame() {
+      score = 0;
+      currentStep = 0;
+      isSuddenDeath = false;
+      SUDDEN_DEATHS.forEach(d => { d.done = false; });
+
+      updateScoreDisplay();
+      showScreen('game-play');
+      renderStep();
+    }
+
+    function updateScoreDisplay() {
+      document.getElementById('score-display').textContent = `Points: ${score} / 30`;
+    }
+
+    /**
+     * Render Current Decision or Sudden-Death Crisis
+     */
+    function renderStep() {
+      const fbBox = document.getElementById('feedback-box');
+      fbBox.style.display = 'none';
+      fbBox.className = 'feedback-card';
+
+      const container = document.getElementById('options-container');
+      container.innerHTML = '';
+
+      const death = SUDDEN_DEATHS.find(d => d.triggerAfter === currentStep && !isSuddenDeath && !d.done);
+
+      if (death) {
         isSuddenDeath = true;
         death.done = true;
+
         document.getElementById('game-container').classList.add('sudden-death');
+        document.getElementById('step-label').innerHTML = `⚡ SUDDEN DEATH CRISIS`;
         document.getElementById('q-text').textContent = death.q;
-        document.getElementById('step-count').textContent = "!!!";
-        
-        // Shuffle Sudden Death Options
-        const shuffledDeathOpts = shuffleArray([...death.opts]);
+        renderVocabStrip(death.vocab);
+
+        const shuffledDeathOpts = shuffleArray(death.opts);
         shuffledDeathOpts.forEach((opt, i) => {
-            const btn = createOptionBtn(String.fromCharCode(65 + i), opt.t);
-            btn.onclick = () => handleDeathChoice(opt);
-            container.appendChild(btn);
+          const btn = createOptionBtn(String.fromCharCode(65 + i), opt.t);
+          btn.onclick = () => handleDeathChoice(opt, btn);
+          container.appendChild(btn);
         });
-    } else {
+      } else {
         isSuddenDeath = false;
         document.getElementById('game-container').classList.remove('sudden-death');
+
         const data = DECISIONS[currentStep];
-        document.getElementById('step-count').textContent = currentStep + 1;
+        const pct = (currentStep / DECISIONS.length) * 100;
+        document.getElementById('progress-bar').style.width = `${pct}%`;
+        document.getElementById('step-label').innerHTML = `Decision: <span id="step-count">${currentStep + 1}</span> / 10`;
         document.getElementById('q-text').textContent = data.q;
-        
-        // Shuffle Standard Decision Options
-        const shuffledOpts = shuffleArray([...data.opts]);
+        renderVocabStrip(data.vocab);
+
+        const shuffledOpts = shuffleArray(data.opts);
         shuffledOpts.forEach((opt, i) => {
-            const btn = createOptionBtn(String.fromCharCode(65 + i), opt.t);
-            btn.onclick = () => handleChoice(opt);
-            container.appendChild(btn);
+          const btn = createOptionBtn(String.fromCharCode(65 + i), opt.t);
+          btn.onclick = () => handleChoice(opt, btn);
+          container.appendChild(btn);
         });
+      }
     }
-}
 
-function createOptionBtn(letter, text) {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.innerHTML = `<span class="letter">${letter}</span><span>${text}</span>`;
-    return btn;
-}
+    function renderVocabStrip(words) {
+      const strip = document.getElementById('vocab-strip');
+      strip.innerHTML = `
+        <span class="vocab-strip-title">📚 Key Terms:</span>
+        ${words.map(w => `<span class="ctx-pill">${w}</span>`).join('')}
+      `;
+    }
 
-function handleChoice(opt) {
-    const fbBox = document.getElementById('feedback-box');
-    const fbMsg = document.getElementById('feedback-msg');
-    const nextBtn = document.getElementById('next-btn');
-    
-    fbBox.style.display = 'block';
-    
-    if (opt.pts === -1) {
+    function createOptionBtn(letter, text) {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<span class="letter">${letter}</span><span>${text}</span>`;
+      return btn;
+    }
+
+    /**
+     * Handle Standard Decision Choice (1–10)
+     */
+    function handleChoice(opt, btnElement) {
+      const fbBox = document.getElementById('feedback-box');
+      const fbTitle = document.getElementById('fb-title');
+      const fbPoints = document.getElementById('fb-points');
+      const fbMsg = document.getElementById('feedback-msg');
+      const fbInsight = document.getElementById('feedback-insight');
+      const nextBtn = document.getElementById('next-btn');
+      const restartBtn = document.getElementById('restart-btn');
+
+      fbBox.style.display = 'block';
+      restartBtn.style.display = 'none';
+
+      if (opt.pts === -1) {
         score -= 1;
-        fbBox.className = "feedback fb-negative";
-        fbMsg.textContent = opt.fb + " (-1 point)";
+        updateScoreDisplay();
+
+        btnElement.disabled = true;
+        btnElement.classList.add('opt-wrong');
+
+        fbBox.className = 'feedback-card fb-negative';
+        fbTitle.textContent = '❌ Poor Strategic Move';
+        fbPoints.textContent = '-1 Point — Try Another Move';
+        fbMsg.textContent = opt.fb;
+        fbInsight.textContent = opt.insight;
         nextBtn.style.display = 'none';
-    } else {
+      } else {
         score += opt.pts;
-        fbBox.className = "feedback fb-positive";
-        fbMsg.textContent = opt.fb + " (+" + opt.pts + " points)";
-        nextBtn.style.display = 'block';
-        document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-    }
-    document.getElementById('score-display').textContent = `Points: ${score}`;
-}
+        updateScoreDisplay();
 
-function handleDeathChoice(opt) {
-    const fbBox = document.getElementById('feedback-box');
-    const fbMsg = document.getElementById('feedback-msg');
-    fbBox.style.display = 'block';
+        document.querySelectorAll('.option-btn').forEach(b => { b.disabled = true; });
 
-    if (opt.fail) {
-        fbBox.className = "feedback fb-negative";
-        fbMsg.textContent = opt.fb;
-        document.getElementById('next-btn').style.display = 'none';
-        document.getElementById('restart-btn').style.display = 'block';
-    } else {
-        fbBox.className = "feedback fb-positive";
-        fbMsg.textContent = opt.fb;
-        document.getElementById('next-btn').style.display = 'block';
-    }
-    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-}
-
-function nextStep() {
-    if (!isSuddenDeath) {
-        if (currentStep < DECISIONS.length - 1) {
-            currentStep++;
-            renderStep();
+        if (opt.pts === 3) {
+          btnElement.classList.add('opt-masterstroke');
+          fbBox.className = 'feedback-card fb-masterstroke';
+          fbTitle.textContent = '🏆 +3 Masterstroke!';
+          fbPoints.textContent = '+3 Points';
+        } else if (opt.pts === 2) {
+          btnElement.classList.add('opt-solid');
+          fbBox.className = 'feedback-card fb-solid';
+          fbTitle.textContent = '✅ +2 Solid Move!';
+          fbPoints.textContent = '+2 Points';
         } else {
-            showFinalResults();
+          btnElement.classList.add('opt-acceptable');
+          fbBox.className = 'feedback-card fb-acceptable';
+          fbTitle.textContent = '⚖️ +1 Acceptable Move';
+          fbPoints.textContent = '+1 Point';
         }
-    } else {
-        renderStep();
-    }
-}
 
-function showFinalResults() {
-    document.getElementById('game-play').style.display = 'none';
-    const screen = document.getElementById('result-screen');
-    screen.style.display = 'block';
-    
-    const title = document.getElementById('res-title');
-    const desc = document.getElementById('res-desc');
-    
-    if (score >= 27) {
-        title.textContent = "🏆 GRANDMASTER STATUS";
-        desc.textContent = "You are a genius! The tournament was perfect. The Library Committee wants you to work here forever!";
-    } else if (score >= 20) {
-        title.textContent = "🥈 INTERNATIONAL MASTER";
-        desc.textContent = "Great job! Everyone enjoyed the games and the library is still standing.";
-    } else if (score >= 12) {
-        title.textContent = "🥉 CLUB PLAYER";
-        desc.textContent = "Good effort. It was a bit messy, but we finished the games.";
-    } else {
-        title.textContent = "♟️ NOVICE PLAYER";
-        desc.textContent = "That was a hard day. You need more practice to manage a quiet room!";
+        fbMsg.textContent = opt.fb;
+        fbInsight.textContent = opt.insight;
+        nextBtn.style.display = 'inline-flex';
+        nextBtn.textContent = currentStep === DECISIONS.length - 1
+          ? 'View Final Evaluation →'
+          : 'Next Decision →';
+      }
+
+      fbBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-    document.getElementById('res-score').textContent = `Final Score: ${score} / 30`;
-}
-</script>
+
+    /**
+     * Handle Sudden-Death Crisis Choice
+     */
+    function handleDeathChoice(opt, btnElement) {
+      const fbBox = document.getElementById('feedback-box');
+      const fbTitle = document.getElementById('fb-title');
+      const fbPoints = document.getElementById('fb-points');
+      const fbMsg = document.getElementById('feedback-msg');
+      const fbInsight = document.getElementById('feedback-insight');
+      const nextBtn = document.getElementById('next-btn');
+      const restartBtn = document.getElementById('restart-btn');
+
+      document.querySelectorAll('.option-btn').forEach(b => { b.disabled = true; });
+      fbBox.style.display = 'block';
+
+      if (opt.fail) {
+        btnElement.classList.add('opt-wrong');
+        fbBox.className = 'feedback-card fb-negative';
+        fbTitle.textContent = '💀 Tournament Halted — Crisis Failed';
+        fbPoints.textContent = 'Game Over';
+        fbMsg.textContent = opt.fb;
+        fbInsight.textContent = opt.insight;
+        nextBtn.style.display = 'none';
+        restartBtn.style.display = 'inline-flex';
+      } else {
+        btnElement.classList.add('opt-masterstroke');
+        fbBox.className = 'feedback-card fb-masterstroke';
+        fbTitle.textContent = '⚡ Crisis Solved with Composure!';
+        fbPoints.textContent = 'Tournament Saved';
+        fbMsg.textContent = opt.fb;
+        fbInsight.textContent = opt.insight;
+        nextBtn.style.display = 'inline-flex';
+        nextBtn.textContent = 'Next Decision →';
+        restartBtn.style.display = 'none';
+      }
+
+      fbBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /**
+     * Advance to Next Step or Show Final Evaluation
+     */
+    function nextStep() {
+      if (!isSuddenDeath) {
+        if (currentStep < DECISIONS.length - 1) {
+          currentStep++;
+          renderStep();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          showFinalResults();
+        }
+      } else {
+        renderStep();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    /**
+     * Final Evaluation & 4-Tier Library Committee Debriefing
+     */
+    function showFinalResults() {
+      document.getElementById('progress-bar').style.width = '100%';
+      showScreen('result-screen');
+
+      const title = document.getElementById('res-title');
+      const desc = document.getElementById('res-desc');
+      const comm = document.getElementById('res-commendation');
+
+      if (score >= 27) {
+        title.textContent = "🏆 GRANDMASTER STATUS";
+        desc.textContent = "Extraordinary leadership, Organizer! From acoustic silence and polished wooden Staunton sets to fair Swiss pairings and spotless closing stewardship, every detail of the Old Library Chess Tournament ran like clockwork. Visiting players and librarians alike are already calling it the finest regional championship in years.";
+        comm.textContent = "The Old City Library Committee hereby awards you Honorary Chief Arbiter & Grandmaster Organizer status—and officially reserves the Grand Reading Hall for your tournament next season!";
+      } else if (score >= 20) {
+        title.textContent = "🥈 INTERNATIONAL MASTER";
+        desc.textContent = "Well played! You kept the Old Library peaceful, balanced the registration budget, and guided competitors smoothly through every round. Only a couple of minor logistical compromises kept you from a flawless score, and the players left with warm memories of your hospitality.";
+        comm.textContent = "You demonstrated strong event-management instincts and calm judgment under pressure. Fine-tuning a few equipment and pairing choices will easily carry you to Grandmaster Status next time!";
+      } else if (score >= 12) {
+        title.textContent = "🥉 CLUB PLAYER";
+        desc.textContent = "A respectable effort! All ten rounds were completed and the Old Library survived the day, though a few noisy distractions, cramped setups, or uneven pairings tested everyone's patience. With sharper planning, this tournament can become a true local classic.";
+        comm.textContent = "Review the Organizer's Insights from each round—focusing on silent refreshments, clear pairing rules, and polite conflict resolution will elevate your next tournament dramatically.";
+      } else {
+        title.textContent = "♟️ NOVICE PLAYER";
+        desc.textContent = "What a turbulent day at the Old Library! Between unexpected noise, equipment mix-ups, and budget blunders, the tournament stumbled through several chaotic rounds. Every great organizer learns from early missteps, so revisit the warmer vocabulary and step back up to the board!";
+        comm.textContent = "Remember the three pillars of library tournament management: protect absolute silence, prepare reliable equipment in advance, and enforce every rule with calm courtesy.";
+      }
+
+      document.getElementById('res-score').textContent = `Final Score: ${score} / 30`;
+    }
+
+    // Initialize the Warmer Exercise when DOM loads
+    window.addEventListener('DOMContentLoaded', () => {
+      initWarmer();
+    });
+  </script>
 </body>
 </html>

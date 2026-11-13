@@ -1,436 +1,1858 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badminton Smash: The Village Story</title>
-    <style>
-        :root {
-            --primary: #0984e3;
-            --secondary: #fdcb6e;
-            --success: #00b894;
-            --danger: #d63031;
-            --dark: #2d3436;
-            --light: #f5f6fa;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Badminton Smash: The Village Story — Tournament Manager</title>
+<style>
+  :root {
+    --primary: #0984e3;
+    --primary-dark: #0652dd;
+    --secondary: #fdcb6e;
+    --secondary-dark: #e1a83e;
+    --success: #00b894;
+    --success-dark: #008f72;
+    --danger: #d63031;
+    --dark: #2d3436;
+    --light: #f5f6fa;
+    --card-bg: #ffffff;
+    --border-subtle: #dfe6e9;
+  }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #dfe6e9;
-            color: var(--dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
+  * {
+    box-sizing: border-box;
+  }
 
-        #game-box {
-            width: 100%;
-            max-width: 700px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border-top: 12px solid var(--primary);
-            overflow: hidden;
-        }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--light);
+    color: var(--dark);
+    margin: 0;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
 
-        .header {
-            background: var(--primary);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+  h1, h2, h3 {
+    margin-top: 0;
+    line-height: 1.25;
+  }
 
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 25px;
-            background: #e1f5fe;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
+  /* =========================================================
+     1. LANDING PAGE (#landingPage)
+     ========================================================= */
+  #landingPage {
+    min-height: 100vh;
+    width: 100%;
+    background:
+      radial-gradient(circle at 85% 15%, rgba(253, 203, 110, 0.24), transparent 42%),
+      radial-gradient(circle at 12% 88%, rgba(0, 184, 148, 0.2), transparent 45%),
+      linear-gradient(145deg, var(--primary-dark) 0%, var(--primary) 58%, #0a6ec2 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 20px;
+  }
 
-        .content { padding: 30px; }
+  .landing-hero {
+    max-width: 940px;
+    width: 100%;
+    text-align: center;
+  }
 
-        .story-text {
-            line-height: 1.6;
-            font-size: 1.1rem;
-            color: #444;
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid var(--secondary);
-            margin-bottom: 20px;
-        }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1.5px solid var(--secondary);
+    color: var(--secondary);
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
 
-        .question {
-            font-size: 1.25rem;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
+  .hero-title {
+    font-size: clamp(2rem, 4.8vw, 3.3rem);
+    font-weight: 800;
+    margin-bottom: 18px;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.2);
+  }
 
-        .options { display: grid; gap: 12px; }
+  .hero-title span {
+    color: var(--secondary);
+  }
 
-        .opt-btn {
-            background: var(--light);
-            border: 2px solid #ddd;
-            padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 1rem;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-        }
+  .story-briefing-card {
+    max-width: 740px;
+    margin: 0 auto 30px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-left: 6px solid var(--secondary);
+    border-radius: 16px;
+    padding: 22px 26px;
+    text-align: left;
+    font-size: 1.07rem;
+    color: #f8fbff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  }
 
-        .opt-btn:hover:not(:disabled) {
-            background: #eef2f3;
-            border-color: var(--primary);
-            transform: scale(1.01);
-        }
+  .story-briefing-card strong {
+    color: var(--secondary);
+  }
 
-        .letter {
-            background: var(--primary);
-            color: white;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin-right: 15px;
-            font-weight: bold;
-        }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 18px;
+    margin-bottom: 34px;
+    text-align: left;
+  }
 
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 12px;
-            display: none;
-        }
+  .feature-card {
+    background: rgba(255, 255, 255, 0.11);
+    border: 1px solid rgba(253, 203, 110, 0.42);
+    border-radius: 16px;
+    padding: 22px;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
 
-        .fb-win { background: #dff9fb; border: 1px solid var(--success); }
-        .fb-fail { background: #fff5f5; border: 1px solid var(--danger); }
+  .feature-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.17);
+  }
 
-        .sudden-death-mode {
-            background: #2d3436 !important;
-            color: white !important;
-        }
+  .feature-card h3 {
+    font-size: 1.15rem;
+    color: var(--secondary);
+    margin-bottom: 8px;
+  }
 
-        .action-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
+  .feature-card p {
+    margin: 0;
+    font-size: 0.96rem;
+    color: #eef6ff;
+  }
 
-        #result-screen { text-align: center; display: none; padding: 40px; }
-    </style>
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .btn-hero-primary {
+    background: var(--secondary);
+    color: var(--dark);
+    border: none;
+    padding: 17px 36px;
+    border-radius: 12px;
+    font-size: 1.08rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+
+  .btn-hero-primary:hover {
+    background: #ffe08a;
+    transform: translateY(-2px);
+  }
+
+  .btn-hero-secondary {
+    background: transparent;
+    color: #ffffff;
+    border: 1.5px solid rgba(255, 255, 255, 0.65);
+    padding: 11px 24px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-hero-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--secondary);
+    color: var(--secondary);
+  }
+
+  /* =========================================================
+     SHARED TOP NAVIGATION HEADER
+     ========================================================= */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    width: 100%;
+    background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+    color: #ffffff;
+    border-bottom: 4px solid var(--secondary);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+    padding: 13px 20px;
+  }
+
+  .top-bar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .top-bar-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .top-bar-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .nav-btn:hover {
+    background: var(--secondary);
+    color: var(--dark);
+    border-color: var(--secondary);
+  }
+
+  /* =========================================================
+     2. INTERACTIVE WARMER PAGE (#warmerPage)
+     ========================================================= */
+  #warmerPage {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 50px;
+  }
+
+  .warmer-container {
+    max-width: 880px;
+    width: 92%;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .warmer-card {
+    background: var(--card-bg);
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 6px 24px rgba(45, 52, 54, 0.08);
+    border-top: 6px solid var(--primary);
+  }
+
+  .part-pill {
+    display: inline-block;
+    background: #e8f4fd;
+    color: var(--primary-dark);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+
+  .warmer-card h2 {
+    font-size: 1.55rem;
+    color: var(--dark);
+    margin-bottom: 8px;
+  }
+
+  .warmer-subtitle {
+    color: #576574;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  .discussion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .discussion-card {
+    background: #f8fbff;
+    border: 1px solid #d6e8f9;
+    border-left: 5px solid var(--primary);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+
+  .discussion-tag {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 5px;
+  }
+
+  .discussion-card p {
+    margin: 0;
+    font-size: 0.98rem;
+    color: var(--dark);
+  }
+
+  .phrases-box {
+    background: #fffbeb;
+    border: 1.5px solid var(--secondary);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+
+  .phrases-box h3 {
+    font-size: 1rem;
+    color: #9a6700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .phrases-grid {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 8px 22px;
+  }
+
+  .phrases-grid li {
+    font-size: 0.95rem;
+    color: #3d3d3d;
+  }
+
+  .phrases-grid li em {
+    font-weight: 700;
+    color: var(--primary-dark);
+  }
+
+  /* Word Bank & Vocabulary Matching */
+  .word-bank {
+    background: #f1f7fe;
+    border: 2px dashed #90caf9;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 22px;
+  }
+
+  .word-bank-header {
+    font-size: 0.84rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .word-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .word-pill {
+    background: #ffffff;
+    border: 1.5px solid var(--primary);
+    color: var(--primary-dark);
+    font-weight: 700;
+    font-size: 0.94rem;
+    padding: 6px 14px;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+  }
+
+  .word-pill.used {
+    background: #dfe6e9;
+    border-color: #b2bec3;
+    color: #636e72;
+    text-decoration: line-through;
+    opacity: 0.72;
+  }
+
+  .vocab-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .vocab-row-card {
+    border: 2px solid #e6ecf0;
+    border-radius: 12px;
+    padding: 16px;
+    background: #ffffff;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .vocab-row-card.is-correct {
+    border-color: var(--success);
+    background: #ebfbf6;
+  }
+
+  .vocab-row-card.is-incorrect {
+    border-color: var(--danger);
+    background: #fff5f5;
+  }
+
+  .vocab-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .vocab-definition {
+    flex: 1 1 340px;
+    font-size: 0.98rem;
+  }
+
+  .vocab-number {
+    font-weight: 800;
+    color: var(--primary);
+    margin-right: 6px;
+  }
+
+  .vocab-select {
+    flex: 0 1 220px;
+    min-width: 195px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    border: 2px solid #cbd5e1;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--dark);
+    background: #ffffff;
+    cursor: pointer;
+  }
+
+  .vocab-select:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .vocab-feedback {
+    display: none;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 0.92rem;
+  }
+
+  .vocab-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .btn-primary-sm {
+    background: var(--primary);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-primary-sm:hover {
+    background: var(--primary-dark);
+  }
+
+  .btn-secondary-sm {
+    background: #ffffff;
+    color: var(--dark);
+    border: 2px solid #cbd5e1;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary-sm:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .vocab-score-pill {
+    margin-left: auto;
+    background: #f1f7fe;
+    border: 1.5px solid #90caf9;
+    color: var(--primary-dark);
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.98rem;
+  }
+
+  .warmer-bottom-cta {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: #ffffff;
+    border-radius: 18px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(9, 132, 227, 0.24);
+  }
+
+  .warmer-bottom-cta h3 {
+    color: var(--secondary);
+    font-size: 1.45rem;
+    margin-bottom: 8px;
+  }
+
+  .warmer-bottom-cta p {
+    max-width: 560px;
+    margin: 0 auto 20px;
+    color: #eef6ff;
+  }
+
+  /* =========================================================
+     3. MAIN TOURNAMENT GAME (#game-play) & RESULTS (#result-screen)
+     ========================================================= */
+  #gameShell {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 48px;
+  }
+
+  /* Sticky Stats & Progress Bar */
+  .stats-sticky {
+    position: sticky;
+    top: 56px;
+    z-index: 20;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 2px solid #dfe6e9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .stats-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    font-weight: 800;
+    font-size: 1.02rem;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+    min-width: 100px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--success));
+    transition: width 0.4s ease;
+  }
+
+  .points-badge {
+    background: #fff8e1;
+    border: 1.5px solid var(--secondary);
+    color: #8d5b00;
+    padding: 4px 13px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  #game-box {
+    width: 92%;
+    max-width: 760px;
+    margin: 26px auto 0;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(45, 52, 54, 0.11);
+    border-top: 10px solid var(--primary);
+    overflow: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  #game-box.sudden-death-mode {
+    background: var(--dark) !important;
+    color: #ffffff !important;
+    border-top-color: var(--danger);
+    box-shadow: 0 12px 34px rgba(214, 48, 49, 0.28);
+  }
+
+  .content {
+    padding: 30px;
+  }
+
+  .decision-tag {
+    display: inline-block;
+    background: #e8f4fd;
+    color: var(--primary-dark);
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+
+  .sudden-death-mode .decision-tag {
+    background: rgba(214, 48, 49, 0.24);
+    color: var(--secondary);
+    border: 1px solid var(--secondary);
+  }
+
+  .question {
+    font-size: 1.32rem;
+    margin-bottom: 22px;
+    font-weight: 800;
+  }
+
+  .options {
+    display: grid;
+    gap: 12px;
+  }
+
+  .opt-btn {
+    background: var(--light);
+    border: 2px solid #dce3e8;
+    padding: 15px 18px;
+    border-radius: 13px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-size: 1.02rem;
+    color: var(--dark);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .opt-btn:hover:not(:disabled) {
+    background: #eaf4fe;
+    border-color: var(--primary);
+    transform: translateY(-1px);
+  }
+
+  .opt-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.72;
+  }
+
+  .sudden-death-mode .opt-btn {
+    background: #3b4346;
+    border-color: #57606f;
+    color: #ffffff;
+  }
+
+  .sudden-death-mode .opt-btn:hover:not(:disabled) {
+    background: #485256;
+    border-color: var(--secondary);
+  }
+
+  .letter {
+    background: var(--primary);
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 15px;
+    font-weight: 800;
+    font-size: 0.92rem;
+  }
+
+  .sudden-death-mode .letter {
+    background: var(--secondary);
+    color: var(--dark);
+  }
+
+  /* Selected option highlight states */
+  .opt-btn.chosen-3 {
+    opacity: 1 !important;
+    background: #ebfbf6;
+    border-color: var(--success);
+    font-weight: 700;
+  }
+
+  .opt-btn.chosen-3 .letter {
+    background: var(--success);
+  }
+
+  .opt-btn.chosen-2 {
+    opacity: 1 !important;
+    background: #eef7ff;
+    border-color: var(--primary);
+    font-weight: 700;
+  }
+
+  .opt-btn.chosen-1 {
+    opacity: 1 !important;
+    background: #fff9eb;
+    border-color: var(--secondary-dark);
+    font-weight: 700;
+  }
+
+  .opt-btn.chosen-1 .letter {
+    background: var(--secondary-dark);
+  }
+
+  .opt-btn.chosen-invalid {
+    opacity: 0.85 !important;
+    background: #fff5f5 !important;
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+    text-decoration: line-through;
+  }
+
+  .opt-btn.chosen-invalid .letter {
+    background: var(--danger) !important;
+    color: #ffffff !important;
+  }
+
+  /* Expanded Multi-Sentence Feedback Card */
+  .feedback {
+    margin-top: 22px;
+    padding: 20px 22px;
+    border-radius: 14px;
+    display: none;
+    line-height: 1.65;
+    border-left: 6px solid var(--primary);
+  }
+
+  .fb-header {
+    font-weight: 800;
+    font-size: 1.08rem;
+    margin-bottom: 8px;
+  }
+
+  .fb-gold {
+    background: #ebfbf6;
+    border: 1px solid #a3e4d1;
+    border-left: 6px solid var(--success);
+    color: var(--dark);
+  }
+
+  .fb-gold .fb-header {
+    color: var(--success-dark);
+  }
+
+  .fb-solid {
+    background: #eef7ff;
+    border: 1px solid #b6dcfe;
+    border-left: 6px solid var(--primary);
+    color: var(--dark);
+  }
+
+  .fb-solid .fb-header {
+    color: var(--primary-dark);
+  }
+
+  .fb-basic {
+    background: #fff9eb;
+    border: 1px solid #fce19c;
+    border-left: 6px solid var(--secondary-dark);
+    color: var(--dark);
+  }
+
+  .fb-basic .fb-header {
+    color: #9a6700;
+  }
+
+  .fb-fail {
+    background: #fff5f5;
+    border: 1px solid #f5b7b1;
+    border-left: 6px solid var(--danger);
+    color: var(--dark);
+  }
+
+  .fb-fail .fb-header {
+    color: var(--danger);
+  }
+
+  .manager-insight {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(45, 52, 54, 0.22);
+    font-size: 0.96rem;
+  }
+
+  .action-btn {
+    width: 100%;
+    padding: 15px 22px;
+    background: var(--success);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    margin-top: 18px;
+    font-weight: 800;
+    font-size: 1.06rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .action-btn:hover {
+    background: var(--success-dark);
+    transform: translateY(-1px);
+  }
+
+  /* =========================================================
+     4. FINAL RESULTS SCREEN (#result-screen)
+     ========================================================= */
+  #result-screen {
+    display: none;
+    text-align: center;
+    padding: 36px 28px;
+  }
+
+  .medal-pill {
+    display: inline-block;
+    background: #fff8e1;
+    border: 2px solid var(--secondary);
+    color: #8d5b00;
+    font-weight: 800;
+    font-size: 0.84rem;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+
+  #res-title {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: 10px;
+  }
+
+  .final-score-box {
+    display: inline-block;
+    background: #f1f7fe;
+    border: 2px solid #90caf9;
+    color: var(--primary-dark);
+    font-size: 1.3rem;
+    font-weight: 800;
+    padding: 12px 26px;
+    border-radius: 14px;
+    margin: 12px 0 18px;
+  }
+
+  #res-desc {
+    max-width: 540px;
+    margin: 0 auto 26px;
+    font-size: 1.06rem;
+    color: #4b5563;
+  }
+
+  .result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .btn-result-primary {
+    background: var(--primary);
+    color: #ffffff;
+    border: none;
+    padding: 15px 28px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-result-primary:hover {
+    background: var(--primary-dark);
+  }
+
+  .btn-result-secondary {
+    background: var(--secondary);
+    color: var(--dark);
+    border: none;
+    padding: 15px 26px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-result-secondary:hover {
+    background: #ffe08a;
+  }
+
+  @media (max-width: 600px) {
+    .content, .warmer-card {
+      padding: 20px 16px;
+    }
+    .vocab-score-pill {
+      margin-left: 0;
+      width: 100%;
+      text-align: center;
+    }
+    .vocab-select {
+      width: 100%;
+      flex: 1 1 100%;
+    }
+  }
+</style>
 </head>
 <body>
 
-<div id="game-box">
-    <div id="start-screen" class="content">
-        <h1 style="text-align:center; color: var(--primary);">🏸 Badminton Manager</h1>
-        
-        <div class="story-text">
-            <strong>The Story:</strong><br>
-            It is a sunny morning in the village of Green Valley. Everyone loves sports, but there is a problem: the village has no badminton tournament! 
-            <br><br>
-            The Village Committee has chosen <strong>YOU</strong> to be the Manager. You have a small budget, a group of excited players, and only one week to organize everything. 
-            <br><br>
-            If the tournament is a success, you will be a hero. If you make bad choices, the players will be sad. Can you get 30 points and win the Gold Medal?
-        </div>
+<!-- =========================================================
+     1. LANDING PAGE (#landingPage)
+     ========================================================= -->
+<section id="landingPage">
+  <div class="landing-hero">
+    <div class="hero-badge">ESL Interactive Roleplay &amp; Vocabulary Edition</div>
+    <h1 class="hero-title">🏸 Badminton Manager: <span>Green Valley Tournament</span></h1>
 
-        <button class="action-btn" style="background: var(--primary);" onclick="startGame()">START YOUR MISSION</button>
+    <div class="story-briefing-card">
+      It is a sunny morning in the village of Green Valley. Everyone loves sports, but there is a problem: the village has no badminton tournament! The Village Committee has chosen <strong>YOU</strong> to be the Manager. You have a small budget, a group of excited players, and only one week to organize everything. <strong>Can you earn 30 points and win the Gold Medal?</strong>
     </div>
 
-    <div id="game-play" style="display:none;">
-        <div class="stats">
-            <span>Decision: <span id="step-num">1</span>/10</span>
-            <span id="score-display">Points: 0</span>
-        </div>
-        <div class="content" id="main-content">
-            <div class="question" id="q-text"></div>
-            <div class="options" id="opt-container"></div>
-            
-            <div class="feedback" id="fb-box">
-                <p id="fb-msg" style="margin:0; font-weight: bold;"></p>
-                <button class="action-btn" id="continue-btn" onclick="nextStep()">Continue →</button>
-                <button class="action-btn" id="fail-restart" style="display:none; background: var(--secondary); color:black;" onclick="location.reload()">TRY AGAIN</button>
-            </div>
-        </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>💬 Warm-Up &amp; Vocab Prep</h3>
+        <p>Discuss sports events and master 8 essential badminton &amp; management words before you begin.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🎯 10 Decisions + Sudden Death</h3>
+        <p>Manage equipment, venue, budget, and unexpected emergencies during the big match day.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🏆 Medal Ranks &amp; Points</h3>
+        <p>Balance cost, safety, and player happiness to unlock the Gold Medal Manager title.</p>
+      </div>
     </div>
 
+    <div class="hero-actions">
+      <button class="btn-hero-primary" onclick="openWarmer()">Start Pre-Tournament Briefing (Warmer) →</button>
+      <button class="btn-hero-secondary" onclick="startGame()">Skip Directly to Tournament →</button>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     2. INTERACTIVE WARMER PAGE (#warmerPage)
+     ========================================================= -->
+<section id="warmerPage">
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <h1 class="top-bar-title">🏸 Pre-Tournament Briefing &amp; Warm-Up</h1>
+      <div class="top-bar-actions">
+        <button class="nav-btn" onclick="showLanding()">← Back to Briefing</button>
+        <button class="nav-btn" onclick="startGame()">Start Tournament →</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="warmer-container">
+    <!-- PART 1: Discussion Questions -->
+    <div class="warmer-card">
+      <span class="part-pill">Part 1 • Pair / Group Speaking Warm-Up</span>
+      <h2>Pre-Tournament Discussion Questions</h2>
+      <p class="warmer-subtitle">Discuss these four questions with a partner or small group before you organize the Green Valley tournament.</p>
+
+      <div class="discussion-grid">
+        <div class="discussion-card">
+          <span class="discussion-tag">Question 1 • Sports Experience</span>
+          <p>Have you ever played badminton or watched a local sports tournament? What made the event fun or exciting?</p>
+        </div>
+        <div class="discussion-card">
+          <span class="discussion-tag">Question 2 • Event Planning</span>
+          <p>What are the three most important things an organizer needs to prepare before a sports competition begins?</p>
+        </div>
+        <div class="discussion-card">
+          <span class="discussion-tag">Question 3 • Indoor vs. Outdoor</span>
+          <p>Do you prefer playing racket sports indoors in a sports hall or outdoors in a park? Why?</p>
+        </div>
+        <div class="discussion-card">
+          <span class="discussion-tag">Question 4 • Crisis Management</span>
+          <p>Imagine the lights go out or equipment breaks in the middle of a final match. How should a good manager react?</p>
+        </div>
+      </div>
+
+      <div class="phrases-box">
+        <h3>🗣️ Useful Speaking Phrases</h3>
+        <ul class="phrases-grid">
+          <li><em>"In my opinion, the most important thing is..."</em></li>
+          <li><em>"One advantage of playing indoors is..."</em></li>
+          <li><em>"If we have a small budget, we should..."</em></li>
+          <li><em>"To keep players safe and happy, a manager needs to..."</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PART 2: Key Tournament Vocabulary Exercise -->
+    <div class="warmer-card">
+      <span class="part-pill">Part 2 • Key Tournament Vocabulary Exercise</span>
+      <h2>Match the 8 Badminton &amp; Management Terms</h2>
+      <p class="warmer-subtitle">Select the matching term from each dropdown menu. Words in the Word Bank highlight as you use them!</p>
+
+      <div class="word-bank">
+        <span class="word-bank-header">Word Bank (8 Target Words)</span>
+        <div class="word-pills" id="wordBankPills"></div>
+      </div>
+
+      <div class="vocab-items" id="vocabList"></div>
+
+      <div class="vocab-toolbar">
+        <button class="btn-primary-sm" onclick="checkVocab()">Check Answers</button>
+        <button class="btn-secondary-sm" onclick="resetVocab()">Reset</button>
+        <div class="vocab-score-pill" id="vocabScoreBadge">0 / 8 Correct</div>
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="warmer-bottom-cta">
+      <h3>Ready to Run the Green Valley Tournament?</h3>
+      <p>You have reviewed the key vocabulary and discussed your event strategy. Step onto the court and make your 10 manager decisions!</p>
+      <button class="btn-hero-primary" onclick="startGame()">Begin Tournament Management →</button>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     3 & 4. MAIN TOURNAMENT GAME (#game-play) & RESULTS (#result-screen)
+     ========================================================= -->
+<div id="gameShell">
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <h1 class="top-bar-title">🏸 Badminton Manager: Green Valley</h1>
+      <div class="top-bar-actions">
+        <button class="nav-btn" onclick="openWarmer()">📖 Warm-Up &amp; Vocab</button>
+        <button class="nav-btn" onclick="showLanding()">🏠 Briefing</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="stats-sticky">
+    <div class="stats-inner">
+      <span>Decision: <span id="step-num">1</span> / 10</span>
+      <div class="progress-track" aria-label="Tournament progress">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <span class="points-badge" id="score-display">Points: 0</span>
+    </div>
+  </div>
+
+  <div id="game-box">
+    <!-- Active Gameplay View -->
+    <div id="game-play">
+      <div class="content" id="main-content">
+        <span class="decision-tag" id="decision-tag">Tournament Planning • Step 1 of 10</span>
+        <div class="question" id="q-text"></div>
+        <div class="options" id="opt-container"></div>
+
+        <div class="feedback" id="fb-box">
+          <div class="fb-header" id="fb-header"></div>
+          <div id="fb-msg"></div>
+          <button class="action-btn" id="continue-btn" onclick="nextStep()">Continue →</button>
+          <button class="action-btn" id="fail-restart" style="display:none; background: var(--secondary); color: var(--dark);" onclick="startGame()">TRY AGAIN</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final Results Screen -->
     <div id="result-screen">
-        <h1 id="res-title"></h1>
-        <p id="res-desc"></p>
-        <h2 id="res-points"></h2>
-        <button class="action-btn" style="background: var(--primary);" onclick="location.reload()">PLAY AGAIN</button>
+      <div class="medal-pill">Green Valley Tournament Complete</div>
+      <h1 id="res-title"></h1>
+      <div class="final-score-box" id="res-points"></div>
+      <p id="res-desc"></p>
+      <div class="result-actions">
+        <button class="btn-result-primary" onclick="startGame()">Play Again (New Tournament)</button>
+        <button class="btn-result-secondary" onclick="openWarmer()">Review Warm-Up &amp; Vocab</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
+/**
+ * =========================================================
+ * WARMER VOCABULARY DATA (8 TARGET TERMS)
+ * =========================================================
+ */
+const VOCAB_DATA = [
+  {
+    id: 1,
+    word: "Shuttlecock",
+    def: "A light, feathered or plastic object with a rounded cork base that players hit back and forth over the net.",
+    example: "Players smashed the white shuttlecock back and forth across the net during the final rally.",
+    clue: "Think of the lightweight projectile hit over the net instead of a ball."
+  },
+  {
+    id: 2,
+    word: "Tournament",
+    def: "A sports competition in which many players or teams play a series of matches to find one overall champion.",
+    example: "Thirty-two local players signed up for the Green Valley weekend badminton tournament.",
+    clue: "You are organizing this multi-match village sports competition!"
+  },
+  {
+    id: 3,
+    word: "Budget",
+    def: "The total amount of money available to spend on organizing an event or project.",
+    example: "Buying durable plastic shuttles helped the manager stay within the village budget.",
+    clue: "This noun refers to the limited money you have to spend on equipment, prizes, and venue."
+  },
+  {
+    id: 4,
+    word: "Venue",
+    def: "The specific place or building where an organized event or sports match takes place.",
+    example: "The indoor sports center hall was the ideal venue because there was no wind.",
+    clue: "This word means the location or hall chosen to host the matches."
+  },
+  {
+    id: 5,
+    word: "Entry fee",
+    def: "The amount of money each player must pay to join a competition.",
+    example: "An affordable £5.00 entry fee allowed families to participate while funding the gold trophy.",
+    clue: "Look at Decision 4: how much money does each player pay to sign up?"
+  },
+  {
+    id: 6,
+    word: "Referee",
+    def: "The official person who watches a match closely to make sure everyone follows the rules and keeps the correct score.",
+    example: "A fair volunteer referee called the shuttle 'in' on the back boundary line.",
+    clue: "This official counts the points and enforces the rules during every match."
+  },
+  {
+    id: 7,
+    word: "Racket",
+    def: "A lightweight piece of sports equipment with a long handle and a frame strung with tight cords used to hit the shuttle.",
+    example: "When a player's strings snapped, the manager lent them a spare badminton racket.",
+    clue: "Players hold this strung piece of equipment in their hand to strike the shuttlecock."
+  },
+  {
+    id: 8,
+    word: "Sudden death",
+    def: "A tense, high-pressure situation or tie-breaker where one mistake means losing immediately.",
+    example: "When the net snapped during the final match, the manager faced a sudden death crisis.",
+    clue: "This two-word phrase describes an immediate win-or-lose emergency situation."
+  }
+];
+
+const VOCAB_WORD_OPTIONS = VOCAB_DATA.map(item => item.word);
+
+/**
+ * Initialize the Warmer Page Word Bank and Definition Cards
+ */
+function initWarmer() {
+  const pillsEl = document.getElementById("wordBankPills");
+  const listEl = document.getElementById("vocabList");
+
+  pillsEl.innerHTML = VOCAB_WORD_OPTIONS
+    .map(word => `<span class="word-pill" data-word="${word}">${word}</span>`)
+    .join("");
+
+  listEl.innerHTML = VOCAB_DATA.map((item, index) => {
+    const optionsHtml = VOCAB_WORD_OPTIONS
+      .map(w => `<option value="${w}">${w}</option>`)
+      .join("");
+
+    return `
+      <div class="vocab-row-card" id="vocab-card-${item.id}">
+        <div class="vocab-main">
+          <div class="vocab-definition">
+            <span class="vocab-number">${index + 1}.</span>${item.def}
+          </div>
+          <select class="vocab-select" id="vocab-select-${item.id}" aria-label="Select term for definition ${index + 1}" onchange="updateWordBankHighlight()">
+            <option value="">-- Select a word --</option>
+            ${optionsHtml}
+          </select>
+        </div>
+        <div class="vocab-feedback" id="vocab-fb-${item.id}"></div>
+      </div>
+    `;
+  }).join("");
+}
+
+/**
+ * Highlight/dim pills in the Word Bank whenever selected in any dropdown
+ */
+function updateWordBankHighlight() {
+  const chosenSet = new Set();
+  VOCAB_DATA.forEach(item => {
+    const val = document.getElementById(`vocab-select-${item.id}`).value;
+    if (val) chosenSet.add(val);
+  });
+
+  document.querySelectorAll(".word-pill").forEach(pill => {
+    const word = pill.getAttribute("data-word");
+    if (chosenSet.has(word)) {
+      pill.classList.add("used");
+    } else {
+      pill.classList.remove("used");
+    }
+  });
+}
+
+/**
+ * Check all 8 vocabulary answers and display green/red educational feedback
+ */
+function checkVocab() {
+  let correct = 0;
+
+  VOCAB_DATA.forEach(item => {
+    const card = document.getElementById(`vocab-card-${item.id}`);
+    const select = document.getElementById(`vocab-select-${item.id}`);
+    const fb = document.getElementById(`vocab-fb-${item.id}`);
+    const userVal = select.value;
+
+    card.classList.remove("is-correct", "is-incorrect");
+    fb.style.display = "block";
+
+    if (userVal === item.word) {
+      correct++;
+      card.classList.add("is-correct");
+      fb.innerHTML = `<strong style="color: var(--success-dark);">✓ Correct!</strong> <em>Example:</em> "${item.example}"`;
+    } else if (!userVal) {
+      card.classList.add("is-incorrect");
+      fb.innerHTML = `<strong style="color: var(--danger);">✗ No word selected yet.</strong> <em>Clue:</em> ${item.clue}`;
+    } else {
+      card.classList.add("is-incorrect");
+      fb.innerHTML = `<strong style="color: var(--danger);">✗ Not quite ("${userVal}" does not fit here).</strong> <em>Clue:</em> ${item.clue}`;
+    }
+  });
+
+  const badge = document.getElementById("vocabScoreBadge");
+  if (correct === 8) {
+    badge.textContent = "🏆 8 / 8 Correct — All Terms Mastered!";
+    badge.style.background = "#ebfbf6";
+    badge.style.borderColor = "var(--success)";
+    badge.style.color = "var(--success-dark)";
+  } else {
+    badge.textContent = `${correct} / 8 Correct`;
+    badge.style.background = "#f1f7fe";
+    badge.style.borderColor = "#90caf9";
+    badge.style.color = "var(--primary-dark)";
+  }
+}
+
+/**
+ * Reset all vocabulary dropdowns and feedback states
+ */
+function resetVocab() {
+  VOCAB_DATA.forEach(item => {
+    const card = document.getElementById(`vocab-card-${item.id}`);
+    const select = document.getElementById(`vocab-select-${item.id}`);
+    const fb = document.getElementById(`vocab-fb-${item.id}`);
+
+    select.value = "";
+    card.classList.remove("is-correct", "is-incorrect");
+    fb.style.display = "none";
+    fb.innerHTML = "";
+  });
+
+  updateWordBankHighlight();
+  const badge = document.getElementById("vocabScoreBadge");
+  badge.textContent = "0 / 8 Correct";
+  badge.style.background = "#f1f7fe";
+  badge.style.borderColor = "#90caf9";
+  badge.style.color = "var(--primary-dark)";
+}
+
+/**
+ * =========================================================
+ * 10 TOURNAMENT DECISIONS (40 EXPANDED CHOICES + MANAGER INSIGHTS)
+ * =========================================================
+ */
+const DECISIONS = [
+  {
+    q: "1. What type of shuttles should we buy for the players?",
+    opts: [
+      {
+        t: "Plastic shuttles. They are strong and cheap.",
+        pts: 3,
+        fb: "The plastic shuttles survive dozens of energetic amateur rallies without splitting, leaving plenty of money in your budget for prizes and refreshments. Everyone gets consistent, reliable equipment all afternoon.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Smart event organizers balance equipment durability with their budget. Synthetic shuttles last up to ten times longer than feathers in community tournaments.</div>"
+      },
+      {
+        t: "Real feather shuttles. They are very fast.",
+        pts: 2,
+        fb: "Players love the crisp, authentic flight speed of real goose-feather shuttles during the opening matches. However, mishits snap the delicate feathers quickly, forcing you to spend extra money on replacement tubes.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Professional gear elevates play quality, but high replacement costs can quickly drain a small community budget.</div>"
+      },
+      {
+        t: "Old shuttles from your garage.",
+        pts: 1,
+        fb: "You save every penny of your budget, yet the crushed, uneven skirts make the shuttles wobble unpredictably through the air. Several players laugh awkwardly as simple shots curve sideways.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Cutting costs too aggressively compromises fair play; worn-out equipment frustrates participants even in friendly events.</div>"
+      },
+      {
+        t: "Tennis balls.",
+        pts: -1,
+        fb: "As soon as the first player swings at a heavy yellow tennis ball, their delicate badminton racket strings snap and the net sags toward the floor! You cannot play badminton with tennis balls.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Always match equipment to the sport's rules and safety standards—badminton rackets are engineered for a 5-gram shuttlecock, not a heavy ball.</div>"
+      }
+    ]
+  },
+  {
+    q: "2. We need a place to play. Where do we go?",
+    opts: [
+      {
+        t: "The sports center hall.",
+        pts: 3,
+        fb: "The indoor sports hall offers still air, clearly painted court lines, and bright overhead lighting that makes every white shuttle easy to track. Players immediately feel like they are competing in a real championship.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Because a shuttlecock weighs only five grams, an indoor venue free from wind is essential for fair, predictable rallies.</div>"
+      },
+      {
+        t: "The school gym.",
+        pts: 2,
+        fb: "The indoor wooden floor keeps the wind out and saves money on rental fees. However, the lower ceiling occasionally blocks high defensive clears during intense rallies.<div class='manager-insight'><strong>💡 Manager Insight:</strong> School gyms are great budget-friendly indoor venues, though managers should always check ceiling height before booking badminton courts.</div>"
+      },
+      {
+        t: "The local park (outside).",
+        pts: 1,
+        fb: "The sunshine feels wonderful and the grass is completely free, but even a gentle afternoon breeze blows the lightweight shuttles far off course. Rallies turn into a comedy of chasing wild shots across the lawn.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Outdoor spaces expose lightweight racket sports to wind and weather risks that can disrupt competitive play.</div>"
+      },
+      {
+        t: "A giant swimming pool.",
+        pts: -1,
+        fb: "Players cannot run, lunge, or jump in waist-deep water, and wet shuttlecocks sink straight to the bottom of the pool! Everyone splashes around laughing, but no matches can be played.<div class='manager-insight'><strong>💡 Manager Insight:</strong> A safe, dry, non-slip court surface is the number-one requirement when selecting any sports venue.</div>"
+      }
+    ]
+  },
+  {
+    q: "3. How do we tell people about the big day?",
+    opts: [
+      {
+        t: "Put posters in the local shop and school.",
+        pts: 3,
+        fb: "Bright posters on the village shop window and school noticeboard catch everyone's eye during the morning rush. Within two days, players of all ages and enthusiastic spectators sign up to fill every bracket.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Placing clear, eye-catching promotion in high-traffic community hubs is the most effective way to reach local participants.</div>"
+      },
+      {
+        t: "Post on the village Facebook page.",
+        pts: 2,
+        fb: "Local families quickly share your post and comment with excitement, bringing in a solid group of players. However, a few older residents who rarely use social media only hear about the event afterward.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Digital marketing spreads fast, but combining online posts with offline notices ensures no part of the community is left out.</div>"
+      },
+      {
+        t: "Tell your neighbor only.",
+        pts: 1,
+        fb: "Your neighbor happily shows up with their racket on Saturday morning, leaving the two of you standing alone in a nearly empty hall. Without wider promotion, a real tournament cannot happen.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Successful events depend on reaching a critical mass of participants through broad, organized publicity.</div>"
+      },
+      {
+        t: "Hire an expensive airplane.",
+        pts: -1,
+        fb: "The skywriting plane looks spectacular above Green Valley, but the bill wipes out your entire village budget before you have even bought a single shuttlecock!<div class='manager-insight'><strong>💡 Manager Insight:</strong> Advertising costs must stay proportional to your event scale—never spend your entire budget just announcing the event.</div>"
+      }
+    ]
+  },
+  {
+    q: "4. What is the entry fee for each player?",
+    opts: [
+      {
+        t: "£5.00 per person.",
+        pts: 3,
+        fb: "Every family in Green Valley finds £5.00 fair and affordable, resulting in a full roster of eager players. Best of all, the collected fees comfortably cover shuttles, hall hire, and a gleaming trophy.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Smart break-even pricing keeps community sports accessible while generating enough revenue to cover essential tournament expenses.</div>"
+      },
+      {
+        t: "£10.00 per person.",
+        pts: 2,
+        fb: "A few budget-conscious villagers hesitate at the ten-pound price tag, though those who join are pleased to receive a complimentary bottle of water at check-in.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Higher entry fees can work when paired with clear added value, such as refreshments or tournament souvenirs.</div>"
+      },
+      {
+        t: "£2.00 per person.",
+        pts: 1,
+        fb: "Dozens of players rush to sign up at such a tiny price, but when you count the cash box, you barely have enough money to pay for court electricity and shuttles.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Setting prices too low creates popularity without sustainability—always calculate fixed costs before setting an entry fee.</div>"
+      },
+      {
+        t: "£500.00 per person.",
+        pts: -1,
+        fb: "Villagers stare at the sign-up sheet in shock—£500 is the price of a luxury holiday, not a friendly village tournament! Not a single person registers.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Always align pricing with your target audience's expectations and financial reality.</div>"
+      }
+    ]
+  },
+  {
+    q: "5. What should the champions win?",
+    opts: [
+      {
+        t: "A shiny gold trophy.",
+        pts: 3,
+        fb: "Eyes light up the moment players spot the gleaming gold cup on the presentation table! Every rally becomes extra exciting as finalists compete for a permanent keepsake to display at home.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Symbolic awards like trophies create lasting pride and memorable photo moments without breaking a community budget.</div>"
+      },
+      {
+        t: "A bag of apples.",
+        pts: 2,
+        fb: "The champions appreciate the crisp, locally grown apples as a healthy post-match snack, though they smile a bit wistfully wishing they had a medal or ribbon to keep.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Consumable prizes are thoughtful and eco-friendly, yet permanent keepsakes make tournament victories feel more special.</div>"
+      },
+      {
+        t: "A high-five.",
+        pts: 1,
+        fb: "Your enthusiastic high-five brings polite smiles and good sportsmanship, but after three hours of intense matches, the winners look noticeably disappointed to leave empty-handed.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Public recognition is vital in sports—even a modest printed certificate or small medal validates players' hard work.</div>"
+      },
+      {
+        t: "A new house.",
+        pts: -1,
+        fb: "The Village Committee nearly faints when you promise a brand-new house as first prize! With a tiny community budget, you obviously cannot buy real estate.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Never promise rewards you cannot realistically fund—credibility is everything for an event manager.</div>"
+      }
+    ]
+  },
+  {
+    q: "6. Who will be the referees for the matches?",
+    opts: [
+      {
+        t: "Kind volunteers from the village.",
+        pts: 3,
+        fb: "Trained local volunteers sit proudly in the referee chairs, calling boundary lines fairly and keeping every scoreboard accurate. The whole village feels involved in making the event a success.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Delegating officiating to neutral, well-briefed volunteers ensures impartial scoring and builds strong community spirit.</div>"
+      },
+      {
+        t: "You referee every single match.",
+        pts: 2,
+        fb: "Your rule knowledge keeps the scores completely accurate, though running back and forth between four courts leaves you exhausted and delays the afternoon schedule.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Doing every job yourself leads to manager burnout—effective leaders empower a team rather than working alone.</div>"
+      },
+      {
+        t: "The players themselves.",
+        pts: 1,
+        fb: "Self-refereeing works smoothly during friendly early games, but during the tense semi-finals, two players argue loudly over whether a smash landed on the line.<div class='manager-insight'><strong>💡 Manager Insight:</strong> In competitive knockout rounds, impartial officials prevent disputes and keep sportsmanship high.</div>"
+      },
+      {
+        t: "A random dog.",
+        pts: -1,
+        fb: "Before the first serve even finishes, the excited dog bounds onto the court, grabs the shuttlecock in its mouth, and refuses to give it back!<div class='manager-insight'><strong>💡 Manager Insight:</strong> Assigning qualified, attentive people to official roles protects both match flow and player safety.</div>"
+      }
+    ]
+  },
+  {
+    q: "7. It's snack time! What food do we give the players?",
+    opts: [
+      {
+        t: "Fresh bananas and water.",
+        pts: 3,
+        fb: "Players happily grab ripe bananas and cold water between rounds, refueling with natural potassium and hydration that prevent muscle cramps during long rallies.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Light, easily digestible carbohydrates and steady hydration are the gold standard for keeping athletes energized during tournaments.</div>"
+      },
+      {
+        t: "Sandwiches and juice.",
+        pts: 2,
+        fb: "Everyone enjoys the tasty lunch spread and feels well cared for, though a few players feel slightly heavy and sluggish when stepping back onto court right after eating.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Hearty snacks satisfy hunger, but timing lighter foods before intense movement helps players stay agile.</div>"
+      },
+      {
+        t: "A bowl of very salty crisps.",
+        pts: 1,
+        fb: "The crunchy crisps disappear in minutes, yet the heavy salt quickly dries out everyone's throats and leaves players begging for extra water during the next set.<div class='manager-insight'><strong>💡 Manager Insight:</strong> High-sodium snacks increase thirst and dehydration during indoor exercise—always prioritize hydration first.</div>"
+      },
+      {
+        t: "Hot spicy soup.",
+        pts: -1,
+        fb: "Serving steaming, fiery soup inside a warm sports hall leaves players sweating, overheated, and nursing upset stomachs before the semi-finals!<div class='manager-insight'><strong>💡 Manager Insight:</strong> Heavy, piping-hot, or spicy meals cause digestive discomfort during physical exertion—choose cool, light refreshments instead.</div>"
+      }
+    ]
+  },
+  {
+    q: "8. A player's racket breaks! What do you do?",
+    opts: [
+      {
+        t: "Lend them a spare racket.",
+        pts: 3,
+        fb: "You calmly hand over a strung backup racket from your manager's kit bag, allowing the match to resume within thirty seconds. The grateful player goes on to play their best set of the day.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Keeping spare equipment courtside is classic contingency planning—it eliminates delays and saves a player's tournament experience.</div>"
+      },
+      {
+        t: "Ask another player to share.",
+        pts: 2,
+        fb: "A generous competitor lends their racket between matches, which keeps the tournament moving even though passing gear back and forth adds minor delays to court transitions.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Encouraging teamwork solves immediate problems, though having dedicated backup gear avoids scheduling bottlenecks.</div>"
+      },
+      {
+        t: "Tell them to go home.",
+        pts: 1,
+        fb: "The player packs up their bag with slumped shoulders and walks out disappointed, leaving their opponent with an anticlimactic forfeit win.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Turning away participants over minor equipment mishaps hurts morale and reduces the excitement of the competition.</div>"
+      },
+      {
+        t: "Tell them to use a frying pan.",
+        pts: -1,
+        fb: "Swinging a heavy metal frying pan on a crowded badminton court is dangerously unsafe and could easily injure another player or smash the floor!<div class='manager-insight'><strong>💡 Manager Insight:</strong> Equipment safety rules are non-negotiable—never allow improvised heavy objects on a sports court.</div>"
+      }
+    ]
+  },
+  {
+    q: "9. How do we group the players?",
+    opts: [
+      {
+        t: "Group them by their skill level.",
+        pts: 3,
+        fb: "Creating Beginner and Advanced divisions produces thrilling, closely contested matches on every court. Newcomers build confidence while experienced players enjoy fast-paced tactical battles.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Skill-based seeding ensures fair competition, keeps every participant engaged, and produces exciting finishes across all levels.</div>"
+      },
+      {
+        t: "Put all the best players together.",
+        pts: 2,
+        fb: "The top-seed group delivers spectacular smashes that thrill the crowd, though the remaining unseeded brackets feel somewhat disorganized for newer players.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Highlighting top talent creates excitement, yet structured divisions for beginners are equally important for an inclusive community event.</div>"
+      },
+      {
+        t: "By the color of their shirts.",
+        pts: 1,
+        fb: "Matching blue shirts against red shirts looks colorful in photos, but pairing total beginners against county champions leads to lopsided 21–1 scores.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Random or cosmetic groupings fail to create balanced, enjoyable matches—always seed based on playing ability.</div>"
+      },
+      {
+        t: "The tallest vs the shortest.",
+        pts: -1,
+        fb: "Height has nothing to do with badminton footwork or racket skill, and pitting the tallest villagers against the shortest feels unfair and frustrating.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Fair tournament divisions rely on relevant athletic skill rather than arbitrary physical traits.</div>"
+      }
+    ]
+  },
+  {
+    q: "10. The day is finished! What is the final job?",
+    opts: [
+      {
+        t: "Take a photo and clean the hall.",
+        pts: 3,
+        fb: "Everyone gathers around the trophy for a joyful village group photo before you lead a quick team sweep of the courts. The sports center manager is so impressed that they invite you back next year!<div class='manager-insight'><strong>💡 Manager Insight:</strong> Celebrating shared success and leaving the venue spotless builds lasting community goodwill and secures future venue access.</div>"
+      },
+      {
+        t: "Say 'bye' and lock the door.",
+        pts: 2,
+        fb: "Securing the building prevents theft and keeps the facility safe, though a few empty water bottles left near the bleachers have to be picked up by staff the next morning.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Locking up is important, yet a final walkthrough inspection ensures no litter or lost property is left behind.</div>"
+      },
+      {
+        t: "Ask the players to clean up alone.",
+        pts: 1,
+        fb: "The hall eventually gets tidied, but tired finalists mutter quietly as they watch the tournament manager sit back without lending a hand.<div class='manager-insight'><strong>💡 Manager Insight:</strong> True leaders pitch in alongside volunteers during closing duties—leading by example inspires respect.</div>"
+      },
+      {
+        t: "Leave all the rubbish on the floor.",
+        pts: -1,
+        fb: "Leaving crushed bottles, banana peels, and broken shuttles scattered across the hall results in a hefty cleaning fine and bans the village from using the venue again!<div class='manager-insight'><strong>💡 Manager Insight:</strong> Venue stewardship is a core managerial responsibility; respecting shared spaces protects future community events.</div>"
+      }
+    ]
+  }
+];
+
+/**
+ * =========================================================
+ * 2 SUDDEN DEATH EVENTS (TRIGGERED AFTER Q6 AND Q9)
+ * =========================================================
+ */
+const SUDDEN_DEATHS = [
+  {
+    after: 5, // Triggers after Q6 (index 5)
+    done: false,
+    q: "💀 SUDDEN DEATH: The main net has snapped in the middle of the final match!",
+    opts: [
+      {
+        t: "Quickly tie it with string and save the game!",
+        fail: false,
+        fb: "You pull strong spare cord from your bag, tie a tight knot at regulation height, and get the finalists back on court in under two minutes to roaring applause!<div class='manager-insight'><strong>💡 Manager Insight:</strong> Keeping a simple emergency repair kit—string, tape, and spare grips—courtside allows you to solve equipment failures without halting play.</div>"
+      },
+      {
+        t: "Cancel the final and tell everyone to go home.",
+        fail: true,
+        fb: "A groan of heartbreak echoes across the sports hall as finalists pack their bags without ever finishing the championship match.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Canceling an event over a minor, fixable issue destroys months of preparation—great managers look for quick, practical workarounds under pressure.</div>"
+      }
+    ]
+  },
+  {
+    after: 8, // Triggers after Q9 (index 8)
+    done: false,
+    q: "💀 SUDDEN DEATH: The lights in the hall have gone out!",
+    opts: [
+      {
+        t: "Open the curtains and use the sunlight!",
+        fail: false,
+        fb: "You sprint along the wall and pull open the tall hall curtains, flooding the courts with bright natural afternoon sunlight so the championship match can finish safely!<div class='manager-insight'><strong>💡 Manager Insight:</strong> When technical systems fail, resourceful leaders immediately assess natural and environmental alternatives to keep the event running safely.</div>"
+      },
+      {
+        t: "Give up and go home in the dark.",
+        fail: true,
+        fb: "Everyone stumbles toward the exit in confusion, leaving the tournament unfinished while bright sunshine shines right outside the closed curtains.<div class='manager-insight'><strong>💡 Manager Insight:</strong> Staying calm during sudden venue outages helps you spot simple solutions that panicked organizers overlook.</div>"
+      }
+    ]
+  }
+];
+
 let score = 0;
 let currentStep = 0;
 let inSuddenDeath = false;
 
-const DECISIONS = [
-    {
-        q: "1. What type of shuttles should we buy for the players?",
-        opts: [
-            { t: "Plastic shuttles. They are strong and cheap.", pts: 3, fb: "Great! This saves money for the prize." },
-            { t: "Real feather shuttles. They are very fast.", pts: 2, fb: "Nice! They feel professional, but they break fast." },
-            { t: "Old shuttles from your garage.", pts: 1, fb: "Okay, it's free, but the players are not very happy." },
-            { t: "Tennis balls.", pts: -1, fb: "Oh no! You can't play badminton with tennis balls. Try again!" }
-        ]
-    },
-    {
-        q: "2. We need a place to play. Where do we go?",
-        opts: [
-            { t: "The local park (outside).", pts: 1, fb: "It's a bit windy, but at least it's free!" },
-            { t: "The sports center hall.", pts: 3, fb: "Perfect! It's indoor and has great lights." },
-            { t: "A giant swimming pool.", pts: -1, fb: "Too much water! The players can't jump. Try again!" },
-            { t: "The school gym.", pts: 2, fb: "Good. It's a bit small, but it works well." }
-        ]
-    },
-    {
-        q: "3. How do we tell people about the big day?",
-        opts: [
-            { t: "Hire an expensive airplane.", pts: -1, fb: "We are broke now! That was too expensive. Try again." },
-            { t: "Tell your neighbor only.", pts: 1, fb: "Only 2 people arrived. We need a bigger crowd!" },
-            { t: "Post on the village Facebook page.", pts: 2, fb: "Good. Many local families saw the news." },
-            { t: "Put posters in the local shop and school.", pts: 3, fb: "Excellent! The whole village is excited." }
-        ]
-    },
-    {
-        q: "4. What is the entry fee for each player?",
-        opts: [
-            { t: "£2.00 per person.", pts: 1, fb: "It's very cheap, but we have no money for medals." },
-            { t: "£500.00 per person.", pts: -1, fb: "Too expensive! Nobody wants to play. Try again!" },
-            { t: "£5.00 per person.", pts: 3, fb: "Perfect! It covers our costs and is fair for everyone." },
-            { t: "£10.00 per person.", pts: 2, fb: "A bit high, but players get a free bottle of water." }
-        ]
-    },
-    {
-        q: "5. What should the champions win?",
-        opts: [
-            { t: "A shiny gold trophy.", pts: 3, fb: "Awesome! The winners will be very proud." },
-            { t: "A bag of apples.", pts: 2, fb: "Healthy and nice, but a trophy would be better." },
-            { t: "A high-five.", pts: 1, fb: "It's friendly, but the winners look a bit sad." },
-            { t: "A new house.", pts: -1, fb: "We are not millionaires! Try again." }
-        ]
-    },
-    {
-        q: "6. Who will be the referees for the matches?",
-        opts: [
-            { t: "A random dog.", pts: -1, fb: "The dog just wants to play with the shuttle! Try again." },
-            { t: "The players themselves.", pts: 1, fb: "Okay, but they are arguing about the score!" },
-            { t: "You referee every single match.", pts: 2, fb: "You are very tired, but the scores are correct." },
-            { t: "Kind volunteers from the village.", pts: 3, fb: "Perfect! They are fair and helpful." }
-        ]
-    },
-    {
-        q: "7. It's snack time! What food do we give the players?",
-        opts: [
-            { t: "Fresh bananas and water.", pts: 3, fb: "Perfect! Healthy food gives them lots of energy." },
-            { t: "Sandwiches and juice.", pts: 2, fb: "Nice choice. Everyone is full and happy." },
-            { t: "A bowl of very salty crisps.", pts: 1, fb: "The players are very thirsty now!" },
-            { t: "Hot spicy soup.", pts: -1, fb: "Too hot! Now the players feel sick. Try again." }
-        ]
-    },
-    {
-        q: "8. A player's racket breaks! What do you do?",
-        opts: [
-            { t: "Tell them to go home.", pts: 1, fb: "That's a bit sad for them." },
-            { t: "Tell them to use a frying pan.", pts: -1, fb: "This isn't a cooking show! Try again." },
-            { t: "Lend them a spare racket.", pts: 3, fb: "Excellent! You are a very kind manager." },
-            { t: "Ask another player to share.", pts: 2, fb: "Good, but it makes the tournament slower." }
-        ]
-    },
-    {
-        q: "9. How do we group the players?",
-        opts: [
-            { t: "By the color of their shirts.", pts: 1, fb: "That's a very strange way to play!" },
-            { t: "Group them by their skill level.", pts: 3, fb: "Excellent. The matches are very exciting." },
-            { t: "Put all the best players together.", pts: 2, fb: "Okay, but the beginners have a hard time." },
-            { t: "The tallest vs the shortest.", pts: -1, fb: "That's not fair for a game. Try again." }
-        ]
-    },
-    {
-        q: "10. The day is finished! What is the final job?",
-        opts: [
-            { t: "Take a photo and clean the hall.", pts: 3, fb: "Wonderful. The village is proud of you!" },
-            { t: "Leave all the rubbish on the floor.", pts: -1, fb: "The center manager is very angry! Try again." },
-            { t: "Say 'bye' and lock the door.", pts: 2, fb: "Good. The building is safe." },
-            { t: "Ask the players to clean up alone.", pts: 1, fb: "The players are tired, but the hall is clean." }
-        ]
-    }
-];
-
-const SUDDEN_DEATHS = [
-    {
-        after: 5, // Triggers after Q6 (Index 5)
-        q: "💀 SUDDEN DEATH: The main net has snapped in the middle of the final match!",
-        opts: [
-            { t: "Quickly tie it with string and save the game!", fail: false, fb: "Amazing! You saved the tournament with your quick thinking!" },
-            { t: "Cancel the final and tell everyone to go home.", fail: true, fb: "Game Over! The players were very disappointed. Better luck next time!" }
-        ]
-    },
-    {
-        after: 8, // Triggers after Q9 (Index 8)
-        q: "💀 SUDDEN DEATH: The lights in the hall have gone out!",
-        opts: [
-            { t: "Give up and go home in the dark.", fail: true, fb: "Game Over! You gave up too easily. Better luck next time!" },
-            { t: "Open the curtains and use the sunlight!", fail: false, fb: "Incredible! You saved the tournament! The final points can be played." }
-        ]
-    }
-];
-
-// Fisher-Yates Shuffle Function
+/**
+ * Fisher-Yates Shuffle Function
+ */
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+/**
+ * View Navigation Functions
+ */
+function showLanding() {
+  document.getElementById("landingPage").style.display = "flex";
+  document.getElementById("warmerPage").style.display = "none";
+  document.getElementById("gameShell").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openWarmer() {
+  document.getElementById("landingPage").style.display = "none";
+  document.getElementById("warmerPage").style.display = "flex";
+  document.getElementById("gameShell").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function startGame() {
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('game-play').style.display = 'block';
-    renderStep();
+  score = 0;
+  currentStep = 0;
+  inSuddenDeath = false;
+  SUDDEN_DEATHS.forEach(sd => {
+    sd.done = false;
+  });
+
+  document.getElementById("landingPage").style.display = "none";
+  document.getElementById("warmerPage").style.display = "none";
+  document.getElementById("gameShell").style.display = "flex";
+
+  document.getElementById("game-play").style.display = "block";
+  document.getElementById("result-screen").style.display = "none";
+  document.getElementById("score-display").textContent = "Points: 0";
+
+  renderStep();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/**
+ * Render either the next Sudden Death event or the current Decision (0..9)
+ */
 function renderStep() {
-    document.getElementById('fb-box').style.display = 'none';
-    const sd = SUDDEN_DEATHS.find(s => s.after === (currentStep - 1) && !inSuddenDeath);
-    const container = document.getElementById('opt-container');
-    container.innerHTML = '';
+  const fbBox = document.getElementById("fb-box");
+  fbBox.style.display = "none";
+  fbBox.innerHTML = `
+    <div class="fb-header" id="fb-header"></div>
+    <div id="fb-msg"></div>
+    <button class="action-btn" id="continue-btn" onclick="nextStep()">Continue →</button>
+    <button class="action-btn" id="fail-restart" style="display:none; background: var(--secondary); color: var(--dark);" onclick="startGame()">TRY AGAIN</button>
+  `;
 
-    if (sd && !sd.done) {
-        inSuddenDeath = true;
-        sd.done = true;
-        document.getElementById('game-box').classList.add('sudden-death-mode');
-        document.getElementById('q-text').textContent = sd.q;
-        document.getElementById('step-num').textContent = "!!!";
-        
-        // Shuffle Sudden Death options
-        const shuffledSDOpts = shuffleArray([...sd.opts]);
-        shuffledSDOpts.forEach((opt, i) => {
-            const btn = createBtn(String.fromCharCode(65+i), opt.t);
-            btn.onclick = () => handleSuddenDeath(opt);
-            container.appendChild(btn);
-        });
-    } else {
-        inSuddenDeath = false;
-        document.getElementById('game-box').classList.remove('sudden-death-mode');
-        const data = DECISIONS[currentStep];
-        document.getElementById('step-num').textContent = currentStep + 1;
-        document.getElementById('q-text').textContent = data.q;
-        
-        // Shuffle standard decision options
-        const shuffledOpts = shuffleArray([...data.opts]);
-        shuffledOpts.forEach((opt, i) => {
-            const btn = createBtn(String.fromCharCode(65+i), opt.t);
-            btn.onclick = () => handleChoice(opt);
-            container.appendChild(btn);
-        });
-    }
+  const sd = SUDDEN_DEATHS.find(s => s.after === (currentStep - 1) && !inSuddenDeath && !s.done);
+  const container = document.getElementById("opt-container");
+  container.innerHTML = "";
+
+  const gameBox = document.getElementById("game-box");
+  const decisionTag = document.getElementById("decision-tag");
+
+  if (sd) {
+    inSuddenDeath = true;
+    sd.done = true;
+    gameBox.classList.add("sudden-death-mode");
+    decisionTag.textContent = "⚡ Emergency Event • Sudden Death";
+    document.getElementById("q-text").textContent = sd.q;
+    document.getElementById("step-num").textContent = "!!!";
+
+    const shuffledSDOpts = shuffleArray([...sd.opts]);
+    shuffledSDOpts.forEach((opt, i) => {
+      const btn = createBtn(String.fromCharCode(65 + i), opt.t);
+      btn.onclick = () => handleSuddenDeath(opt, btn);
+      container.appendChild(btn);
+    });
+  } else {
+    inSuddenDeath = false;
+    gameBox.classList.remove("sudden-death-mode");
+
+    const data = DECISIONS[currentStep];
+    document.getElementById("step-num").textContent = currentStep + 1;
+    decisionTag.textContent = `Tournament Management • Decision ${currentStep + 1} of 10`;
+    document.getElementById("q-text").textContent = data.q;
+
+    const progressPct = (currentStep / DECISIONS.length) * 100;
+    document.getElementById("progress-fill").style.width = `${progressPct}%`;
+
+    const shuffledOpts = shuffleArray([...data.opts]);
+    shuffledOpts.forEach((opt, i) => {
+      const btn = createBtn(String.fromCharCode(65 + i), opt.t);
+      btn.onclick = () => handleChoice(opt, btn);
+      container.appendChild(btn);
+    });
+  }
 }
 
 function createBtn(letter, text) {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.innerHTML = `<span class="letter">${letter}</span><span>${text}</span>`;
-    return btn;
+  const btn = document.createElement("button");
+  btn.className = "opt-btn";
+  btn.innerHTML = `<span class="letter">${letter}</span><span>${text}</span>`;
+  return btn;
 }
 
-function handleChoice(opt) {
-    const fbBox = document.getElementById('fb-box');
-    const fbMsg = document.getElementById('fb-msg');
-    const continueBtn = document.getElementById('continue-btn');
-    fbBox.style.display = 'block';
+/**
+ * Handle standard 10-decision choices:
+ * - pts === -1: subtract 1 point, disable ONLY that invalid button, keep others enabled, hide Continue
+ * - pts in [1, 2, 3]: add pts, disable all buttons, highlight selected choice, show Continue
+ */
+function handleChoice(opt, selectedBtn) {
+  const fbBox = document.getElementById("fb-box");
+  const fbHeader = document.getElementById("fb-header");
+  const fbMsg = document.getElementById("fb-msg");
+  const continueBtn = document.getElementById("continue-btn");
+  const failRestart = document.getElementById("fail-restart");
 
-    if (opt.pts === -1) {
-        score -= 1;
-        fbBox.className = "feedback fb-fail";
-        fbMsg.textContent = opt.fb + " (-1 point)";
-        continueBtn.style.display = 'none';
-        document.getElementById('fail-restart').style.display = 'none';
+  fbBox.style.display = "block";
+  failRestart.style.display = "none";
+
+  if (opt.pts === -1) {
+    score -= 1;
+    fbBox.className = "feedback fb-fail";
+    fbHeader.textContent = "⚠️ -1 Point — Poor Manager Choice! Try Another Option";
+    fbMsg.innerHTML = opt.fb;
+
+    // Disable ONLY the invalid button so the student cannot click it repeatedly
+    selectedBtn.disabled = true;
+    selectedBtn.classList.add("chosen-invalid");
+    continueBtn.style.display = "none";
+  } else {
+    score += opt.pts;
+
+    if (opt.pts === 3) {
+      fbBox.className = "feedback fb-gold";
+      fbHeader.textContent = "🏆 +3 Points — Gold Medal Choice!";
+      selectedBtn.classList.add("chosen-3");
+    } else if (opt.pts === 2) {
+      fbBox.className = "feedback fb-solid";
+      fbHeader.textContent = "👍 +2 Points — Solid Manager Choice";
+      selectedBtn.classList.add("chosen-2");
     } else {
-        score += opt.pts;
-        fbBox.className = "feedback fb-win";
-        fbMsg.textContent = opt.fb + " (+" + opt.pts + " points)";
-        continueBtn.style.display = 'block';
-        document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+      fbBox.className = "feedback fb-basic";
+      fbHeader.textContent = "👌 +1 Point — Basic Choice (Room to Improve)";
+      selectedBtn.classList.add("chosen-1");
     }
-    document.getElementById('score-display').textContent = `Points: ${score}`;
+
+    fbMsg.innerHTML = opt.fb;
+    continueBtn.textContent = currentStep === DECISIONS.length - 1
+      ? "Finish Tournament & See Medal Rank →"
+      : "Continue →";
+    continueBtn.style.display = "block";
+
+    document.querySelectorAll(".opt-btn").forEach(b => {
+      b.disabled = true;
+    });
+  }
+
+  document.getElementById("score-display").textContent = `Points: ${score}`;
 }
 
-function handleSuddenDeath(opt) {
-    const fbBox = document.getElementById('fb-box');
-    const fbMsg = document.getElementById('fb-msg');
-    fbBox.style.display = 'block';
+/**
+ * Handle Sudden Death emergency choices
+ */
+function handleSuddenDeath(opt, selectedBtn) {
+  const fbBox = document.getElementById("fb-box");
+  const fbHeader = document.getElementById("fb-header");
+  const fbMsg = document.getElementById("fb-msg");
+  const continueBtn = document.getElementById("continue-btn");
+  const failRestart = document.getElementById("fail-restart");
 
-    if (opt.fail) {
-        fbBox.className = "feedback fb-fail";
-        fbMsg.textContent = opt.fb;
-        document.getElementById('continue-btn').style.display = 'none';
-        document.getElementById('fail-restart').style.display = 'block';
-    } else {
-        fbBox.className = "feedback fb-win";
-        fbMsg.textContent = opt.fb + " You saved the game!";
-        document.getElementById('continue-btn').style.display = 'block';
-    }
-    document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  fbBox.style.display = "block";
+
+  if (opt.fail) {
+    fbBox.className = "feedback fb-fail";
+    fbHeader.textContent = "💀 Game Over — Tournament Canceled!";
+    fbMsg.innerHTML = opt.fb;
+    selectedBtn.classList.add("chosen-invalid");
+    continueBtn.style.display = "none";
+    failRestart.style.display = "block";
+  } else {
+    fbBox.className = "feedback fb-gold";
+    fbHeader.textContent = "⚡ Crisis Averted — You Saved the Tournament!";
+    fbMsg.innerHTML = opt.fb;
+    selectedBtn.classList.add("chosen-3");
+    continueBtn.textContent = "Continue to Next Match →";
+    continueBtn.style.display = "block";
+    failRestart.style.display = "none";
+  }
+
+  document.querySelectorAll(".opt-btn").forEach(b => {
+    b.disabled = true;
+  });
 }
 
 function nextStep() {
-    if (!inSuddenDeath) {
-        if (currentStep < DECISIONS.length - 1) {
-            currentStep++;
-            renderStep();
-        } else {
-            showResults();
-        }
+  if (!inSuddenDeath) {
+    if (currentStep < DECISIONS.length - 1) {
+      currentStep++;
+      renderStep();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-        inSuddenDeath = false;
-        renderStep();
+      showResults();
     }
+  } else {
+    inSuddenDeath = false;
+    renderStep();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 }
 
+/**
+ * Final Medal Evaluation Screen
+ */
 function showResults() {
-    document.getElementById('game-play').style.display = 'none';
-    document.getElementById('result-screen').style.display = 'block';
-    const title = document.getElementById('res-title');
-    const desc = document.getElementById('res-desc');
-    
-    if (score >= 27) {
-        title.textContent = "🏆 GOLD MEDAL MANAGER";
-        desc.textContent = "Incredible work! The village of Green Valley will never forget this tournament. You are a legend!";
-    } else if (score >= 20) {
-        title.textContent = "🥈 SILVER SUCCESS";
-        desc.textContent = "Great job! The tournament was a lot of fun and everyone had a good time.";
-    } else if (score >= 12) {
-        title.textContent = "🥉 BRONZE EFFORT";
-        desc.textContent = "You finished the tournament. It was a bit messy, but the players are okay.";
-    } else {
-        title.textContent = "🏸 BEGINNER COACH";
-        desc.textContent = "That was a difficult tournament! Try again to see if you can manage it better.";
-    }
-    document.getElementById('res-points').textContent = `Final Score: ${score} / 30`;
-}
-</script>
+  document.getElementById("game-box").classList.remove("sudden-death-mode");
+  document.getElementById("progress-fill").style.width = "100%";
+  document.getElementById("game-play").style.display = "none";
+  document.getElementById("result-screen").style.display = "block";
 
+  const title = document.getElementById("res-title");
+  const desc = document.getElementById("res-desc");
+
+  if (score >= 27) {
+    title.textContent = "🏆 GOLD MEDAL MANAGER";
+    title.style.color = "#008f72";
+    desc.textContent = "Incredible work! The village of Green Valley will never forget this tournament. You balanced budget, safety, and sportsmanship like a true champion!";
+  } else if (score >= 20) {
+    title.textContent = "🥈 SILVER SUCCESS";
+    title.style.color = "#0652dd";
+    desc.textContent = "Great job! The tournament was a lot of fun and everyone had a wonderful time. A few small adjustments will earn you the Gold Medal next time!";
+  } else if (score >= 12) {
+    title.textContent = "🥉 BRONZE EFFORT";
+    title.style.color = "#9a6700";
+    desc.textContent = "You finished the tournament! It was a little bumpy in places, but the players stayed safe and enjoyed getting on the court.";
+  } else {
+    title.textContent = "🏸 BEGINNER COACH";
+    title.style.color = "#d63031";
+    desc.textContent = "That was a tough tournament to manage! Review the Manager Insights and try again to lead Green Valley to victory.";
+  }
+
+  document.getElementById("res-points").textContent = `Final Score: ${score} / 30`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  initWarmer();
+});
+</script>
 </body>
 </html>

@@ -8,324 +8,2159 @@
 <style>
   :root {
     --safari-green: #556b2f;
+    --safari-green-dark: #3f5022;
     --safari-orange: #e67e22;
+    --safari-orange-dark: #cf6d17;
     --safari-khaki: #c3b091;
     --danger: #c0392b;
     --text: #2c3e50;
     --bg: #fdf5e6;
   }
 
-  body { font-family: 'Lato', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; }
-  .header { background: var(--safari-green); color: white; width: 100%; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 10; border-bottom: 5px solid var(--safari-orange); }
-  
-  .stats-bar { display: flex; justify-content: space-around; background: #fff; width: 100%; padding: 10px 0; border-bottom: 2px solid #ddd; font-weight: bold; }
-  .stat-item { display: flex; align-items: center; gap: 5px; }
-
-  .progress-bar { width: 100%; height: 8px; background: #ddd; }
-  .progress-fill { height: 100%; background: var(--safari-orange); width: 0%; transition: 0.5s; }
-
-  .game-container { max-width: 800px; width: 90%; margin: 20px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); min-height: 400px; }
-  .choice-list { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-
-  .choice-btn { 
-    padding: 18px; border: 2px solid #eee; border-radius: 8px; background: white; 
-    cursor: pointer; font-size: 1rem; text-align: left; transition: 0.2s;
+  * {
+    box-sizing: border-box;
   }
-  .choice-btn:hover:not(:disabled) { border-color: var(--safari-green); background: #f9f1e7; transform: translateX(5px); }
-  .choice-btn:disabled { opacity: 0.8; cursor: not-allowed; }
-  
-  .day-tag { color: var(--safari-orange); font-weight: bold; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 5px; display: block; }
 
-  .feedback { margin-top: 20px; padding: 20px; border-radius: 8px; display: none; line-height: 1.6; border-left: 5px solid var(--safari-orange); font-size: 1.05rem; }
-  .fb-2 { border-left-color: var(--safari-green); background-color: #f0f9eb; }
-  .fb-1 { border-left-color: var(--safari-orange); background-color: #fff9f0; }
-  .fb-0 { border-left-color: var(--danger); background-color: #fdf2f2; }
+  body {
+    font-family: 'Lato', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.6;
+  }
 
-  .btn-next { display: none; margin-top: 20px; padding: 15px 30px; background: var(--safari-green); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem; }
+  h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+    margin-top: 0;
+  }
 
+  /* =========================================
+     1. FULL-FEATURED LANDING PAGE
+     ========================================= */
   #landingPage {
-    position: fixed; inset: 0; z-index: 100;
-    background: var(--safari-green);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 30px;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background:
+      radial-gradient(circle at top right, rgba(230, 126, 34, 0.22), transparent 45%),
+      radial-gradient(circle at bottom left, rgba(195, 176, 145, 0.25), transparent 50%),
+      linear-gradient(160deg, #435624 0%, var(--safari-green) 55%, #3a4a1f 100%);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
   }
 
-  .landing-inner { max-width: 680px; width: 100%; text-align: center; color: white; }
-  .landing-title { font-family: 'Playfair Display', serif; font-size: 3.5rem; margin-bottom: 10px; color: var(--safari-khaki); }
-  .landing-btn { padding: 17px 48px; background: var(--safari-orange); color: white; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
+  .landing-inner {
+    max-width: 920px;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    margin: auto;
+  }
+
+  .expedition-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid var(--safari-khaki);
+    color: var(--safari-khaki);
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+
+  .landing-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.1rem, 5vw, 3.5rem);
+    line-height: 1.15;
+    margin-bottom: 16px;
+    color: #fff;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+  }
+
+  .landing-title span {
+    color: var(--safari-khaki);
+  }
+
+  .landing-subtitle {
+    max-width: 680px;
+    margin: 0 auto 30px;
+    font-size: 1.12rem;
+    color: #f4efe6;
+    line-height: 1.65;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+    margin-bottom: 34px;
+    text-align: left;
+  }
+
+  .feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(195, 176, 145, 0.45);
+    border-radius: 14px;
+    padding: 22px;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .feature-icon {
+    font-size: 1.85rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .feature-card h3 {
+    font-size: 1.15rem;
+    color: var(--safari-khaki);
+    margin-bottom: 8px;
+  }
+
+  .feature-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #f4efe6;
+    line-height: 1.5;
+  }
+
+  .landing-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .landing-btn {
+    padding: 17px 38px;
+    background: var(--safari-orange);
+    color: white;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .landing-btn:hover {
+    background: var(--safari-orange-dark);
+    transform: translateY(-2px);
+  }
+
+  .landing-secondary-btn {
+    background: transparent;
+    color: var(--safari-khaki);
+    border: 1px solid rgba(195, 176, 145, 0.6);
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .landing-secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-color: #fff;
+  }
+
+  /* =========================================
+     SHARED HEADER & NAVIGATION
+     ========================================= */
+  .header {
+    background: var(--safari-green);
+    color: white;
+    width: 100%;
+    padding: 14px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 5px solid var(--safari-orange);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .header h1 {
+    font-size: 1.35rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-pills {
+    display: flex;
+    gap: 8px;
+  }
+
+  .nav-pill {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .nav-pill:hover {
+    background: var(--safari-orange);
+    border-color: var(--safari-orange);
+  }
+
+  /* =========================================
+     2. INTERACTIVE WARMER PAGE
+     ========================================= */
+  #warmerPage {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 50px;
+  }
+
+  .warmer-wrapper {
+    max-width: 860px;
+    width: 92%;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .warmer-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-top: 5px solid var(--safari-green);
+  }
+
+  .section-badge {
+    display: inline-block;
+    background: #f4efe6;
+    color: var(--safari-green);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+
+  .warmer-card h2 {
+    font-size: 1.65rem;
+    color: var(--safari-green);
+    margin-bottom: 8px;
+  }
+
+  .warmer-intro {
+    color: #52616b;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  .discussion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .discussion-item {
+    background: #fdf9f2;
+    border: 1px solid #eadcc5;
+    border-left: 4px solid var(--safari-orange);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .discussion-num {
+    font-weight: 700;
+    color: var(--safari-orange);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .discussion-item p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .phrases-box {
+    background: #f3f6ee;
+    border: 1px solid #cfd9be;
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .phrases-box h3 {
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--safari-green);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .phrases-list {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 8px 20px;
+  }
+
+  .phrases-list li {
+    font-size: 0.95rem;
+    color: #34495e;
+  }
+
+  .phrases-list li em {
+    font-style: italic;
+    color: var(--safari-green-dark);
+    font-weight: 700;
+  }
+
+  /* Vocabulary Exercise */
+  .word-bank {
+    background: #fdf5e6;
+    border: 2px dashed var(--safari-khaki);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 22px;
+  }
+
+  .word-bank-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--safari-green);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .word-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .word-chip {
+    background: #fff;
+    border: 1.5px solid var(--safari-green);
+    color: var(--safari-green);
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+  }
+
+  .word-chip.used {
+    background: #e9ece4;
+    border-color: #b7c2a6;
+    color: #6c7a58;
+    text-decoration: line-through;
+  }
+
+  .vocab-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .vocab-item {
+    border: 2px solid #ece5d8;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+
+  .vocab-item.vocab-correct {
+    border-color: var(--safari-green);
+    background: #f0f9eb;
+  }
+
+  .vocab-item.vocab-incorrect {
+    border-color: var(--danger);
+    background: #fdf2f2;
+  }
+
+  .vocab-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .vocab-def {
+    flex: 1 1 320px;
+    font-size: 0.98rem;
+  }
+
+  .vocab-num {
+    font-weight: 700;
+    color: var(--safari-orange);
+    margin-right: 6px;
+  }
+
+  .vocab-select {
+    flex: 0 1 220px;
+    min-width: 190px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 2px solid var(--safari-khaki);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--text);
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .vocab-select:focus {
+    outline: none;
+    border-color: var(--safari-green);
+  }
+
+  .vocab-item-fb {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: none;
+  }
+
+  .vocab-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .btn-check {
+    background: var(--safari-green);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-check:hover {
+    background: var(--safari-green-dark);
+  }
+
+  .btn-reset {
+    background: #fff;
+    color: var(--text);
+    border: 2px solid #d5ccb9;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-reset:hover {
+    border-color: var(--safari-orange);
+    color: var(--safari-orange);
+  }
+
+  .vocab-score-badge {
+    margin-left: auto;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #fdf5e6;
+    border: 1.5px solid var(--safari-khaki);
+    color: var(--text);
+  }
+
+  .warmer-cta-card {
+    background: linear-gradient(135deg, var(--safari-green) 0%, #3f5022 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 6px 22px rgba(85, 107, 47, 0.25);
+  }
+
+  .warmer-cta-card h3 {
+    color: var(--safari-khaki);
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+
+  .warmer-cta-card p {
+    margin: 0 auto 20px;
+    max-width: 560px;
+    color: #f4efe6;
+  }
+
+  /* =========================================
+     3. MAIN SAFARI EXPEDITION VIEW
+     ========================================= */
+  #gamePage {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 40px;
+  }
+
+  .stats-bar {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #fff;
+    width: 100%;
+    padding: 12px 16px;
+    border-bottom: 2px solid #e5dccb;
+    font-weight: 700;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.98rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2d9c8;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--safari-orange);
+    width: 0%;
+    transition: width 0.45s ease;
+  }
+
+  .game-container {
+    max-width: 820px;
+    width: 92%;
+    margin: 24px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+    min-height: 400px;
+    border-top: 5px solid var(--safari-green);
+    transition: border-color 0.3s;
+  }
+
+  .game-container.emergency-mode {
+    border-top-color: var(--danger);
+    box-shadow: 0 6px 24px rgba(192, 57, 43, 0.16);
+  }
+
+  .day-tag {
+    color: var(--safari-orange);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.82rem;
+    letter-spacing: 0.9px;
+    margin-bottom: 6px;
+    display: inline-block;
+    background: #fdf5e6;
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+
+  .day-tag.emergency-tag {
+    background: #fdf2f2;
+    color: var(--danger);
+  }
+
+  #stepTitle {
+    font-size: 1.75rem;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  #stepDesc {
+    font-size: 1.08rem;
+    color: #3d4f5f;
+    margin-bottom: 20px;
+  }
+
+  .choice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .choice-btn {
+    padding: 16px 18px;
+    border: 2px solid #e6dfd1;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    font-size: 1.02rem;
+    color: var(--text);
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .choice-letter {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #f4efe6;
+    color: var(--safari-green);
+    font-weight: 700;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--safari-green);
+    background: #f9f3e8;
+    transform: translateX(4px);
+  }
+
+  .choice-btn:disabled {
+    opacity: 0.72;
+    cursor: not-allowed;
+  }
+
+  /* Highlight selected choice outcome */
+  .choice-btn.selected-2 {
+    opacity: 1 !important;
+    border-color: var(--safari-green);
+    background: #f0f9eb;
+    font-weight: 700;
+  }
+
+  .choice-btn.selected-2 .choice-letter {
+    background: var(--safari-green);
+    color: #fff;
+  }
+
+  .choice-btn.selected-1 {
+    opacity: 1 !important;
+    border-color: var(--safari-orange);
+    background: #fff9f0;
+    font-weight: 700;
+  }
+
+  .choice-btn.selected-1 .choice-letter {
+    background: var(--safari-orange);
+    color: #fff;
+  }
+
+  .choice-btn.selected-0 {
+    opacity: 1 !important;
+    border-color: var(--danger);
+    background: #fdf2f2;
+    font-weight: 700;
+  }
+
+  .choice-btn.selected-0 .choice-letter {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  /* Expanded Feedback Box */
+  .feedback {
+    margin-top: 22px;
+    padding: 20px 22px;
+    border-radius: 12px;
+    display: none;
+    line-height: 1.65;
+    border-left: 6px solid var(--safari-orange);
+    font-size: 1.02rem;
+  }
+
+  .fb-header {
+    font-weight: 700;
+    font-size: 1.08rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fb-2 {
+    border-left-color: var(--safari-green);
+    background-color: #f0f9eb;
+  }
+
+  .fb-2 .fb-header {
+    color: var(--safari-green-dark);
+  }
+
+  .fb-1 {
+    border-left-color: var(--safari-orange);
+    background-color: #fff9f0;
+  }
+
+  .fb-1 .fb-header {
+    color: #b85d10;
+  }
+
+  .fb-0 {
+    border-left-color: var(--danger);
+    background-color: #fdf2f2;
+  }
+
+  .fb-0 .fb-header {
+    color: var(--danger);
+  }
+
+  .ranger-insight {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(44, 62, 80, 0.2);
+    font-size: 0.97rem;
+  }
+
+  .btn-next {
+    display: none;
+    margin-top: 20px;
+    padding: 15px 30px;
+    background: var(--safari-green);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    width: 100%;
+    font-size: 1.08rem;
+    transition: background 0.2s;
+  }
+
+  .btn-next:hover {
+    background: var(--safari-green-dark);
+  }
+
+  /* Final Screen */
+  #finalView {
+    display: none;
+    text-align: center;
+    padding: 12px 6px;
+  }
+
+  .rank-badge {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: #fdf5e6;
+    border: 2px solid var(--safari-khaki);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .final-score-pill {
+    display: inline-block;
+    background: #f4efe6;
+    padding: 12px 26px;
+    border-radius: 12px;
+    font-size: 1.25rem;
+    margin: 12px 0 18px;
+  }
+
+  .final-desc {
+    max-width: 560px;
+    margin: 0 auto 26px;
+    font-size: 1.08rem;
+    color: #3d4f5f;
+  }
+
+  .final-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+  }
+
+  .btn-final-primary {
+    padding: 15px 30px;
+    background: var(--safari-orange);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-final-primary:hover {
+    background: var(--safari-orange-dark);
+  }
+
+  .btn-final-secondary {
+    padding: 15px 26px;
+    background: var(--safari-green);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-final-secondary:hover {
+    background: var(--safari-green-dark);
+  }
+
+  @media (max-width: 600px) {
+    .game-container, .warmer-card {
+      padding: 20px 16px;
+    }
+    .vocab-score-badge {
+      margin-left: 0;
+      width: 100%;
+      text-align: center;
+    }
+    .vocab-select {
+      width: 100%;
+      flex: 1 1 100%;
+    }
+  }
 </style>
 </head>
 <body>
 
+<!-- =========================================================
+     1. FULL-FEATURED LANDING PAGE
+     ========================================================= -->
 <div id="landingPage">
   <div class="landing-inner">
-    <h1 class="landing-title">Safari Ranger</h1>
-    <p>Welcome! You are the head ranger for a 3-day expedition.</p>
-    <p>Keep your guests safe and happy to earn <b>Safari Points</b>!</p>
-    <button class="landing-btn" onclick="startGame()">Begin Expedition →</button>
+    <div class="expedition-badge">3-Day Wilderness Simulation • ESL Edition</div>
+    <h1 class="landing-title">African Safari: <span>3-Day Ranger Challenge</span></h1>
+    <p class="landing-subtitle">
+      Welcome to the savannah! As Head Safari Ranger, you will guide international guests across <strong>14 dynamic scenarios</strong> over three unforgettable days. Balance guest hospitality, wilderness safety, and wildlife conservation to earn Safari Points.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🗣️</span>
+        <h3>Warm-Up &amp; Vocabulary Prep</h3>
+        <p>Start with speaking discussion prompts and an interactive 8-word vocabulary matching activity tailored for the bush.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🚙</span>
+        <h3>14 Field &amp; Emergency Decisions</h3>
+        <p>Handle 12 daily safari dilemmas and 2 sudden wilderness emergencies, complete with detailed Ranger Insights after every choice.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🏆</span>
+        <h3>Ranger Rank &amp; Safari Points</h3>
+        <p>Score up to 28 Safari Points to rise from <em>Safari Scout</em> to <em>Legend of the Savannah</em>.</p>
+      </div>
+    </div>
+
+    <div class="landing-actions">
+      <button class="landing-btn" onclick="openWarmer()">Start Pre-Safari Briefing (Warmer) →</button>
+      <button class="landing-secondary-btn" onclick="startGame()">Skip Directly to Expedition →</button>
+    </div>
   </div>
 </div>
 
-<div class="header">
-  <h1>🦁 3-Day African Safari</h1>
+<!-- =========================================================
+     2. INTERACTIVE WARMER PAGE
+     ========================================================= -->
+<div id="warmerPage">
+  <div class="header">
+    <div class="header-inner">
+      <h1>🦁 African Safari: Pre-Safari Briefing</h1>
+      <div class="nav-pills">
+        <button class="nav-pill" onclick="showLanding()">← Briefing Home</button>
+        <button class="nav-pill" onclick="startGame()">Start Expedition →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="warmer-wrapper">
+    <!-- Section 1: Discussion Questions -->
+    <section class="warmer-card">
+      <span class="section-badge">Pre-Expedition Speaking</span>
+      <h2>Part 1: Pre-Safari Discussion Questions</h2>
+      <p class="warmer-intro">Discuss these four questions with a partner or small group before heading out into the reserve.</p>
+
+      <div class="discussion-grid">
+        <div class="discussion-item">
+          <span class="discussion-num">Question 1 • Wildlife Travel</span>
+          <p>Have you ever seen wild animals in their natural habitat or visited a national park? What was the most memorable part?</p>
+        </div>
+        <div class="discussion-item">
+          <span class="discussion-num">Question 2 • Tour Guide Qualities</span>
+          <p>What skills and personality traits make a safari ranger or tour guide truly professional when leading international guests?</p>
+        </div>
+        <div class="discussion-item">
+          <span class="discussion-num">Question 3 • Wildlife Safety Rules</span>
+          <p>Why is it so important for visitors to follow strict safety rules—such as staying quiet or remaining inside the vehicle—near wild animals?</p>
+        </div>
+        <div class="discussion-item">
+          <span class="discussion-num">Question 4 • Ethical Tourism</span>
+          <p>How can travelers support local communities and protect fragile ecosystems responsibly when visiting another country?</p>
+        </div>
+      </div>
+
+      <div class="phrases-box">
+        <h3>💬 Useful Speaking Phrases</h3>
+        <ul class="phrases-list">
+          <li><em>"In my opinion, a great ranger should..."</em></li>
+          <li><em>"I've always wanted to see... because..."</em></li>
+          <li><em>"One essential safety rule is to... so that..."</em></li>
+          <li><em>"Responsible tourists can help local people by..."</em></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 2: Vocabulary Exercise -->
+    <section class="warmer-card">
+      <span class="section-badge">Field Terminology</span>
+      <h2>Part 2: Safari Ranger Vocabulary Exercise</h2>
+      <p class="warmer-intro">Match each key safari term from the Word Bank to its correct definition below, then click <strong>Check Answers</strong>.</p>
+
+      <div class="word-bank">
+        <span class="word-bank-label">Word Bank (8 Terms)</span>
+        <div class="word-chips" id="wordBankChips"></div>
+      </div>
+
+      <div class="vocab-list" id="vocabList"></div>
+
+      <div class="vocab-controls">
+        <button class="btn-check" onclick="checkVocab()">Check Answers</button>
+        <button class="btn-reset" onclick="resetVocab()">Reset</button>
+        <div class="vocab-score-badge" id="vocabScoreDisplay">Score: 0 / 8 Correct</div>
+      </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <div class="warmer-cta-card">
+      <h3>Ready to Lead Your First Safari?</h3>
+      <p>Your international guests have just arrived at camp. Put your hospitality, safety, and conservation instincts to the test!</p>
+      <button class="landing-btn" onclick="startGame()">Begin 3-Day Expedition →</button>
+    </div>
+  </div>
 </div>
 
-<div class="stats-bar">
-  <div class="stat-item">⭐ Safari Points: <span id="scoreDisplay">0</span></div>
-  <div class="stat-item">📅 Progress: <span id="stepCounter">1 / 14</span></div>
-</div>
+<!-- =========================================================
+     3. 3-DAY SAFARI EXPEDITION VIEW
+     ========================================================= -->
+<div id="gamePage">
+  <div class="header">
+    <div class="header-inner">
+      <h1>🦁 3-Day African Safari</h1>
+      <div class="nav-pills">
+        <button class="nav-pill" onclick="openWarmer()">📖 Warm-Up &amp; Vocab</button>
+        <button class="nav-pill" onclick="showLanding()">🏠 Briefing</button>
+      </div>
+    </div>
+  </div>
 
-<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="stats-bar">
+    <div class="stat-item">⭐ Safari Points: <span id="scoreDisplay">0</span> / 28</div>
+    <div class="stat-item">📅 Progress: <span id="stepCounter">1 / 14</span></div>
+  </div>
 
-<div class="game-container" id="gameWindow">
-  <span class="day-tag" id="dayLabel">Day 1</span>
-  <h2 id="stepTitle">Expedition Start</h2>
-  <p id="stepDesc">The guests have arrived. How do you welcome them?</p>
-  <div class="choice-list" id="choiceList"></div>
-  <div class="feedback" id="feedbackBox"></div>
-  <button class="btn-next" id="nextBtn" onclick="nextStep()">Continue Journey →</button>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="game-container" id="gameWindow">
+    <!-- Active Scenario View -->
+    <div id="stepView">
+      <span class="day-tag" id="dayLabel">Day 1</span>
+      <h2 id="stepTitle">Expedition Start</h2>
+      <p id="stepDesc">The guests have arrived. How do you welcome them?</p>
+      <div class="choice-list" id="choiceList"></div>
+      <div class="feedback" id="feedbackBox"></div>
+      <button class="btn-next" id="nextBtn" onclick="nextStep()">Continue Journey →</button>
+    </div>
+
+    <!-- Final Completion View -->
+    <div id="finalView"></div>
+  </div>
 </div>
 
 <script>
 /**
- * SCENARIO POOL: 36 Scenarios organized into 12 chronological slots[cite: 2]
+ * =========================================================
+ * WARMER VOCABULARY DATA (8 TARGET WORDS)
+ * =========================================================
+ */
+const vocabItems = [
+  {
+    id: 1,
+    word: "Binoculars",
+    def: "An optical instrument with two lenses that you hold up to your eyes to see distant animals clearly.",
+    confirm: "Rangers use binoculars to spot leopards in high trees without disturbing them.",
+    clue: "Think about the equipment a guest was holding backwards on Day 1!"
+  },
+  {
+    id: 2,
+    word: "Ethical",
+    def: "Morally right and responsible toward local people, wildlife, and the environment.",
+    confirm: "Buying carvings directly from local artisans is an ethical choice that supports the community.",
+    clue: "This adjective describes fair, respectful behavior toward people and nature."
+  },
+  {
+    id: 3,
+    word: "Expedition",
+    def: "An organized journey undertaken by a group of people for exploration, research, or wildlife observation.",
+    confirm: "You are leading a 3-day safari expedition across the African savannah.",
+    clue: "Look at the title of your 3-day journey!"
+  },
+  {
+    id: 4,
+    word: "Herd",
+    def: "A large group of animals, such as elephants or zebras, that live and travel together.",
+    confirm: "When an elephant herd crosses the road, rangers turn off the engine and wait respectfully.",
+    clue: "This collective noun describes a family group of elephants moving together."
+  },
+  {
+    id: 5,
+    word: "Hospitality",
+    def: "The friendly, generous, and attentive reception and care of guests or visitors.",
+    confirm: "Offering cold juice and a wet towel after a dusty flight is great hospitality.",
+    clue: "This noun describes warm customer service and making guests feel welcome."
+  },
+  {
+    id: 6,
+    word: "Predator",
+    def: "A wild animal that hunts, kills, and eats other animals for food, such as a lion or leopard.",
+    confirm: "Never leave your tent alone at night because predators are active in the bush.",
+    clue: "Lions, leopards, and hyenas are all examples of this type of hunter."
+  },
+  {
+    id: 7,
+    word: "Termite mound",
+    def: "A tall, hard earth structure built by thousands of tiny social insects on the savannah.",
+    confirm: "A termite mound is an amazing natural skyscraper that should never be climbed on.",
+    clue: "During the bush walk, guests see a massive hill built by tiny insects."
+  },
+  {
+    id: 8,
+    word: "Tracking",
+    def: "The skill of following animal footprints, droppings, and signs to find where wildlife has gone.",
+    confirm: "Good tracking requires patience, quiet observation, and knowledge of animal behavior.",
+    clue: "This -ing noun refers to reading footprints and signs on the ground."
+  }
+];
+
+// Alphabetical list for the dropdown options
+const vocabWordList = [...vocabItems].map(v => v.word).sort((a, b) => a.localeCompare(b));
+
+/**
+ * Render the Warmer Vocabulary Exercise
+ */
+function initWarmer() {
+  const chipsContainer = document.getElementById("wordBankChips");
+  const listContainer = document.getElementById("vocabList");
+
+  chipsContainer.innerHTML = vocabWordList
+    .map(w => `<span class="word-chip" data-word="${w}">${w}</span>`)
+    .join("");
+
+  listContainer.innerHTML = vocabItems
+    .map((item, idx) => {
+      const optionsHtml = vocabWordList
+        .map(w => `<option value="${w}">${w}</option>`)
+        .join("");
+
+      return `
+        <div class="vocab-item" id="vocabCard-${item.id}">
+          <div class="vocab-row">
+            <div class="vocab-def">
+              <span class="vocab-num">${idx + 1}.</span> ${item.def}
+            </div>
+            <select class="vocab-select" id="vocabSelect-${item.id}" aria-label="Select word for definition ${idx + 1}" onchange="updateWordBankUsage()">
+              <option value="">-- Select a word --</option>
+              ${optionsHtml}
+            </select>
+          </div>
+          <div class="vocab-item-fb" id="vocabFb-${item.id}"></div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+/**
+ * Visually mark words in the Word Bank as used when selected in dropdowns
+ */
+function updateWordBankUsage() {
+  const selectedWords = new Set();
+  vocabItems.forEach(item => {
+    const val = document.getElementById(`vocabSelect-${item.id}`).value;
+    if (val) selectedWords.add(val);
+  });
+
+  document.querySelectorAll(".word-chip").forEach(chip => {
+    const w = chip.getAttribute("data-word");
+    if (selectedWords.has(w)) {
+      chip.classList.add("used");
+    } else {
+      chip.classList.remove("used");
+    }
+  });
+}
+
+/**
+ * Evaluate all 8 vocabulary dropdowns and display per-item feedback
+ */
+function checkVocab() {
+  let correctCount = 0;
+
+  vocabItems.forEach(item => {
+    const card = document.getElementById(`vocabCard-${item.id}`);
+    const select = document.getElementById(`vocabSelect-${item.id}`);
+    const fb = document.getElementById(`vocabFb-${item.id}`);
+    const chosen = select.value;
+
+    card.classList.remove("vocab-correct", "vocab-incorrect");
+    fb.style.display = "block";
+
+    if (chosen === item.word) {
+      correctCount++;
+      card.classList.add("vocab-correct");
+      fb.innerHTML = `<strong style="color: var(--safari-green-dark);">✓ Correct!</strong> ${item.confirm}`;
+    } else if (chosen === "") {
+      card.classList.add("vocab-incorrect");
+      fb.innerHTML = `<strong style="color: var(--danger);">✗ No word selected.</strong> <em>Clue:</em> ${item.clue}`;
+    } else {
+      card.classList.add("vocab-incorrect");
+      fb.innerHTML = `<strong style="color: var(--danger);">✗ Not quite ("${chosen}" doesn't match this definition).</strong> <em>Clue:</em> ${item.clue}`;
+    }
+  });
+
+  const scoreBadge = document.getElementById("vocabScoreDisplay");
+  if (correctCount === 8) {
+    scoreBadge.innerHTML = `🎉 Score: 8 / 8 Correct — Ranger Ready!`;
+    scoreBadge.style.background = "#f0f9eb";
+    scoreBadge.style.borderColor = "var(--safari-green)";
+    scoreBadge.style.color = "var(--safari-green-dark)";
+  } else {
+    scoreBadge.innerHTML = `Score: ${correctCount} / 8 Correct`;
+    scoreBadge.style.background = "#fdf5e6";
+    scoreBadge.style.borderColor = "var(--safari-khaki)";
+    scoreBadge.style.color = "var(--text)";
+  }
+}
+
+/**
+ * Reset the vocabulary exercise
+ */
+function resetVocab() {
+  vocabItems.forEach(item => {
+    const card = document.getElementById(`vocabCard-${item.id}`);
+    const select = document.getElementById(`vocabSelect-${item.id}`);
+    const fb = document.getElementById(`vocabFb-${item.id}`);
+
+    select.value = "";
+    card.classList.remove("vocab-correct", "vocab-incorrect");
+    fb.style.display = "none";
+    fb.innerHTML = "";
+  });
+
+  updateWordBankUsage();
+  const scoreBadge = document.getElementById("vocabScoreDisplay");
+  scoreBadge.innerHTML = `Score: 0 / 8 Correct`;
+  scoreBadge.style.background = "#fdf5e6";
+  scoreBadge.style.borderColor = "var(--safari-khaki)";
+  scoreBadge.style.color = "var(--text)";
+}
+
+/**
+ * =========================================================
+ * SCENARIO POOL: 36 SCENARIOS IN 12 CHRONOLOGICAL SLOTS
+ * Every choice includes 2-3 educational sentences:
+ * (a) Immediate reaction + (b) Ranger Insight
+ * =========================================================
  */
 const scenarioPool = [
   // SLOT 1: DAY 1 ARRIVAL
   [
-    { title: "The Welcome Drink", desc: "Your guests arrive at the camp after a long, dusty flight. They look tired.", day: 1, choices: [
-      { text: "Give them cold fruit juice and a wet towel.", pts: 2, fb: "<b>Excellent!</b> They feel cool and happy immediately." },
-      { text: "Show them to their rooms and tell them where the water is.", pts: 1, fb: "<b>Okay.</b> It is helpful, but a bit cold for a first meeting." },
-      { text: "Tell them to wait at the desk for check-in.", pts: 0, fb: "<b>Poor.</b> They are very tired and want to sit down." }
-    ]},
-    { title: "The Heavy Bags", desc: "A family arrives with many heavy suitcases for their safari.", day: 1, choices: [
-      { text: "Call a porter to carry the bags to their tents.", pts: 2, fb: "<b>Perfect!</b> The guests can relax while their things move." },
-      { text: "Tell them they can leave the bags in the car for now.", pts: 1, fb: "<b>Good.</b> It saves effort, but they might need their things." },
-      { text: "Point at the tents and ask them to carry their bags.", pts: 0, fb: "<b>Rude.</b> Good service means helping with heavy luggage." }
-    ]},
-    { title: "The First Meeting", desc: "The guests ask about the animals they will see today.", day: 1, choices: [
-      { text: "Show them a colorful book of local animals and smile.", pts: 2, fb: "<b>Great!</b> This makes them very excited for the trip." },
-      { text: "Say 'I don't know, it depends on the luck'.", pts: 1, fb: "<b>Honest.</b> But it is not very exciting for the guests." },
-      { text: "Tell them there are no animals near the camp.", pts: 0, fb: "<b>Boring!</b> Even small birds are exciting for tourists." }
-    ]}
+    {
+      title: "The Welcome Drink",
+      desc: "Your guests arrive at the camp after a long, dusty flight. They look tired.",
+      day: 1,
+      choices: [
+        {
+          text: "Give them cold fruit juice and a wet towel.",
+          pts: 2,
+          fb: "The guests sigh with relief as they wipe the savannah dust from their faces and enjoy the refreshing juice. Their energy immediately lifts after their exhausting journey.<div class='ranger-insight'><b>Ranger Insight:</b> Thoughtful first impressions set the tone for the entire expedition. In safari hospitality, anticipating physical comfort—like hydration and cooling down—builds instant trust with travelers.</div>"
+        },
+        {
+          text: "Show them to their rooms and tell them where the water is.",
+          pts: 1,
+          fb: "The guests appreciate getting into the shade, though they look slightly underwhelmed by the quick, businesslike greeting. They quietly unpack on their own.<div class='ranger-insight'><b>Ranger Insight:</b> Meeting basic needs is acceptable, but memorable hospitality goes one step further by offering warm, personal service before guests have to ask.</div>"
+        },
+        {
+          text: "Tell them to wait at the desk for check-in.",
+          pts: 0,
+          fb: "The exhausted travelers frown and shift their weight uncomfortably in the midday heat while waiting in line. Several guests already look frustrated before the safari has even started.<div class='ranger-insight'><b>Ranger Insight:</b> Making tired arrivals stand around for paperwork creates unnecessary stress. Great guides always prioritize guest comfort first and handle administrative details afterward.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Heavy Bags",
+      desc: "A family arrives with many heavy suitcases for their safari.",
+      day: 1,
+      choices: [
+        {
+          text: "Call a porter to carry the bags to their tents.",
+          pts: 2,
+          fb: "The parents smile gratefully as the camp porter loads their luggage onto a trolley and delivers it straight to their canvas tents. The family can immediately relax and admire the view.<div class='ranger-insight'><b>Ranger Insight:</b> Coordinating smoothly with your camp team removes physical stress from guests and shows that your lodge operates with professional hospitality.</div>"
+        },
+        {
+          text: "Tell them they can leave the bags in the car for now.",
+          pts: 1,
+          fb: "The family agrees for the moment, though they soon realize their sun hats, cameras, and medications are still locked inside the vehicle.<div class='ranger-insight'><b>Ranger Insight:</b> Delaying luggage delivery is a temporary shortcut, but guests need quick access to essential safari gear before their first afternoon activity.</div>"
+        },
+        {
+          text: "Point at the tents and ask them to carry their bags.",
+          pts: 0,
+          fb: "The guests look shocked as they struggle to drag heavy suitcases across uneven gravel paths in the heat. One guest nearly trips over a tent rope.<div class='ranger-insight'><b>Ranger Insight:</b> Expecting paying guests to haul heavy luggage across rough terrain is poor service and risks minor injuries before the expedition even begins.</div>"
+        }
+      ]
+    },
+    {
+      title: "The First Meeting",
+      desc: "The guests ask about the animals they will see today.",
+      day: 1,
+      choices: [
+        {
+          text: "Show them a colorful book of local animals and smile.",
+          pts: 2,
+          fb: "The guests gather around eagerly, pointing at photos of lions, zebras, and hornbills while asking enthusiastic questions. Excitement fills the lounge.<div class='ranger-insight'><b>Ranger Insight:</b> Visual aids and genuine enthusiasm turn curiosity into engagement. Educating guests early helps them appreciate both famous predators and smaller ecosystem species.</div>"
+        },
+        {
+          text: "Say 'I don't know, it depends on the luck'.",
+          pts: 1,
+          fb: "The guests nod politely, though their excitement drops a little because they have no idea what habitats or species exist in the reserve.<div class='ranger-insight'><b>Ranger Insight:</b> While wildlife sightings are never guaranteed in nature, a skilled ranger shares knowledge about local habitats and likely tracks rather than relying on luck.</div>"
+        },
+        {
+          text: "Tell them there are no animals near the camp.",
+          pts: 0,
+          fb: "The guests look deeply disappointed, wondering why they traveled all this way if there is nothing to see nearby.<div class='ranger-insight'><b>Ranger Insight:</b> In the African bush, wildlife is everywhere—from weaver birds to grazing impalas. Dismissing local nature dampens guest morale and ignores ecological reality.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 2: DAY 1 ORIENTATION
   [
-    { title: "Safety Rules", desc: "It is time for the safety talk. How do you explain the rules?", day: 1, choices: [
-      { text: "Tell them 'Never leave the tent at night alone'.", pts: 2, fb: "<b>Safe!</b> You must be very clear about wild animals at night." },
-      { text: "Give them a long paper with 50 rules to read.", pts: 1, fb: "<b>Safe but boring.</b> They might not read it all." },
-      { text: "Tell them to do whatever they want.", pts: 0, fb: "<b>Dangerous!</b> The bush is full of predators." }
-    ]},
-    { title: "The Water Bottle", desc: "The guests are going on their first drive. They have no water.", day: 1, choices: [
-      { text: "Give everyone a reusable cold bottle of water.", pts: 2, fb: "<b>Smart!</b> It keeps them healthy and helps the environment." },
-      { text: "Tell them there is a tap in the bathroom.", pts: 1, fb: "<b>Okay.</b> But they can't take the bathroom on the drive!" },
-      { text: "Don't say anything about water.", pts: 0, fb: "<b>Danger.</b> The sun is very hot and they will get thirsty." }
-    ]},
-    { title: "Binocular Lessons", desc: "A guest is holding their binoculars backwards.", day: 1, choices: [
-      { text: "Smile and show them the correct way to hold them.", pts: 2, fb: "<b>Helpful!</b> Now they can actually see the lions." },
-      { text: "Laugh at them with the other rangers.", pts: 0, fb: "<b>Mean!</b> Guests will feel embarrassed and sad." },
-      { text: "Ignore it and let them figure it out.", pts: 1, fb: "<b>Okay.</b> But they will miss the view." }
-    ]}
+    {
+      title: "Safety Rules",
+      desc: "It is time for the safety talk. How do you explain the rules?",
+      day: 1,
+      choices: [
+        {
+          text: "Tell them 'Never leave the tent at night alone'.",
+          pts: 2,
+          fb: "The guests listen attentively and nod, understanding clearly why a ranger escort is required after dark. Everyone feels secure knowing how camp safety works.<div class='ranger-insight'><b>Ranger Insight:</b> Clear, memorable safety briefings save lives. Nocturnal predators often pass through unfenced camps, so guests must understand essential rules immediately.</div>"
+        },
+        {
+          text: "Give them a long paper with 50 rules to read.",
+          pts: 1,
+          fb: "Most guests skim the first few lines and fold the paper into their pockets without reading the critical nighttime safety warnings.<div class='ranger-insight'><b>Ranger Insight:</b> Overloading travelers with dense text reduces comprehension. Effective rangers highlight the most vital safety rules verbally and check that everyone understands.</div>"
+        },
+        {
+          text: "Tell them to do whatever they want.",
+          pts: 0,
+          fb: "Several guests look nervous, while others assume the camp is completely fenced like a city park and plan to walk around after dark.<div class='ranger-insight'><b>Ranger Insight:</b> Failing to establish boundaries in a wilderness reserve puts both guests and wildlife in grave danger. A ranger's primary duty is always safety.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Water Bottle",
+      desc: "The guests are going on their first drive. They have no water.",
+      day: 1,
+      choices: [
+        {
+          text: "Give everyone a reusable cold bottle of water.",
+          pts: 2,
+          fb: "The guests happily clip the sturdy bottles into the vehicle holders and thank you for thinking ahead. Everyone stays hydrated throughout the sunny drive.<div class='ranger-insight'><b>Ranger Insight:</b> Providing reusable water bottles protects guests from heat exhaustion while reducing single-use plastic waste in fragile wilderness areas.</div>"
+        },
+        {
+          text: "Tell them there is a tap in the bathroom.",
+          pts: 1,
+          fb: "A couple of guests rush back to their tents to fill small cups, delaying the departure of the entire safari vehicle by ten minutes.<div class='ranger-insight'><b>Ranger Insight:</b> Pointing out a facility is not the same as preparing your guests. Proactive rangers check essential supplies before the vehicle leaves camp.</div>"
+        },
+        {
+          text: "Don't say anything about water.",
+          pts: 0,
+          fb: "Halfway through the dusty afternoon drive, two guests develop headaches and extreme thirst, forcing you to cut the game drive short.<div class='ranger-insight'><b>Ranger Insight:</b> Dehydration happens rapidly in dry savannah climates. Overlooking basic hydration directly threatens guest health and ruins the expedition schedule.</div>"
+        }
+      ]
+    },
+    {
+      title: "Binocular Lessons",
+      desc: "A guest is holding their binoculars backwards.",
+      day: 1,
+      choices: [
+        {
+          text: "Smile and show them the correct way to hold them.",
+          pts: 2,
+          fb: "The guest laughs warmly, adjusts the focus wheel with your help, and gasps in delight when a distant giraffe suddenly comes into sharp focus.<div class='ranger-insight'><b>Ranger Insight:</b> Patient, respectful coaching empowers beginners to use field equipment properly without feeling self-conscious, enriching their wildlife viewing.</div>"
+        },
+        {
+          text: "Laugh at them with the other rangers.",
+          pts: 0,
+          fb: "The guest's face turns bright red with embarrassment, and they quietly put their binoculars back inside their bag for the rest of the afternoon.<div class='ranger-insight'><b>Ranger Insight:</b> Mocking a guest destroys trust and ruins their confidence. Professional hospitality requires empathy and respect for travelers of all experience levels.</div>"
+        },
+        {
+          text: "Ignore it and let them figure it out.",
+          pts: 1,
+          fb: "The guest squints through the wrong lenses for twenty minutes, complaining that everything looks tiny and blurry before finally giving up.<div class='ranger-insight'><b>Ranger Insight:</b> Remaining silent avoids embarrassment, but a good ranger actively helps guests get the most out of their equipment and sightings.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 3: DAY 1 FIRST DRIVE
   [
-    { title: "The Lion Sighting", desc: "You find a lion sleeping far away under a tree.", day: 1, choices: [
-      { text: "Stop the car and wait quietly for it to wake up.", pts: 2, fb: "<b>Wonderful!</b> Guests love to watch animals being natural." },
-      { text: "Drive very close and honk the horn to wake it up.", pts: 0, fb: "<b>Dangerous!</b> Never annoy a wild predator." },
-      { text: "Say 'Look, a lion' and drive away after 10 seconds.", pts: 1, fb: "<b>Too fast.</b> Guests want time to take photos." }
-    ]},
-    { title: "The Noisy Guest", desc: "A guest is shouting very loudly because they are excited.", day: 1, choices: [
-      { text: "Whisper 'Please be quiet so we don't scare the animals'.", pts: 2, fb: "<b>Professional.</b> You kept the peace and the animals stayed." },
-      { text: "Shout back at them to be quiet.", pts: 0, fb: "<b>Irony!</b> You are being as loud as the guest." },
-      { text: "Do nothing and let them keep shouting.", pts: 1, fb: "<b>Poor.</b> All the animals will run away from the car." }
-    ]},
-    { title: "The Flat Tire", desc: "The car hits a rock and the tire goes flat.", day: 1, choices: [
-      { text: "Tell the guests to stay in the car while you check the area.", pts: 2, fb: "<b>Safety First!</b> You must check for lions before getting out." },
-      { text: "Ask the guests to get out and help you change it.", pts: 0, fb: "<b>Bad!</b> You are putting the guests in danger on the ground." },
-      { text: "Start crying because the car is broken.", pts: 0, fb: "<b>Unprofessional.</b> You are the ranger! Stay calm." }
-    ]}
+    {
+      title: "The Lion Sighting",
+      desc: "You find a lion sleeping far away under a tree.",
+      day: 1,
+      choices: [
+        {
+          text: "Stop the car and wait quietly for it to wake up.",
+          pts: 2,
+          fb: "After a few peaceful minutes, the lion stretches, yawns massively, and gazes calmly toward the vehicle while guests capture unforgettable photographs.<div class='ranger-insight'><b>Ranger Insight:</b> Patience and silence allow wild animals to behave naturally without feeling threatened. Ethical wildlife viewing never forces an animal to perform.</div>"
+        },
+        {
+          text: "Drive very close and honk the horn to wake it up.",
+          pts: 0,
+          fb: "Startled by the loud horn, the lion snarls defensively and retreats deep into thick bushes where nobody can see it anymore.<div class='ranger-insight'><b>Ranger Insight:</b> Harassing wildlife with loud noises violates conservation ethics, stresses the animal, and can trigger dangerous defensive charges.</div>"
+        },
+        {
+          text: "Say 'Look, a lion' and drive away after 10 seconds.",
+          pts: 1,
+          fb: "The guests barely have time to raise their cameras before the vehicle accelerates away, leaving everyone disappointed and frustrated.<div class='ranger-insight'><b>Ranger Insight:</b> Rushing past major sightings deprives guests of the quiet observation time they traveled across the world to experience.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Noisy Guest",
+      desc: "A guest is shouting very loudly because they are excited.",
+      day: 1,
+      choices: [
+        {
+          text: "Whisper 'Please be quiet so we don't scare the animals'.",
+          pts: 2,
+          fb: "The guest immediately lowers their voice to a whisper and smiles apologetically, allowing the nearby impalas to continue grazing undisturbed.<div class='ranger-insight'><b>Ranger Insight:</b> Modeling calm, quiet behavior reminds guests politely that silence is essential for both wildlife conservation and quality sightings.</div>"
+        },
+        {
+          text: "Shout back at them to be quiet.",
+          pts: 0,
+          fb: "Your loud voice echoes across the plain, instantly spooking every animal in sight while creating an awkward, tense atmosphere in the vehicle.<div class='ranger-insight'><b>Ranger Insight:</b> Shouting creates the exact disturbance you want to prevent and damages the respectful relationship between guide and guest.</div>"
+        },
+        {
+          text: "Do nothing and let them keep shouting.",
+          pts: 1,
+          fb: "Within seconds, the startled animals bolt into the tall grass, leaving the other guests annoyed that the sighting was ruined.<div class='ranger-insight'><b>Ranger Insight:</b> A ranger must manage group behavior gently so that one person's excitement does not disturb wildlife or spoil the experience for others.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Flat Tire",
+      desc: "The car hits a rock and the tire goes flat.",
+      day: 1,
+      choices: [
+        {
+          text: "Tell the guests to stay in the car while you check the area.",
+          pts: 2,
+          fb: "The guests remain safely seated inside the vehicle while you scan the surrounding tall grass for predators before efficiently changing the wheel.<div class='ranger-insight'><b>Ranger Insight:</b> Inside the safari vehicle, guests are safe; on the ground, humans are vulnerable. Checking the perimeter first is a golden rule of bush safety.</div>"
+        },
+        {
+          text: "Ask the guests to get out and help you change it.",
+          pts: 0,
+          fb: "Having untrained tourists standing unprotected on an open savannah trail exposes them to hidden snakes, buffalo, or big cats.<div class='ranger-insight'><b>Ranger Insight:</b> Never ask guests to leave the safety of the vehicle during a breakdown in predator territory. Your job is to protect them at all times.</div>"
+        },
+        {
+          text: "Start crying because the car is broken.",
+          pts: 0,
+          fb: "Seeing their ranger panic causes the guests to lose confidence and fear that they are stranded in the wilderness with no rescue plan.<div class='ranger-insight'><b>Ranger Insight:</b> Flat tires are routine in rough off-road terrain. Composure and preparedness reassure guests that every situation is under control.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 4: DAY 1 NIGHTFALL
   [
-    { title: "Campfire Stories", desc: "The sun is down. Guests are sitting around the fire.", day: 1, choices: [
-      { text: "Tell a story about the history of the park.", pts: 2, fb: "<b>Magical.</b> Guests love the culture and history." },
-      { text: "Check your phone and don't talk to anyone.", pts: 0, fb: "<b>Boring.</b> Part of your job is to entertain." },
-      { text: "Ask the guests to tell their own stories.", pts: 1, fb: "<b>Good.</b> It builds a community feeling." }
-    ]},
-    { title: "The Strange Noise", desc: "A guest hears a 'whoop' sound from the bushes.", day: 1, choices: [
-      { text: "Explain that it is a hyena and it is far away.", pts: 2, fb: "<b>Calm.</b> Knowledge stops people from being scared." },
-      { text: "Say 'Oh no! Run to your tents!'", pts: 0, fb: "<b>Panic!</b> You just scared everyone for no reason." },
-      { text: "Say 'I didn't hear anything'.", pts: 1, fb: "<b>Dismissive.</b> The guest wants to learn about sounds." }
-    ]},
-    { title: "Dinner Service", desc: "One guest says they are a vegetarian.", day: 1, choices: [
-      { text: "Provide a fresh salad and grilled vegetables.", pts: 2, fb: "<b>Great.</b> You are ready for all types of guests." },
-      { text: "Tell them to just eat the bread.", pts: 1, fb: "<b>Okay.</b> But they will be very hungry tomorrow." },
-      { text: "Say 'We only serve meat in the bush'.", pts: 0, fb: "<b>Inflexible.</b> Modern safaris must have options." }
-    ]}
+    {
+      title: "Campfire Stories",
+      desc: "The sun is down. Guests are sitting around the fire.",
+      day: 1,
+      choices: [
+        {
+          text: "Tell a story about the history of the park.",
+          pts: 2,
+          fb: "Under the bright southern stars, the guests listen in fascination as you share local conservation history and traditional savannah folklore.<div class='ranger-insight'><b>Ranger Insight:</b> Storytelling connects travelers emotionally to the land and highlights the local communities and rangers who protect the reserve.</div>"
+        },
+        {
+          text: "Check your phone and don't talk to anyone.",
+          pts: 0,
+          fb: "The guests sit in awkward silence around the fire, feeling ignored by their guide and heading to bed early.<div class='ranger-insight'><b>Ranger Insight:</b> Evening campfire time is a core part of safari hospitality. Disengaging with a phone breaks the sense of warmth and connection.</div>"
+        },
+        {
+          text: "Ask the guests to tell their own stories.",
+          pts: 1,
+          fb: "The guests enjoy chatting with each other, though they still wish they could hear more authentic local knowledge from their ranger.<div class='ranger-insight'><b>Ranger Insight:</b> Encouraging guest conversation builds camaraderie, but travelers also look to their guide for cultural and ecological insight.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Strange Noise",
+      desc: "A guest hears a 'whoop' sound from the bushes.",
+      day: 1,
+      choices: [
+        {
+          text: "Explain that it is a hyena and it is far away.",
+          pts: 2,
+          fb: "The nervous guest relaxes immediately and smiles, excited to recognize the classic nocturnal call of a spotted hyena.<div class='ranger-insight'><b>Ranger Insight:</b> Replacing fear of the unknown with accurate natural history turns an anxious moment into an unforgettable educational highlight.</div>"
+        },
+        {
+          text: "Say 'Oh no! Run to your tents!'",
+          pts: 0,
+          fb: "Guests panic, knock over chairs, and sprint blindly in the dark—which is actually dangerous because running triggers predator chase instincts.<div class='ranger-insight'><b>Ranger Insight:</b> Never cause panic or encourage guests to run in the bush. Staying calm and informed is essential for nighttime camp safety.</div>"
+        },
+        {
+          text: "Say 'I didn't hear anything'.",
+          pts: 1,
+          fb: "The guest still feels uneasy and keeps glancing nervously toward the dark bushes instead of enjoying their evening.<div class='ranger-insight'><b>Ranger Insight:</b> Brushing off a guest's question misses a valuable teaching opportunity and leaves their safety concerns unresolved.</div>"
+        }
+      ]
+    },
+    {
+      title: "Dinner Service",
+      desc: "One guest says they are a vegetarian.",
+      day: 1,
+      choices: [
+        {
+          text: "Provide a fresh salad and grilled vegetables.",
+          pts: 2,
+          fb: "The guest smiles warmly and compliments the colorful, flavorful meal prepared specially for them by the camp kitchen.<div class='ranger-insight'><b>Ranger Insight:</b> Inclusive hospitality means accommodating dietary needs gracefully so every traveler feels valued and well-nourished.</div>"
+        },
+        {
+          text: "Tell them to just eat the bread.",
+          pts: 1,
+          fb: "The guest eats a few slices of dry bread politely, but goes to bed hungry before an early 5:00 AM wake-up call.<div class='ranger-insight'><b>Ranger Insight:</b> Offering only plain bread falls short of balanced nutrition and shows a lack of kitchen preparation for international guests.</div>"
+        },
+        {
+          text: "Say 'We only serve meat in the bush'.",
+          pts: 0,
+          fb: "The guest looks hurt and unwelcome, realizing they will have nothing proper to eat during their three-day stay.<div class='ranger-insight'><b>Ranger Insight:</b> Rigid, dismissive attitudes alienate travelers. Modern eco-tourism lodges always plan ahead for vegetarian and allergy-friendly meals.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 5: DAY 2 MORNING DRIVE
   [
-    { title: "Early Start", desc: "It is 5:00 AM. One guest is still sleeping.", day: 2, choices: [
-      { text: "Knock gently and offer a hot coffee.", pts: 2, fb: "<b>Great Service.</b> Morning is the best time for animals." },
-      { text: "Leave without them.", pts: 1, fb: "<b>Fair.</b> But they will be sad they missed the leopards." },
-      { text: "Blow a loud whistle outside their tent.", pts: 0, fb: "<b>Too loud!</b> You will wake up the whole camp." }
-    ]},
-    { title: "The Leopard", desc: "You spot a leopard in a tree with its lunch.", day: 2, choices: [
-      { text: "Stop the engine and let everyone use binoculars.", pts: 2, fb: "<b>Perfect.</b> This is a very rare and beautiful sight." },
-      { text: "Throw a rock at the tree to make it move.", pts: 0, fb: "<b>Cruel!</b> Never touch or bother the animals." },
-      { text: "Keep driving because you already saw a lion.", pts: 1, fb: "<b>No!</b> Leopards are special. Stop the car!" }
-    ]},
-    { title: "The Cold Wind", desc: "The morning air is very cold in the open car.", day: 2, choices: [
-      { text: "Give everyone a thick blanket.", pts: 2, fb: "<b>Thoughtful.</b> They can enjoy the drive without shivering." },
-      { text: "Tell them to 'be tough like a ranger'.", pts: 0, fb: "<b>Rude.</b> Guests pay for comfort." },
-      { text: "Suggest they put their hands in their pockets.", pts: 1, fb: "<b>Basic.</b> Not very helpful." }
-    ]}
+    {
+      title: "Early Start",
+      desc: "It is 5:00 AM. One guest is still sleeping.",
+      day: 2,
+      choices: [
+        {
+          text: "Knock gently and offer a hot coffee.",
+          pts: 2,
+          fb: "The sleepy guest wakes up with a grateful smile, warms their hands on the mug, and joins the group right on time for sunrise.<div class='ranger-insight'><b>Ranger Insight:</b> Dawn is prime wildlife activity time, and a gentle, hospitable wake-up service keeps the schedule smooth without startling guests.</div>"
+        },
+        {
+          text: "Leave without them.",
+          pts: 1,
+          fb: "You depart on schedule, but the guest wakes up ten minutes later heartbroken that they missed a rare morning leopard sighting.<div class='ranger-insight'><b>Ranger Insight:</b> Punctuality matters, yet checking briefly on a sleeping guest takes only a minute and prevents deep disappointment.</div>"
+        },
+        {
+          text: "Blow a loud whistle outside their tent.",
+          pts: 0,
+          fb: "The piercing whistle jolts every guest awake in fright and scares nearby birds and antelope away from the camp.<div class='ranger-insight'><b>Ranger Insight:</b> Loud, jarring noises disrupt the peaceful bush atmosphere and show a lack of courtesy toward resting guests and wildlife.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Leopard",
+      desc: "You spot a leopard in a tree with its lunch.",
+      day: 2,
+      choices: [
+        {
+          text: "Stop the engine and let everyone use binoculars.",
+          pts: 2,
+          fb: "In complete silence, guests watch the elusive leopard resting on an acacia branch, marveling at its spotted coat through their binoculars.<div class='ranger-insight'><b>Ranger Insight:</b> Turning off the engine eliminates vibration and noise, allowing shy predators like leopards to remain relaxed in full view.</div>"
+        },
+        {
+          text: "Throw a rock at the tree to make it move.",
+          pts: 0,
+          fb: "The startled leopard drops its meal and vanishes into dense bush, while your guests stare at you in shock and disapproval.<div class='ranger-insight'><b>Ranger Insight:</b> Throwing objects at wildlife is unethical, illegal in national parks, and teaches animals to fear or attack safari vehicles.</div>"
+        },
+        {
+          text: "Keep driving because you already saw a lion.",
+          pts: 1,
+          fb: "The guests protest in disappointment as you drive past one of Africa's most secretive and prized big cats without stopping.<div class='ranger-insight'><b>Ranger Insight:</b> Every species has unique ecological behavior. Leopards are solitary and rarely seen, making them a highlight of any expedition.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Cold Wind",
+      desc: "The morning air is very cold in the open car.",
+      day: 2,
+      choices: [
+        {
+          text: "Give everyone a thick blanket.",
+          pts: 2,
+          fb: "The guests wrap themselves cozily in the warm fleece blankets and comfortably enjoy the crisp sunrise drive.<div class='ranger-insight'><b>Ranger Insight:</b> Morning temperatures on the savannah can be surprisingly chilly. Carrying extra blankets demonstrates thoughtful preparation.</div>"
+        },
+        {
+          text: "Tell them to 'be tough like a ranger'.",
+          pts: 0,
+          fb: "The guests shiver miserably in the wind, unable to hold their cameras steady or focus on the wildlife.<div class='ranger-insight'><b>Ranger Insight:</b> Dismissing physical discomfort undermines hospitality. Guests should be comfortable enough to enjoy and learn from the environment.</div>"
+        },
+        {
+          text: "Suggest they put their hands in their pockets.",
+          pts: 1,
+          fb: "It helps slightly, though the guests still look cold and wish warmer gear had been packed in the vehicle.<div class='ranger-insight'><b>Ranger Insight:</b> Practical advice is better than nothing, but anticipating weather changes with proper equipment is what separates good guides from great ones.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 6: DAY 2 BUSH WALK
   [
-    { title: "Small Wonders", desc: "You are walking. A guest asks about a pile of poop.", day: 2, choices: [
-      { text: "Explain which animal made it and how old it is.", pts: 2, fb: "<b>Expert!</b> Tracking is a very interesting skill." },
-      { text: "Say 'Ew, don't look at that'.", pts: 0, fb: "<b>Silly.</b> Nature includes everything, even poop." },
-      { text: "Kick it away and keep walking.", pts: 1, fb: "<b>Okay.</b> But you missed a chance to teach." }
-    ]},
-    { title: "The Ant Hill", desc: "You see a massive termite mound.", day: 2, choices: [
-      { text: "Stop and explain how the insects build it.", pts: 2, fb: "<b>Interesting!</b> Guests love the 'small' safari too." },
-      { text: "Let a guest stand on top of it for a photo.", pts: 0, fb: "<b>Destructive!</b> Protect the park and the animals." },
-      { text: "Walk past it without saying anything.", pts: 1, fb: "<b>Boring.</b> It is a great thing to see." }
-    ]},
-    { title: "Following Tracks", desc: "You find fresh tracks of a cheetah.", day: 2, choices: [
-      { text: "Follow them slowly and look at the bushes.", pts: 2, fb: "<b>Exciting!</b> This makes the guests feel like hunters." },
-      { text: "Run as fast as you can to find the cat.", pts: 0, fb: "<b>Dangerous.</b> Never run in the bush." },
-      { text: "Say 'We can't find it' and go back to camp.", pts: 1, fb: "<b>Lazy.</b> Try a little bit first." }
-    ]}
+    {
+      title: "Small Wonders",
+      desc: "You are walking. A guest asks about a pile of poop.",
+      day: 2,
+      choices: [
+        {
+          text: "Explain which animal made it and how old it is.",
+          pts: 2,
+          fb: "The guests lean in with genuine fascination as you point out undigested seeds and explain how rangers track animals using dung.<div class='ranger-insight'><b>Ranger Insight:</b> Tracking signs reveal an animal's diet, health, and direction of travel—turning a simple trail into an exciting ecological detective story.</div>"
+        },
+        {
+          text: "Say 'Ew, don't look at that'.",
+          pts: 0,
+          fb: "The guest looks embarrassed for asking, and the group walks past without learning anything about bush tracking.<div class='ranger-insight'><b>Ranger Insight:</b> In wildlife ecology, nothing in nature is 'gross.' Every sign tells a vital story about how the savannah ecosystem functions.</div>"
+        },
+        {
+          text: "Kick it away and keep walking.",
+          pts: 1,
+          fb: "You destroy a useful tracking clue while leaving the guest's question completely unanswered.<div class='ranger-insight'><b>Ranger Insight:</b> Preserving natural signs helps other trackers and keeps the bush undisturbed while giving you a great teaching prop.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Ant Hill",
+      desc: "You see a massive termite mound.",
+      day: 2,
+      choices: [
+        {
+          text: "Stop and explain how the insects build it.",
+          pts: 2,
+          fb: "Guests are amazed to learn how millions of tiny termites engineer natural air-conditioning shafts inside the towering clay mound.<div class='ranger-insight'><b>Ranger Insight:</b> Highlighting the 'Little Five' and insect architecture teaches guests that small organisms are the true engineers of the African plains.</div>"
+        },
+        {
+          text: "Let a guest stand on top of it for a photo.",
+          pts: 0,
+          fb: "The heavy footsteps crush fragile ventilation tunnels, damaging a colony that took decades to build and risking painful insect bites.<div class='ranger-insight'><b>Ranger Insight:</b> Conservation means leaving habitats intact. Climbing on natural formations damages wildlife homes and sets a poor example.</div>"
+        },
+        {
+          text: "Walk past it without saying anything.",
+          pts: 1,
+          fb: "The guests glance briefly at the tall dirt tower, missing out on one of the savannah's most fascinating natural structures.<div class='ranger-insight'><b>Ranger Insight:</b> Without a guide's interpretation, travelers often walk right past extraordinary ecological stories.</div>"
+        }
+      ]
+    },
+    {
+      title: "Following Tracks",
+      desc: "You find fresh tracks of a cheetah.",
+      day: 2,
+      choices: [
+        {
+          text: "Follow them slowly and look at the bushes.",
+          pts: 2,
+          fb: "Moving quietly in single file, the group spots the sleek cheetah resting atop a fallen log fifty meters ahead.<div class='ranger-insight'><b>Ranger Insight:</b> Slow, silent tracking builds suspense safely and allows you to spot predators before getting dangerously close.</div>"
+        },
+        {
+          text: "Run as fast as you can to find the cat.",
+          pts: 0,
+          fb: "Running footsteps spook the cheetah immediately, and sprinting in predator habitat risks startling hidden animals.<div class='ranger-insight'><b>Ranger Insight:</b> Never run during a bush walk. Sudden fast movement triggers chase or defensive reactions in wild animals.</div>"
+        },
+        {
+          text: "Say 'We can't find it' and go back to camp.",
+          pts: 1,
+          fb: "The guests feel let down because you gave up immediately on fresh tracks without even trying to read the trail.<div class='ranger-insight'><b>Ranger Insight:</b> Persistent, safe tracking teaches patience and shows dedication to giving guests an authentic wilderness experience.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 7: DAY 2 MIDDAY HEAT
   [
-    { title: "Pool Time", desc: "It is 40 degrees. The guests want to swim.", day: 2, choices: [
-      { text: "Show them the camp pool and give them towels.", pts: 2, fb: "<b>Refreshing.</b> A great way to wait for the sunset." },
-      { text: "Tell them to swim in the river.", pts: 0, fb: "<b>Fatal!</b> Rivers have crocodiles and hippos." },
-      { text: "Tell them to stay in their tents with the fan.", pts: 1, fb: "<b>Safe.</b> But the pool is more fun." }
-    ]},
-    { title: "The Sunburn", desc: "A guest is very red and looks painful.", day: 2, choices: [
-      { text: "Give them some aloe vera cream and a hat.", pts: 2, fb: "<b>Kind.</b> You are looking after their health." },
-      { text: "Laugh and call them 'Mr. Tomato'.", pts: 0, fb: "<b>Unkind.</b> Don't make fun of your guests." },
-      { text: "Tell them to sit in the shade.", pts: 1, fb: "<b>Good advice.</b> Simple but helpful." }
-    ]},
-    { title: "Midday Nap", desc: "The camp is very quiet. Guests are resting.", day: 2, choices: [
-      { text: "Check that everyone has enough drinking water.", pts: 2, fb: "<b>Proactive.</b> Heat can be dangerous." },
-      { text: "Play loud music in the bar.", pts: 0, fb: "<b>Disturbing.</b> Guests want to sleep now." },
-      { text: "Take a nap yourself and forget the guests.", pts: 1, fb: "<b>Risky.</b> A ranger should always be ready." }
-    ]}
+    {
+      title: "Pool Time",
+      desc: "It is 40 degrees. The guests want to swim.",
+      day: 2,
+      choices: [
+        {
+          text: "Show them the camp pool and give them towels.",
+          pts: 2,
+          fb: "The guests cool off happily in the secure lodge pool while watching zebras stroll past the distant waterhole.<div class='ranger-insight'><b>Ranger Insight:</b> Providing safe recreational options during peak afternoon heat keeps guests refreshed and safely inside camp boundaries.</div>"
+        },
+        {
+          text: "Tell them to swim in the river.",
+          pts: 0,
+          fb: "African rivers are home to Nile crocodiles and territorial hippos—entering the water would be life-threatening.<div class='ranger-insight'><b>Ranger Insight:</b> Never allow guests near wild rivers or waterholes on foot. Hippos and crocodiles are among Africa's most dangerous animals.</div>"
+        },
+        {
+          text: "Tell them to stay in their tents with the fan.",
+          pts: 1,
+          fb: "The guests stay safe indoors, though they feel a bit cooped up when a refreshing pool is available right at the lodge.<div class='ranger-insight'><b>Ranger Insight:</b> Safety comes first, yet great hospitality also helps guests enjoy the best amenities the camp has to offer.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Sunburn",
+      desc: "A guest is very red and looks painful.",
+      day: 2,
+      choices: [
+        {
+          text: "Give them some aloe vera cream and a hat.",
+          pts: 2,
+          fb: "The guest sighs with relief as the soothing aloe cools their skin and thanks you warmly for the protective sun hat.<div class='ranger-insight'><b>Ranger Insight:</b> Attentive first-aid care and sun protection prevent heatstroke and show genuine concern for guest wellbeing.</div>"
+        },
+        {
+          text: "Laugh and call them 'Mr. Tomato'.",
+          pts: 0,
+          fb: "The sunburned guest feels humiliated and hurt while in genuine physical pain.<div class='ranger-insight'><b>Ranger Insight:</b> Making jokes at the expense of an injured or uncomfortable guest is unprofessional and erodes trust.</div>"
+        },
+        {
+          text: "Tell them to sit in the shade.",
+          pts: 1,
+          fb: "Moving into the shade stops further burning, though the guest still suffers from painful skin without soothing treatment.<div class='ranger-insight'><b>Ranger Insight:</b> Good basic advice helps, but combining prevention with active first-aid care is the hallmark of an exceptional guide.</div>"
+        }
+      ]
+    },
+    {
+      title: "Midday Nap",
+      desc: "The camp is very quiet. Guests are resting.",
+      day: 2,
+      choices: [
+        {
+          text: "Check that everyone has enough drinking water.",
+          pts: 2,
+          fb: "Guests appreciate finding fresh water pitchers outside their tents when they wake up from their afternoon rest.<div class='ranger-insight'><b>Ranger Insight:</b> Quiet vigilance during extreme heat ensures guests stay hydrated and ready for the late-afternoon game drive.</div>"
+        },
+        {
+          text: "Play loud music in the bar.",
+          pts: 0,
+          fb: "Several tired guests emerge from their tents looking annoyed because the noise ruined their rest and scared away camp birds.<div class='ranger-insight'><b>Ranger Insight:</b> Respecting quiet hours preserves the tranquil soundscape of the bush and allows guests to recover from early mornings.</div>"
+        },
+        {
+          text: "Take a nap yourself and forget the guests.",
+          pts: 1,
+          fb: "Nothing goes wrong during the quiet hour, though a guest looking for afternoon tea has to wait twenty minutes to find staff.<div class='ranger-insight'><b>Ranger Insight:</b> Even during downtime, a head ranger ensures someone is always on duty to assist guests and monitor camp safety.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 8: DAY 2 AFTERNOON
   [
-    { title: "The Elephant Herd", desc: "A family of elephants is crossing the road.", day: 2, choices: [
-      { text: "Stop the car far away and turn off the engine.", pts: 2, fb: "<b>Respectful.</b> Give the elephants space." },
-      { text: "Drive fast to get past them before they block you.", pts: 0, fb: "<b>Aggressive.</b> This can make a mother elephant angry." },
-      { text: "Keep the engine running so you can move fast.", pts: 1, fb: "<b>Loud.</b> The noise bothers the animals." }
-    ]},
-    { title: "The Bird Watcher", desc: "A guest wants to see a specific tiny blue bird.", day: 2, choices: [
-      { text: "Stop the car and help them find it with the book.", pts: 2, fb: "<b>Patient.</b> Small animals are important too." },
-      { text: "Say 'Birds are boring, let's find a rhino'.", pts: 0, fb: "<b>Opinionated.</b> The guest's interests come first." },
-      { text: "Point at a random tree and say 'It's there'.", pts: 1, fb: "<b>Dishonest.</b> Don't lie to your guests." }
-    ]},
-    { title: "Dusty Roads", desc: "The road is very dusty and the guests are coughing.", day: 2, choices: [
-      { text: "Drive more slowly to make less dust.", pts: 2, fb: "<b>Comfortable.</b> They will appreciate the clean air." },
-      { text: "Tell them to close their eyes.", pts: 0, fb: "<b>Useless.</b> They want to see the view!" },
-      { text: "Give them a scarf to cover their mouths.", pts: 1, fb: "<b>Helpful.</b> A good solution." }
-    ]}
+    {
+      title: "The Elephant Herd",
+      desc: "A family of elephants is crossing the road.",
+      day: 2,
+      choices: [
+        {
+          text: "Stop the car far away and turn off the engine.",
+          pts: 2,
+          fb: "The matriarch leads her calves calmly across the track just meters away while your guests watch in hushed awe.<div class='ranger-insight'><b>Ranger Insight:</b> Giving elephant herds plenty of space and silence prevents protective mothers from feeling cornered or threatened.</div>"
+        },
+        {
+          text: "Drive fast to get past them before they block you.",
+          pts: 0,
+          fb: "Speeding toward a herd separates calves from adults and provokes an angry trumpet and mock charge from the matriarch.<div class='ranger-insight'><b>Ranger Insight:</b> Wildlife always has the right of way in a reserve. Cutting off an elephant family is reckless and dangerous.</div>"
+        },
+        {
+          text: "Keep the engine running so you can move fast.",
+          pts: 1,
+          fb: "The herd crosses safely, though the idling engine noise makes the younger elephants visibly nervous.<div class='ranger-insight'><b>Ranger Insight:</b> Keeping a safe distance is good, but switching off the motor creates a calmer, more respectful encounter.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Bird Watcher",
+      desc: "A guest wants to see a specific tiny blue bird.",
+      day: 2,
+      choices: [
+        {
+          text: "Stop the car and help them find it with the book.",
+          pts: 2,
+          fb: "Together you spot a brilliant lilac-breasted roller perched on an acacia branch, and the guest beams with pure joy.<div class='ranger-insight'><b>Ranger Insight:</b> Tailoring the safari to individual interests shows genuine hospitality and proves that every creature—big or small—matters.</div>"
+        },
+        {
+          text: "Say 'Birds are boring, let's find a rhino'.",
+          pts: 0,
+          fb: "The guest feels dismissed and stops sharing their interests for the rest of the trip.<div class='ranger-insight'><b>Ranger Insight:</b> Never belittle a guest's passion. Great rangers celebrate biodiversity from tiny kingfishers to giant rhinos.</div>"
+        },
+        {
+          text: "Point at a random tree and say 'It's there'.",
+          pts: 1,
+          fb: "The guest searches the empty branches in confusion and soon realizes you didn't actually spot the bird.<div class='ranger-insight'><b>Ranger Insight:</b> Integrity builds credibility. If you haven't spotted an animal yet, be honest and search together.</div>"
+        }
+      ]
+    },
+    {
+      title: "Dusty Roads",
+      desc: "The road is very dusty and the guests are coughing.",
+      day: 2,
+      choices: [
+        {
+          text: "Drive more slowly to make less dust.",
+          pts: 2,
+          fb: "The thick dust cloud settles behind the vehicle, allowing everyone to breathe easily and enjoy the golden afternoon light.<div class='ranger-insight'><b>Ranger Insight:</b> Smooth, moderate driving protects guest comfort, keeps camera lenses clean, and prevents wildlife collisions.</div>"
+        },
+        {
+          text: "Tell them to close their eyes.",
+          pts: 0,
+          fb: "The guests cough louder and complain that they can't see any animals with their eyes shut.<div class='ranger-insight'><b>Ranger Insight:</b> Giving unhelpful remarks instead of adjusting your driving shows poor judgment and lack of care.</div>"
+        },
+        {
+          text: "Give them a scarf to cover their mouths.",
+          pts: 1,
+          fb: "The scarves help filter the dust, though slowing down the vehicle would have solved the problem at its source.<div class='ranger-insight'><b>Ranger Insight:</b> Providing gear is thoughtful, yet adjusting your driving speed is the most effective way to keep the ride comfortable.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 9: DAY 3 BREAKFAST
   [
-    { title: "The Hippo View", desc: "Breakfast is near the water. Hippos are splashing.", day: 3, choices: [
-      { text: "Tell the guests to stay 10 meters away from the water.", pts: 2, fb: "<b>Safety!</b> Hippos are very dangerous animals." },
-      { text: "Let a guest feed the hippo some bread.", pts: 0, fb: "<b>Terrible!</b> Never feed wild animals." },
-      { text: "Ignore the hippos and eat.", pts: 1, fb: "<b>Missing out.</b> They are cool to watch from a distance." }
-    ]},
-    { title: "The Monkey Thief", desc: "A monkey is trying to steal a guest's toast.", day: 3, choices: [
-      { text: "Move the food inside and clap your hands at the monkey.", pts: 2, fb: "<b>Smart.</b> You protected the food without hurting the animal." },
-      { text: "Let the monkey take the toast for a photo.", pts: 0, fb: "<b>Bad.</b> Monkeys will become aggressive if they get human food." },
-      { text: "Try to catch the monkey.", pts: 1, fb: "<b>Funny but hard.</b> You will probably fail." }
-    ]},
-    { title: "The Surprise", desc: "It is the last day. You have some extra champagne.", day: 3, choices: [
-      { text: "Have a 'Bush Breakfast' with a toast to the trip.", pts: 2, fb: "<b>Classy.</b> A perfect way to say goodbye." },
-      { text: "Drink it yourself in the kitchen.", pts: 0, fb: "<b>Selfish!</b> Share the joy with the guests." },
-      { text: "Ask the guests to pay double for it.", pts: 1, fb: "<b>Greedy.</b> Gifts should be free." }
-    ]}
+    {
+      title: "The Hippo View",
+      desc: "Breakfast is near the water. Hippos are splashing.",
+      day: 3,
+      choices: [
+        {
+          text: "Tell the guests to stay 10 meters away from the water.",
+          pts: 2,
+          fb: "Guests enjoy their coffee safely from the terrace while watching hippos yawn and grunt in the river below.<div class='ranger-insight'><b>Ranger Insight:</b> Hippos are fiercely territorial and surprisingly fast on land. Maintaining a strict buffer zone keeps everyone safe.</div>"
+        },
+        {
+          text: "Let a guest feed the hippo some bread.",
+          pts: 0,
+          fb: "Human food harms wild digestive systems and teaches dangerous animals to approach dining areas looking for handouts.<div class='ranger-insight'><b>Ranger Insight:</b> Never feed wild animals under any circumstances. Habituated wildlife quickly becomes aggressive and poses a fatal risk.</div>"
+        },
+        {
+          text: "Ignore the hippos and eat.",
+          pts: 1,
+          fb: "Breakfast goes fine, though one curious guest walks dangerously close to the riverbank for a selfie before you notice.<div class='ranger-insight'><b>Ranger Insight:</b> Whenever dining near open water, proactive safety reminders prevent guests from wandering too close to hidden hazards.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Monkey Thief",
+      desc: "A monkey is trying to steal a guest's toast.",
+      day: 3,
+      choices: [
+        {
+          text: "Move the food inside and clap your hands at the monkey.",
+          pts: 2,
+          fb: "The startled vervet monkey scurries back into the trees safely while the guest laughs and receives a fresh plate of toast.<div class='ranger-insight'><b>Ranger Insight:</b> Securing food and using non-harmful noise deters camp wildlife without injuring the animal or reinforcing bad habits.</div>"
+        },
+        {
+          text: "Let the monkey take the toast for a photo.",
+          pts: 0,
+          fb: "Soon five more bold monkeys leap onto the breakfast table, knocking over hot coffee and frightening the guests.<div class='ranger-insight'><b>Ranger Insight:</b> Allowing wild monkeys to take food rewards aggressive behavior and quickly turns a cute moment into a camp safety hazard.</div>"
+        },
+        {
+          text: "Try to catch the monkey.",
+          pts: 1,
+          fb: "The agile monkey leaps effortlessly out of reach while you knock over a chair in the chase.<div class='ranger-insight'><b>Ranger Insight:</b> Never try to grab wild animals—even small monkeys have sharp teeth and can transmit diseases if cornered.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Surprise",
+      desc: "It is the last day. You have some extra champagne.",
+      day: 3,
+      choices: [
+        {
+          text: "Have a 'Bush Breakfast' with a toast to the trip.",
+          pts: 2,
+          fb: "Guests clink their glasses together with big smiles, celebrating three unforgettable days in the African wilderness.<div class='ranger-insight'><b>Ranger Insight:</b> Shared celebratory moments turn a great safari into a lifelong memory and strengthen group camaraderie.</div>"
+        },
+        {
+          text: "Drink it yourself in the kitchen.",
+          pts: 0,
+          fb: "Consuming alcohol while on duty leaves you unfit to drive or handle emergencies, violating fundamental ranger safety rules.<div class='ranger-insight'><b>Ranger Insight:</b> A ranger must remain completely sober, alert, and focused on guest safety throughout the entire expedition.</div>"
+        },
+        {
+          text: "Ask the guests to pay double for it.",
+          pts: 1,
+          fb: "Guests decline awkwardly, feeling that the farewell gesture has been turned into an overpriced sales pitch.<div class='ranger-insight'><b>Ranger Insight:</b> Genuine hospitality builds goodwill naturally; trying to overcharge guests on the final morning leaves a sour impression.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 10: DAY 3 LOCAL CULTURE
   [
-    { title: "The Village Visit", desc: "You take the guests to meet the local community.", day: 3, choices: [
-      { text: "Ask the guests to ask questions about the local language.", pts: 2, fb: "<b>Educational.</b> This connects people together." },
-      { text: "Tell the guests to take photos of everyone without asking.", pts: 0, fb: "<b>Disrespectful.</b> Always ask before taking photos of people." },
-      { text: "Wait in the car while the guests walk around.", pts: 1, fb: "<b>Unhelpful.</b> You should be the bridge." }
-    ]},
-    { title: "The Souvenir Shop", desc: "Guests want to buy wood carvings to take home.", day: 3, choices: [
-      { text: "Show them the shop where the money goes to the carvers.", pts: 2, fb: "<b>Ethical.</b> Supporting the community is great." },
-      { text: "Take them to a big plastic factory shop.", pts: 1, fb: "<b>Okay.</b> But it is not very authentic." },
-      { text: "Tell them 'Don't buy anything, it's all trash'.", pts: 0, fb: "<b>Mean.</b> They want a memory of Africa." }
-    ]},
-    { title: "Traditional Dance", desc: "The villagers want to perform a dance.", day: 3, choices: [
-      { text: "Encourage the guests to join in and dance too.", pts: 2, fb: "<b>Joyful!</b> Everyone is laughing and having fun." },
-      { text: "Tell the guests to sit and be quiet.", pts: 1, fb: "<b>Formal.</b> A bit boring." },
-      { text: "Say 'We don't have time for this'.", pts: 0, fb: "<b>Rude.</b> This is a gift from the community." }
-    ]}
+    {
+      title: "The Village Visit",
+      desc: "You take the guests to meet the local community.",
+      day: 3,
+      choices: [
+        {
+          text: "Ask the guests to ask questions about the local language.",
+          pts: 2,
+          fb: "Laughter and warm conversation fill the village square as hosts and guests trade greetings in the local language.<div class='ranger-insight'><b>Ranger Insight:</b> Facilitating respectful two-way cultural exchange builds mutual dignity and deepens travelers' understanding of local heritage.</div>"
+        },
+        {
+          text: "Tell the guests to take photos of everyone without asking.",
+          pts: 0,
+          fb: "Community members look uncomfortable and turn away as cameras are pointed in their faces without permission.<div class='ranger-insight'><b>Ranger Insight:</b> Ethical cultural tourism requires asking permission before photographing people. Communities are hosts, not exhibits.</div>"
+        },
+        {
+          text: "Wait in the car while the guests walk around.",
+          pts: 1,
+          fb: "Guests wander around unsure of local customs or etiquette because nobody is there to translate or introduce them.<div class='ranger-insight'><b>Ranger Insight:</b> A good ranger acts as a cultural bridge, helping visitors interact respectfully with local hosts.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Souvenir Shop",
+      desc: "Guests want to buy wood carvings to take home.",
+      day: 3,
+      choices: [
+        {
+          text: "Show them the shop where the money goes to the carvers.",
+          pts: 2,
+          fb: "Guests proudly purchase hand-carved animals directly from the artisans, knowing their money supports local families.<div class='ranger-insight'><b>Ranger Insight:</b> Ethical tourism ensures revenue stays within the local community, creating direct economic incentives to protect wildlife.</div>"
+        },
+        {
+          text: "Take them to a big plastic factory shop.",
+          pts: 1,
+          fb: "Guests buy a few cheap trinkets, though they later realize the items were mass-produced overseas rather than made locally.<div class='ranger-insight'><b>Ranger Insight:</b> Supporting authentic local craftspeople makes travel meaningful and sustains traditional skills.</div>"
+        },
+        {
+          text: "Tell them 'Don't buy anything, it's all trash'.",
+          pts: 0,
+          fb: "Both the local artisans and your guests look offended by your rude dismissal of traditional craftsmanship.<div class='ranger-insight'><b>Ranger Insight:</b> Insulting local livelihoods harms community partnerships that are vital for modern wildlife conservation.</div>"
+        }
+      ]
+    },
+    {
+      title: "Traditional Dance",
+      desc: "The villagers want to perform a dance.",
+      day: 3,
+      choices: [
+        {
+          text: "Encourage the guests to join in and dance too.",
+          pts: 2,
+          fb: "Everyone claps, laughs, and dances together in rhythm, creating one of the happiest moments of the entire expedition.<div class='ranger-insight'><b>Ranger Insight:</b> Active participation turns passive spectators into engaged guests and honors the generosity of local performers.</div>"
+        },
+        {
+          text: "Tell the guests to sit and be quiet.",
+          pts: 1,
+          fb: "Guests watch politely from their seats, though the atmosphere feels stiff rather than celebratory.<div class='ranger-insight'><b>Ranger Insight:</b> Respectful attention is good, yet welcoming guests to join when invited creates much richer cultural memories.</div>"
+        },
+        {
+          text: "Say 'We don't have time for this'.",
+          pts: 0,
+          fb: "The performers look deeply hurt as your group walks away from a welcome ceremony prepared especially for them.<div class='ranger-insight'><b>Ranger Insight:</b> Rushing away from a cultural welcome shows disrespect and damages goodwill between the lodge and neighboring villages.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 11: DAY 3 PACKING
   [
-    { title: "Late Checkout", desc: "A guest asks to stay in the room for 2 more hours.", day: 3, choices: [
-      { text: "Say 'Yes, of course' and help them with their bags later.", pts: 2, fb: "<b>Kind.</b> They can relax before the airport." },
-      { text: "Say 'No, leave now' and stand at their door.", pts: 0, fb: "<b>Aggressive.</b> Give them a little time." },
-      { text: "Charge them $50 for the extra time.", pts: 1, fb: "<b>Business-like.</b> A bit strict." }
-    ]},
-    { title: "The Tip", desc: "A guest wants to give you a tip for your hard work.", day: 3, choices: [
-      { text: "Say 'Thank you so much' and share it with the team.", pts: 2, fb: "<b>Professional.</b> Teamwork makes the safari work." },
-      { text: "Ask for more money.", pts: 0, fb: "<b>Greedy.</b> Never ask for a tip." },
-      { text: "Refuse the money and look angry.", pts: 1, fb: "<b>Awkward.</b> It makes the guest feel bad." }
-    ]},
-    { title: "Forgot Something", desc: "You find a expensive camera in a room after checkout.", day: 3, choices: [
-      { text: "Drive to the airport immediately to return it.", pts: 2, fb: "<b>Hero!</b> You just saved their holiday memories." },
-      { text: "Keep it for yourself.", pts: 0, fb: "<b>Criminal.</b> That is stealing." },
-      { text: "Leave it at the desk and wait for a call.", pts: 1, fb: "<b>Okay.</b> But they might be in another country soon." }
-    ]}
+    {
+      title: "Late Checkout",
+      desc: "A guest asks to stay in the room for 2 more hours.",
+      day: 3,
+      choices: [
+        {
+          text: "Say 'Yes, of course' and help them with their bags later.",
+          pts: 2,
+          fb: "The guest thanks you sincerely, enjoying a peaceful shower and organized packing before their long flight home.<div class='ranger-insight'><b>Ranger Insight:</b> Flexible, generous service when rooms are available leaves guests with a lasting impression of genuine care.</div>"
+        },
+        {
+          text: "Say 'No, leave now' and stand at their door.",
+          pts: 0,
+          fb: "The guest rushes out flustered and stressed, forgetting their phone charger in the hurry.<div class='ranger-insight'><b>Ranger Insight:</b> Aggressive impatience ruins three days of hard-earned goodwill in just a few seconds.</div>"
+        },
+        {
+          text: "Charge them $50 for the extra time.",
+          pts: 1,
+          fb: "The guest pays quietly, though the sudden fee feels transactional after such a warm wilderness trip.<div class='ranger-insight'><b>Ranger Insight:</b> Following strict policy is understandable, yet small complimentary courtesies often generate far greater loyalty.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Tip",
+      desc: "A guest wants to give you a tip for your hard work.",
+      day: 3,
+      choices: [
+        {
+          text: "Say 'Thank you so much' and share it with the team.",
+          pts: 2,
+          fb: "The guest smiles warmly knowing the trackers, chefs, and camp staff who worked behind the scenes will also be rewarded.<div class='ranger-insight'><b>Ranger Insight:</b> A successful safari relies on an entire team. Sharing recognition and gratuities builds loyalty and morale across the camp.</div>"
+        },
+        {
+          text: "Ask for more money.",
+          pts: 0,
+          fb: "The guest looks shocked and uncomfortable, quickly putting their wallet away.<div class='ranger-insight'><b>Ranger Insight:</b> Demanding larger tips is deeply unprofessional and violates international hospitality standards.</div>"
+        },
+        {
+          text: "Refuse the money and look angry.",
+          pts: 1,
+          fb: "The guest feels awkward and confused, unsure if they accidentally offended you.<div class='ranger-insight'><b>Ranger Insight:</b> Even if a camp has a pooled tip box, accepting gratitude graciously and explaining how it is shared keeps guests comfortable.</div>"
+        }
+      ]
+    },
+    {
+      title: "Forgot Something",
+      desc: "You find an expensive camera in a room after checkout.",
+      day: 3,
+      choices: [
+        {
+          text: "Drive to the airport immediately to return it.",
+          pts: 2,
+          fb: "You reach the airstrip just before boarding—the guest nearly cries with relief as they hold their irreplaceable safari photos.<div class='ranger-insight'><b>Ranger Insight:</b> Going the extra mile to protect guests' memories demonstrates extraordinary integrity and world-class hospitality.</div>"
+        },
+        {
+          text: "Keep it for yourself.",
+          pts: 0,
+          fb: "Stealing guest property destroys your career, ruins the camp's reputation, and breaks the law.<div class='ranger-insight'><b>Ranger Insight:</b> Honesty and trustworthiness are the foundation of every reputable safari operation.</div>"
+        },
+        {
+          text: "Leave it at the desk and wait for a call.",
+          pts: 1,
+          fb: "The camera is safe, though the guest has already flown home and now faces expensive international shipping.<div class='ranger-insight'><b>Ranger Insight:</b> Securing lost items is essential, but acting quickly while travelers are still nearby saves everyone time and stress.</div>"
+        }
+      ]
+    }
   ],
+
   // SLOT 12: DAY 3 DEPARTURE
   [
-    { title: "The Final Goodbye", desc: "The car is leaving for the airport.", day: 3, choices: [
-      { text: "Wave and say 'We hope to see you again soon!'", pts: 2, fb: "<b>Warm.</b> They leave with a smile." },
-      { text: "Turn your back and go to lunch.", pts: 0, fb: "<b>Cold.</b> The end is as important as the start." },
-      { text: "Ask them 'Did you write a review yet?'", pts: 1, fb: "<b>Annoying.</b> Let them enjoy the last minute." }
-    ]},
-    { title: "The Gift Bag", desc: "You have some small wooden animal toys.", day: 3, choices: [
-      { text: "Give one to each guest as a parting gift.", pts: 2, fb: "<b>Sweet.</b> A small gift means a lot." },
-      { text: "Try to sell them for $10 each.", pts: 1, fb: "<b>Okay.</b> But a gift is nicer." },
-      { text: "Keep them in the box.", pts: 0, fb: "<b>Waste.</b> They are better as memories for guests." }
-    ]},
-    { title: "Safe Travels", desc: "The road to the airport is very bumpy.", day: 3, choices: [
-      { text: "Drive slowly and tell stories about the animals.", pts: 2, fb: "<b>Great.</b> One last bit of entertainment." },
-      { text: "Drive like a race car driver.", pts: 0, fb: "<b>Scary.</b> Guests might get sick before the flight." },
-      { text: "Be completely silent for the whole hour.", pts: 1, fb: "<b>Awkward.</b> Say a few words." }
-    ]}
+    {
+      title: "The Final Goodbye",
+      desc: "The car is leaving for the airport.",
+      day: 3,
+      choices: [
+        {
+          text: "Wave and say 'We hope to see you again soon!'",
+          pts: 2,
+          fb: "The guests wave enthusiastically from the vehicle windows, already promising to recommend your safari to their friends.<div class='ranger-insight'><b>Ranger Insight:</b> A warm farewell is the final memory guests take home—ending with genuine kindness ensures lasting goodwill.</div>"
+        },
+        {
+          text: "Turn your back and go to lunch.",
+          pts: 0,
+          fb: "The guests glance back in surprise at the sudden coldness as their vehicle pulls away from camp.<div class='ranger-insight'><b>Ranger Insight:</b> The last five minutes of an expedition matter just as much as the first five. Never abandon guests before departure.</div>"
+        },
+        {
+          text: "Ask them 'Did you write a review yet?'",
+          pts: 1,
+          fb: "The guests smile politely, though being pressured for a review feels rushed during their heartfelt goodbye.<div class='ranger-insight'><b>Ranger Insight:</b> Great reviews happen naturally when guests feel cared for; focus on sincere farewells first.</div>"
+        }
+      ]
+    },
+    {
+      title: "The Gift Bag",
+      desc: "You have some small wooden animal toys.",
+      day: 3,
+      choices: [
+        {
+          text: "Give one to each guest as a parting gift.",
+          pts: 2,
+          fb: "The guests delight in receiving a hand-carved giraffe or elephant keepsake to place on their desks back home.<div class='ranger-insight'><b>Ranger Insight:</b> A small, thoughtful souvenir creates an emotional reminder of wildlife conservation long after the trip ends.</div>"
+        },
+        {
+          text: "Try to sell them for $10 each.",
+          pts: 1,
+          fb: "A couple of guests buy one politely, though most have already packed their wallets for the flight.<div class='ranger-insight'><b>Ranger Insight:</b> Turning a farewell moment into a last-minute sale feels less warm than offering a simple token of appreciation.</div>"
+        },
+        {
+          text: "Keep them in the box.",
+          pts: 0,
+          fb: "The carvings sit unused in a storage cupboard while guests depart empty-handed.<div class='ranger-insight'><b>Ranger Insight:</b> Hospitality resources are meant to create joy for guests, not gather dust in storage.</div>"
+        }
+      ]
+    },
+    {
+      title: "Safe Travels",
+      desc: "The road to the airport is very bumpy.",
+      day: 3,
+      choices: [
+        {
+          text: "Drive slowly and tell stories about the animals.",
+          pts: 2,
+          fb: "Even on the transfer road, guests spot a secretary bird and enjoy one last engaging lesson before reaching the airstrip safely.<div class='ranger-insight'><b>Ranger Insight:</b> A true ranger treats every mile as part of the journey—prioritizing road safety and education until the very end.</div>"
+        },
+        {
+          text: "Drive like a race car driver.",
+          pts: 0,
+          fb: "Guests bounce painfully over potholes and arrive at the airstrip nauseous and shaken.<div class='ranger-insight'><b>Ranger Insight:</b> Reckless driving endangers passengers and wildlife on rural roads and erases the calm atmosphere of the safari.</div>"
+        },
+        {
+          text: "Be completely silent for the whole hour.",
+          pts: 1,
+          fb: "The drive is safe, though the long silence makes the final hour feel dull and disconnected.<div class='ranger-insight'><b>Ranger Insight:</b> Safe driving is essential, and friendly conversation keeps the spirit of hospitality alive right up to departure.</div>"
+        }
+      ]
+    }
   ]
 ];
 
+/**
+ * =========================================================
+ * 2 EMERGENCY SCENARIOS (INSERTED AT POSITIONS 4 AND 9)
+ * =========================================================
+ */
 const emergencies = [
-  { title: "🚨 EMERGENCY: Elephant on the Road!", isEmergency: true, desc: "A massive bull elephant is standing in the middle of the road. He looks grumpy!", day: 1, choices: [
-    { text: "Turn off the engine and wait quietly.", pts: 2, fb: "<b>Wise Choice.</b> The elephant stays calm and walks away. You are safe!" },
-    { text: "Honk your horn to make him move.", pts: 0, fb: "<b>Bad Idea!</b> This makes elephants very angry and dangerous." },
-    { text: "Get out of the car to see him better.", pts: 0, fb: "<b>Death Wish!</b> Never get out of the car near a wild elephant." }
-  ]},
-  { title: "🚨 EMERGENCY: The Storm", isEmergency: true, desc: "A massive rain storm starts and the car gets stuck in the mud!", day: 2, choices: [
-    { text: "Use the radio to call for help and give guests snacks.", pts: 2, fb: "<b>Excellent.</b> You kept them safe and fed while help came." },
-    { text: "Tell the guests to push the car while you drive.", pts: 0, fb: "<b>Dangerous.</b> Lions love it when humans get stuck in the mud." },
-    { text: "Leave the guests in the car and walk to the camp alone.", pts: 0, fb: "<b>Abandonment.</b> Never leave your guests alone in the bush." }
-  ]}
+  {
+    title: "🚨 EMERGENCY: Elephant on the Road!",
+    isEmergency: true,
+    desc: "A massive bull elephant is standing in the middle of the road. He looks grumpy!",
+    day: 1,
+    choices: [
+      {
+        text: "Turn off the engine and wait quietly.",
+        pts: 2,
+        fb: "Seeing that the vehicle is still and non-threatening, the bull elephant flaps his ears once and strolls peacefully into the trees. Your guests breathe a sigh of awe.<div class='ranger-insight'><b>Ranger Insight:</b> Bull elephants in musth or defensive moods need space and calm. Cutting the engine shows respect and prevents a dangerous charge.</div>"
+      },
+      {
+        text: "Honk your horn to make him move.",
+        pts: 0,
+        fb: "Enraged by the loud horn, the six-ton bull flares his ears, trumpets furiously, and charges toward the vehicle before you frantically reverse.<div class='ranger-insight'><b>Ranger Insight:</b> Never challenge or startle a wild elephant with loud horns. Aggressive noise triggers immediate defensive charges.</div>"
+      },
+      {
+        text: "Get out of the car to see him better.",
+        pts: 0,
+        fb: "Stepping out of the vehicle puts you directly in the path of a giant wild animal with zero protection, terrified guests watching in horror.<div class='ranger-insight'><b>Ranger Insight:</b> Leaving the vehicle near large wildlife is a fatal mistake. Animals recognize the outline of a vehicle, not a standing human.</div>"
+      }
+    ]
+  },
+  {
+    title: "🚨 EMERGENCY: The Storm",
+    isEmergency: true,
+    desc: "A massive rain storm starts and the car gets stuck in the mud!",
+    day: 2,
+    choices: [
+      {
+        text: "Use the radio to call for help and give guests snacks.",
+        pts: 2,
+        fb: "Base camp confirms a rescue vehicle is on the way, and your guests stay warm, calm, and well-fed inside the canvas-covered safari truck.<div class='ranger-insight'><b>Ranger Insight:</b> Communication, shelter, and calm leadership are the pillars of wilderness emergency management. Never separate from your vehicle.</div>"
+      },
+      {
+        text: "Tell the guests to push the car while you drive.",
+        pts: 0,
+        fb: "Guests slip dangerously in deep mud in the pouring rain while exposed to predators and spinning tires.<div class='ranger-insight'><b>Ranger Insight:</b> Asking guests to push a stuck vehicle in the bush risks severe injury and leaves them defenseless outside the vehicle.</div>"
+      },
+      {
+        text: "Leave the guests in the car and walk to the camp alone.",
+        pts: 0,
+        fb: "Abandoning guests in a storm leaves them terrified while you walk alone through predator territory with poor visibility.<div class='ranger-insight'><b>Ranger Insight:</b> A ranger never abandons their vehicle or guests. Always stay together and rely on radio communication for recovery.</div>"
+      }
+    ]
+  }
 ];
 
+/**
+ * =========================================================
+ * 3 SCORING BANDS (0-10, 11-22, 23-28)
+ * =========================================================
+ */
 const bands = [
-  { min: 0, max: 10, title: "Safari Scout", color: "#e67e22", text: "You are learning! Next time, think more about guest safety and comfort." },
-  { min: 11, max: 22, title: "Professional Ranger", color: "#2980b9", text: "Good job! You know how to run a great safari. Your guests had a wonderful time." },
-  { min: 23, max: 28, title: "Legend of the Savannah", color: "#27ae60", text: "Incredible! You are the perfect guide. Every guest wants to travel with you!" }
+  {
+    min: 0,
+    max: 10,
+    title: "Safari Scout",
+    color: "#e67e22",
+    text: "You are learning the ropes of the savannah! Next time, focus more closely on wildlife safety rules, guest comfort, and respectful conservation habits."
+  },
+  {
+    min: 11,
+    max: 22,
+    title: "Professional Ranger",
+    color: "#2980b9",
+    text: "Solid job! You know how to run a safe, welcoming safari. Your guests had a wonderful adventure, with just a few moments left to polish."
+  },
+  {
+    min: 23,
+    max: 28,
+    title: "Legend of the Savannah",
+    color: "#27ae60",
+    text: "Incredible leadership! You balanced five-star hospitality, strict wilderness safety, and ethical conservation. Every international guest wants to travel with you!"
+  }
 ];
 
 let score = 0;
@@ -333,7 +2168,7 @@ let currentGameSteps = [];
 let currentStepIndex = 0;
 
 /**
- * Fisher-Yates Shuffle Function[cite: 2]
+ * Fisher-Yates Shuffle Function
  */
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -343,72 +2178,142 @@ function shuffleArray(array) {
   return array;
 }
 
+/**
+ * Navigation helpers between Landing, Warmer, and Game views
+ */
+function showLanding() {
+  document.getElementById("landingPage").style.display = "flex";
+  document.getElementById("warmerPage").style.display = "none";
+  document.getElementById("gamePage").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openWarmer() {
+  document.getElementById("landingPage").style.display = "none";
+  document.getElementById("warmerPage").style.display = "flex";
+  document.getElementById("gamePage").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/**
+ * Start or Restart the 14-step 3-Day Safari Expedition
+ */
 function startGame() {
   score = 0;
   currentStepIndex = 0;
-  
-  // Choose 1 scenario from each of the 12 chronological slots[cite: 2]
+
+  // Choose 1 random scenario from each of the 12 chronological slots
   currentGameSteps = scenarioPool.map(slot => {
-    return {...slot[Math.floor(Math.random() * slot.length)]};
+    return { ...slot[Math.floor(Math.random() * slot.length)] };
   });
 
-  // Insert emergencies at logical intervals[cite: 2]
-  currentGameSteps.splice(4, 0, emergencies[0]); // After slot 4
-  currentGameSteps.splice(9, 0, emergencies[1]); // After slot 8 + 1st emergency
-  
+  // Insert emergencies at logical intervals (positions 4 and 9 -> 14 total steps)
+  currentGameSteps.splice(4, 0, emergencies[0]);
+  currentGameSteps.splice(9, 0, emergencies[1]);
+
   document.getElementById("landingPage").style.display = "none";
+  document.getElementById("warmerPage").style.display = "none";
+  document.getElementById("gamePage").style.display = "flex";
+
+  document.getElementById("stepView").style.display = "block";
+  document.getElementById("finalView").style.display = "none";
+
   updateStats();
   renderStep();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function updateStats() {
   document.getElementById("scoreDisplay").innerText = score;
   document.getElementById("stepCounter").innerText = `${currentStepIndex + 1} / 14`;
-  const progress = ((currentStepIndex) / 14) * 100;
+  const progress = (currentStepIndex / 14) * 100;
   document.getElementById("progressFill").style.width = progress + "%";
 }
 
 function renderStep() {
   const data = currentGameSteps[currentStepIndex];
-  document.getElementById("dayLabel").innerText = `Day ${data.day}`;
+  const gameWindow = document.getElementById("gameWindow");
+  const dayLabel = document.getElementById("dayLabel");
+
+  if (data.isEmergency) {
+    gameWindow.classList.add("emergency-mode");
+    dayLabel.classList.add("emergency-tag");
+    dayLabel.innerText = `🚨 Day ${data.day} • Wilderness Emergency`;
+  } else {
+    gameWindow.classList.remove("emergency-mode");
+    dayLabel.classList.remove("emergency-tag");
+    dayLabel.innerText = `Day ${data.day} • Field Decision`;
+  }
+
   document.getElementById("stepTitle").innerText = data.title;
   document.getElementById("stepDesc").innerHTML = data.desc;
-  
+
   const list = document.getElementById("choiceList");
   list.innerHTML = "";
-  
-  // Shuffle options so the best answer isn't always in the same place[cite: 2]
+
+  // Shuffle options so the best answer isn't always in the same position
   const shuffledChoices = shuffleArray([...data.choices]);
-  
-  shuffledChoices.forEach((c) => {
+  const letters = ["A", "B", "C"];
+
+  shuffledChoices.forEach((choice, idx) => {
     const btn = document.createElement("button");
     btn.className = "choice-btn";
-    btn.innerHTML = c.text;
-    btn.onclick = () => selectChoice(c);
+    btn.innerHTML = `
+      <span class="choice-letter">${letters[idx]}</span>
+      <span>${choice.text}</span>
+    `;
+    btn.onclick = () => selectChoice(choice, btn);
     list.appendChild(btn);
   });
-  
-  document.getElementById("feedbackBox").style.display = "none";
-  document.getElementById("nextBtn").style.display = "none";
+
+  const fb = document.getElementById("feedbackBox");
+  fb.style.display = "none";
+  fb.innerHTML = "";
+
+  const nextBtn = document.getElementById("nextBtn");
+  nextBtn.style.display = "none";
+  nextBtn.innerText = currentStepIndex === currentGameSteps.length - 1
+    ? "Complete Expedition & View Rank →"
+    : "Continue Journey →";
 }
 
-function selectChoice(choice) {
+function selectChoice(choice, selectedBtn) {
   const fb = document.getElementById("feedbackBox");
   score += choice.pts;
   updateStats();
-  
-  fb.innerHTML = `⭐ +${choice.pts} Points<br>${choice.fb}`;
+
+  // Determine outcome header label
+  let headerLabel = "";
+  if (choice.pts === 2) {
+    headerLabel = "⭐ +2 Points — Best Ranger Choice";
+  } else if (choice.pts === 1) {
+    headerLabel = "⭐ +1 Point — Acceptable, Could Be Better";
+  } else {
+    headerLabel = "⚠️ 0 Points — Safety or Service Mistake";
+  }
+
+  fb.innerHTML = `
+    <div class="fb-header">${headerLabel}</div>
+    <div>${choice.fb}</div>
+  `;
   fb.className = `feedback fb-${choice.pts}`;
   fb.style.display = "block";
-  
-  document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
+
+  // Disable all buttons and style the selected choice button
+  document.querySelectorAll(".choice-btn").forEach(b => {
+    b.disabled = true;
+  });
+  selectedBtn.classList.add(`selected-${choice.pts}`);
+
   document.getElementById("nextBtn").style.display = "block";
 }
 
 function nextStep() {
   currentStepIndex++;
   if (currentStepIndex < currentGameSteps.length) {
+    updateStats();
     renderStep();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   } else {
     renderFinalScreen();
   }
@@ -417,15 +2322,33 @@ function nextStep() {
 function renderFinalScreen() {
   const band = bands.find(b => score >= b.min && score <= b.max) || bands[0];
   document.getElementById("progressFill").style.width = "100%";
-  
-  document.getElementById("gameWindow").innerHTML = `
-    <h2 style="color:${band.color}">${band.title}</h2>
-    <p>Final Score: <b>${score} / 28</b></p>
-    <p>${band.text}</p>
-    <hr style="margin:20px 0; border:0; border-top:1px solid #ddd">
-    <button class="landing-btn" style="width:100%" onclick="location.reload()">New Expedition</button>
+  document.getElementById("gameWindow").classList.remove("emergency-mode");
+
+  document.getElementById("stepView").style.display = "none";
+  const finalView = document.getElementById("finalView");
+  finalView.style.display = "block";
+
+  finalView.innerHTML = `
+    <div class="rank-badge" style="color:${band.color}; border-color:${band.color}">Expedition Complete • Official Rank</div>
+    <h2 style="color:${band.color}; font-size: 2.2rem; margin-bottom: 6px;">${band.title}</h2>
+    <div class="final-score-pill">
+      Final Score: <strong>${score} / 28</strong> Safari Points
+    </div>
+    <p class="final-desc">${band.text}</p>
+    <hr style="margin: 24px 0; border: 0; border-top: 1px solid #e5dccb;">
+    <div class="final-actions">
+      <button class="btn-final-primary" onclick="startGame()">New Expedition</button>
+      <button class="btn-final-secondary" onclick="openWarmer()">Review Warm-Up &amp; Vocab</button>
+    </div>
   `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+// Initialize Warmer Vocabulary Exercise on load
+window.addEventListener("DOMContentLoaded", () => {
+  initWarmer();
+});
 </script>
 </body>
 </html>

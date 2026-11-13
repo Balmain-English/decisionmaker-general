@@ -9,6 +9,7 @@
             --primary-color: #0288d1;
             --primary-hover: #01579b;
             --secondary-color: #e0f7fa;
+            --ice-border: #b2ebf2;
             --dark-color: #0f172a;
             --light-color: #ffffff;
             --success-color: #2e7d32;
@@ -32,9 +33,9 @@
             color: var(--dark-color);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px 16px 48px;
         }
 
         .game-container {
@@ -43,20 +44,25 @@
             border-radius: 20px;
             box-shadow: var(--card-shadow);
             width: 100%;
-            max-width: 720px;
-            padding: 35px;
+            max-width: 780px;
+            padding: 30px 32px 34px;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.35);
         }
 
+        /* =========================================================
+           HEADER & PERSISTENT SECTION NAVIGATION TAB BAR
+           ========================================================= */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
             border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 18px;
-            margin-bottom: 25px;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
         }
 
         h1 {
@@ -73,13 +79,54 @@
             padding: 8px 18px;
             border-radius: 25px;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             box-shadow: 0 4px 10px rgba(2, 136, 209, 0.3);
+            white-space: nowrap;
         }
 
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            background-color: #f1f5f9;
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            background-color: transparent;
+            border: 1.5px solid transparent;
+            border-radius: 10px;
+            padding: 10px 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.75);
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-hover);
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(2, 136, 209, 0.16);
+        }
+
+        /* =========================================================
+           SCREEN TRANSITIONS & SHARED BUTTONS
+           ========================================================= */
         .screen {
             display: none;
-            animation: fadeIn 0.4s ease-in-out;
+            animation: fadeIn 0.35s ease-in-out;
         }
 
         .screen.active {
@@ -91,32 +138,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .intro-screen h2 {
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            font-size: 1.6rem;
-            text-align: center;
-        }
-
-        .intro-screen p {
-            margin-bottom: 14px;
-            line-height: 1.6;
-            font-size: 1.05rem;
-            color: #334155;
-            text-align: center;
-        }
-
         .btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 14px 28px;
-            font-size: 1.05rem;
+            padding: 14px 24px;
+            font-size: 1.03rem;
             font-weight: 700;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
-            margin-top: 15px;
+            margin-top: 14px;
             display: inline-block;
             width: 100%;
             text-align: center;
@@ -133,10 +165,458 @@
             transform: translateY(0);
         }
 
-        .question-text {
+        .btn-secondary {
+            background-color: #ffffff;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 12px 22px;
+            font-size: 0.98rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        /* =========================================================
+           LANDING PAGE: BRIEFING, DISCUSSION & VOCABULARY WARM-UP
+           ========================================================= */
+        .hero-box {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .esl-pill {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: var(--primary-hover);
+            border: 1.5px solid #80deea;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .hero-box h2 {
+            color: var(--primary-color);
+            font-size: 1.85rem;
+            margin-bottom: 12px;
+        }
+
+        .mission-brief {
+            background: linear-gradient(180deg, #f8fafc 0%, #f0f9ff 100%);
+            border: 1px solid #bae6fd;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 18px 20px;
+            text-align: left;
+            font-size: 1rem;
+            line-height: 1.62;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .summary-card {
+            background-color: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 14px 15px;
+            box-shadow: 0 3px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .summary-card .card-icon {
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .summary-card h3 {
+            font-size: 0.98rem;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+
+        .summary-card p {
+            font-size: 0.88rem;
+            color: #475569;
+            line-height: 1.42;
+        }
+
+        .warmer-card {
+            background-color: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: var(--primary-hover);
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-bottom: 8px;
+        }
+
+        .warmer-card h3 {
             font-size: 1.25rem;
+            color: var(--dark-color);
+            margin-bottom: 6px;
+        }
+
+        .warmer-subtitle {
+            font-size: 0.94rem;
+            color: #475569;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .discussion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .discussion-item {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 13px 15px;
+        }
+
+        .discussion-item span {
+            display: block;
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .discussion-item p {
+            font-size: 0.94rem;
+            color: #1e293b;
+            line-height: 1.48;
+        }
+
+        .phrases-box {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--ice-border);
+            border-left: 4px solid var(--primary-hover);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .phrases-box h4 {
+            font-size: 0.96rem;
+            color: var(--primary-hover);
+            margin-bottom: 8px;
+        }
+
+        .phrases-list {
+            padding-left: 18px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 6px 16px;
+        }
+
+        .phrases-list li {
+            font-size: 0.9rem;
+            color: #1e293b;
+            font-style: italic;
+        }
+
+        /* Interactive Clickable Word Bank */
+        .word-bank {
+            background-color: #f0f9ff;
+            border: 2px dashed #7dd3fc;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+        }
+
+        .word-bank-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .word-bank-title {
+            font-size: 0.84rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary-hover);
+        }
+
+        .word-bank-hint {
+            font-size: 0.82rem;
+            color: #475569;
+        }
+
+        .word-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .word-chip {
+            background-color: #ffffff;
+            color: var(--primary-hover);
+            border: 1.5px solid #38bdf8;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .word-chip:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--primary-color);
+        }
+
+        .word-chip.chip-active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.25);
+        }
+
+        .word-chip.chip-assigned {
+            background-color: #e2e8f0;
+            color: #475569;
+            border-color: #cbd5e1;
+        }
+
+        .word-chip.chip-assigned.chip-active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* Vocabulary Definition Cards */
+        .vocab-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .vocab-item {
+            background-color: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .vocab-item:hover {
+            border-color: #94a3b8;
+        }
+
+        .vocab-item.is-correct {
+            background-color: var(--success-bg);
+            border-color: #81c784;
+        }
+
+        .vocab-item.is-incorrect {
+            background-color: var(--danger-bg);
+            border-color: #e57373;
+        }
+
+        .vocab-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vocab-def {
+            flex: 1 1 320px;
+            font-size: 0.94rem;
+            color: #1e293b;
+            line-height: 1.45;
+        }
+
+        .vocab-num {
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-right: 6px;
+        }
+
+        .vocab-select {
+            flex: 0 1 210px;
+            min-width: 190px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1.5px solid #94a3b8;
+            background-color: #ffffff;
+            color: var(--dark-color);
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .vocab-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(2, 136, 209, 0.2);
+        }
+
+        .vocab-fb {
+            display: none;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 0.89rem;
+            line-height: 1.45;
+        }
+
+        .vocab-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .btn-small-primary {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-small-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-small-secondary {
+            background-color: #ffffff;
+            color: var(--dark-color);
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 9px 16px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-small-secondary:hover {
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .vocab-score-badge {
+            margin-left: auto;
+            background-color: var(--secondary-color);
+            color: var(--primary-hover);
+            border: 1.5px solid #80deea;
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           QUIZ & MAZE GAMEPLAY STYLES
+           ========================================================= */
+        .stage-topbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .danger-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.84rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        .skip-link-btn {
+            background-color: var(--secondary-color);
+            color: var(--primary-hover);
+            border: 1px solid #80deea;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .skip-link-btn:hover {
+            background-color: #b2ebf2;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #29b6f6, var(--primary-color));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .question-text {
+            font-size: 1.22rem;
             font-weight: 600;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             line-height: 1.5;
             color: #1e293b;
         }
@@ -144,20 +624,21 @@
         .options-grid {
             display: grid;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .option-btn {
             background-color: #fff;
             border: 2px solid #cbd5e1;
             border-radius: 10px;
-            padding: 16px 20px;
+            padding: 15px 18px;
             font-size: 1rem;
             text-align: left;
             cursor: pointer;
             transition: all 0.2s ease;
             color: var(--dark-color);
             font-weight: 500;
+            line-height: 1.45;
         }
 
         .option-btn:hover:not(:disabled) {
@@ -168,15 +649,15 @@
 
         .option-btn:disabled {
             cursor: not-allowed;
-            opacity: 0.7;
+            opacity: 0.72;
         }
 
         .feedback-box {
             padding: 18px;
             border-radius: 10px;
-            margin-top: 20px;
+            margin-top: 18px;
             font-size: 1rem;
-            line-height: 1.5;
+            line-height: 1.55;
             display: none;
             animation: fadeIn 0.3s ease;
         }
@@ -210,32 +691,74 @@
             100% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0); }
         }
 
-        .danger-badge {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+        .stage-complete-box {
+            background: linear-gradient(180deg, #f0f9ff 0%, #e0f7fa 100%);
+            border: 2px solid #80deea;
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stage-complete-box h3 {
+            color: var(--primary-hover);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .stage-complete-box p {
+            color: #334155;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* =========================================================
+           GAME OVER & FINAL RESULTS SCREENS
+           ========================================================= */
+        .game-over-screen {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .game-over-screen h2 {
+            color: var(--danger-color);
+            font-size: 2.1rem;
+            margin-bottom: 14px;
+        }
+
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .breakdown-card {
+            background-color: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .breakdown-card .label {
+            font-size: 0.86rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            display: inline-block;
-            font-weight: 700;
+            color: #475569;
+            margin-bottom: 6px;
         }
 
-        .progress-bar {
-            height: 10px;
-            background-color: #e2e8f0;
-            border-radius: 5px;
-            margin-bottom: 22px;
-            overflow: hidden;
+        .breakdown-card .pts {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: var(--primary-color);
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #29b6f6, var(--primary-color));
-            width: 0%;
-            transition: width 0.4s ease;
+        .breakdown-card .sub {
+            font-size: 0.84rem;
+            color: #64748b;
+            margin-top: 4px;
         }
 
         .result-band {
@@ -243,6 +766,7 @@
             border-radius: 12px;
             margin-bottom: 22px;
             text-align: center;
+            border: 1.5px solid rgba(0, 0, 0, 0.08);
         }
 
         .result-band h3 {
@@ -250,92 +774,314 @@
             margin-bottom: 10px;
         }
 
-        .game-over-screen {
-            text-align: center;
+        .result-band p {
+            line-height: 1.6;
+            font-size: 1.02rem;
         }
 
-        .game-over-screen h2 {
-            color: var(--danger-color);
-            font-size: 2.2rem;
-            margin-bottom: 15px;
+        @media (max-width: 640px) {
+            .game-container {
+                padding: 22px 18px 26px;
+            }
+            .nav-tabs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .summary-grid,
+            .results-breakdown {
+                grid-template-columns: 1fr;
+            }
+            .vocab-score-badge {
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
+            }
+            .vocab-select {
+                width: 100%;
+                flex: 1 1 100%;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="game-container">
+    <!-- HEADER -->
     <div class="header">
         <h1>❄️ Cold Snap!</h1>
         <div class="score-badge">Score: <span id="score-display">0</span>/50</div>
     </div>
 
-    <!-- BRIEF INTRO SCREEN -->
+    <!-- PERSISTENT SECTION NAVIGATION TAB BAR -->
+    <nav class="nav-tabs" aria-label="Game Sections">
+        <button type="button" class="tab-btn active" data-tab="intro-screen" onclick="navigateToTab('intro-screen')">🏠 Briefing &amp; Warm-Up</button>
+        <button type="button" class="tab-btn" data-tab="quiz-screen" onclick="navigateToTab('quiz-screen')">🧠 Part 1: Survival Quiz</button>
+        <button type="button" class="tab-btn" data-tab="maze-screen" onclick="navigateToTab('maze-screen')">🧭 Part 2: Survival Maze</button>
+        <button type="button" class="tab-btn" data-tab="result-screen" onclick="navigateToTab('result-screen')">🏆 Final Results</button>
+    </nav>
+
+    <!-- =========================================================
+         TAB 1: BRIEFING & WARM-UP (LANDING PAGE)
+         ========================================================= -->
     <div id="intro-screen" class="screen active">
-        <h2>Survive the Cold Snap!</h2>
-        <p>A polar vortex has brought severe freezing temperatures and blizzards to your city. Test your winter survival knowledge and navigate extreme cold scenarios to protect yourself and others.</p>
-        <p style="font-size: 1.2rem; font-weight: bold; color: var(--primary-color); margin: 20px 0;">
-            🏆 Maximum Total Score: 50 Points
-        </p>
-        <button class="btn" onclick="startGame()">Start Game</button>
+        <div class="hero-box">
+            <div class="esl-pill">❄️ ESL Extreme Weather &amp; Survival Simulation</div>
+            <h2>Survive the Cold Snap!</h2>
+        </div>
+
+        <div class="mission-brief">
+            A massive <strong>polar vortex</strong> has descended on your city, plunging temperatures below -20°C (-4°F) with howling winds and blinding snow squalls. Power lines are straining, roads are turning to black ice, and dangerous cold-weather myths can put lives at risk. Complete the warm-up below, test your cold-weather science in <strong>Part 1</strong>, and navigate 24 hours of sub-zero emergencies in <strong>Part 2</strong> to earn up to <strong>50 points</strong>!
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <span class="card-icon">🗣️</span>
+                <h3>Warm-Up &amp; Vocab Prep</h3>
+                <p>Discuss winter survival strategies and master 8 essential extreme-cold vocabulary terms.</p>
+            </div>
+            <div class="summary-card">
+                <span class="card-icon">🧠</span>
+                <h3>Part 1: 12-Question Quiz (18 pts)</h3>
+                <p>6 True/False (1 pt each) + 6 Multiple Choice (2 pts each) on hypothermia, frostbite &amp; layering.</p>
+            </div>
+            <div class="summary-card">
+                <span class="card-icon">🧭</span>
+                <h3>Part 2: 12-Scenario Maze (32 pts)</h3>
+                <p>Survive from 7:00 AM to 10:30 PM, including 2 high-stakes Life-or-Death crises. (Total: 50 pts)</p>
+            </div>
+        </div>
+
+        <!-- SECTION A: PRE-GAME DISCUSSION QUESTIONS -->
+        <section class="warmer-card">
+            <span class="section-tag">Section A • Pre-Game Speaking Warm-Up</span>
+            <h3>Pre-Game Discussion Questions</h3>
+            <p class="warmer-subtitle">Discuss these four questions with a partner or class before starting the survival challenge.</p>
+
+            <div class="discussion-grid">
+                <div class="discussion-item">
+                    <span>Question 1 • Personal Experience</span>
+                    <p>What is the coldest weather or winter storm you have ever experienced, and how did people prepare for it?</p>
+                </div>
+                <div class="discussion-item">
+                    <span>Question 2 • Emergency Gear</span>
+                    <p>If a sudden blizzard trapped you at home or inside your car, what five emergency items would be most essential to have?</p>
+                </div>
+                <div class="discussion-item">
+                    <span>Question 3 • Cold-Weather Myths</span>
+                    <p>Why do people often believe myths like drinking alcohol to warm up or rubbing frostbitten skin with snow, and why are these dangerous?</p>
+                </div>
+                <div class="discussion-item">
+                    <span>Question 4 • Winter Power Outage</span>
+                    <p>Imagine the electricity and central heating fail during a sub-zero night. What steps would you take to keep your home and family warm?</p>
+                </div>
+            </div>
+
+            <div class="phrases-box">
+                <h4>💬 Useful Speaking Phrases</h4>
+                <ul class="phrases-list">
+                    <li>"In extreme freezing conditions, the top priority is..."</li>
+                    <li>"A common misconception about cold weather is..."</li>
+                    <li>"If the heating went out overnight, I would immediately..."</li>
+                    <li>"To prevent heat loss, it is much safer to..."</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SECTION B: WINTER SURVIVAL VOCABULARY MATCH-UP -->
+        <section class="warmer-card">
+            <span class="section-tag">Section B • Vocabulary Match-Up</span>
+            <h3>Winter Survival Vocabulary Match-Up</h3>
+            <p class="warmer-subtitle">Match all 8 key winter survival terms to their definitions. Click a chip in the Word Bank to highlight it (then click any definition card), or pick directly from each dropdown menu.</p>
+
+            <div class="word-bank">
+                <div class="word-bank-header">
+                    <span class="word-bank-title">❄️ Interactive Word Bank</span>
+                    <span class="word-bank-hint" id="bank-status">Click a word chip to select it, or use any dropdown</span>
+                </div>
+                <div class="word-chips" id="word-chips-container"></div>
+            </div>
+
+            <div class="vocab-list" id="vocab-list-container"></div>
+
+            <div class="vocab-actions">
+                <button type="button" class="btn-small-primary" onclick="checkVocabAnswers()">Check Answers</button>
+                <button type="button" class="btn-small-secondary" onclick="resetVocabExercise()">Reset Exercise</button>
+                <div class="vocab-score-badge" id="vocab-score-badge">Score: 0 / 8 Correct</div>
+            </div>
+        </section>
+
+        <button type="button" class="btn" onclick="startQuizFromLanding()">Start Part 1: Knowledge Quiz →</button>
+        <button type="button" class="btn-secondary" onclick="skipToMazeFromLanding()">Skip Directly to Part 2: Survival Maze →</button>
     </div>
 
-    <!-- QUIZ SCREEN -->
+    <!-- =========================================================
+         TAB 2: PART 1 - KNOWLEDGE QUIZ (18 PTS MAX)
+         ========================================================= -->
     <div id="quiz-screen" class="screen">
         <div class="progress-bar">
             <div id="quiz-progress" class="progress-fill"></div>
         </div>
-        <div id="quiz-type-tag" class="danger-badge">Part 1: Knowledge Quiz</div>
-        <div class="question-text" id="quiz-question">Question text goes here...</div>
-        
-        <div id="quiz-options" class="options-grid"></div>
 
-        <div id="quiz-feedback" class="feedback-box"></div>
-        <button id="quiz-next-btn" class="btn" style="display: none;" onclick="nextQuizQuestion()">Next Question</button>
+        <div id="quiz-active-area">
+            <div class="stage-topbar">
+                <div id="quiz-type-tag" class="danger-badge">Part 1: Knowledge Quiz</div>
+                <button type="button" class="skip-link-btn" onclick="navigateToTab('maze-screen')">Skip to Part 2 Maze →</button>
+            </div>
+
+            <div class="question-text" id="quiz-question">Question text goes here...</div>
+            <div id="quiz-options" class="options-grid"></div>
+            <div id="quiz-feedback" class="feedback-box"></div>
+            <button type="button" id="quiz-next-btn" class="btn" style="display: none;" onclick="nextQuizQuestion()">Next Question →</button>
+        </div>
+
+        <div id="quiz-completed-area" class="stage-complete-box" style="display: none;">
+            <h3>✅ Part 1: Survival Quiz Completed!</h3>
+            <p>You scored <strong id="quiz-done-score">0 / 18</strong> points in the knowledge quiz. Continue to the Part 2 Survival Maze or retake Part 1 if you want to practice again.</p>
+            <button type="button" class="btn" onclick="navigateToTab('maze-screen')">Continue to Part 2: Survival Maze →</button>
+            <button type="button" class="btn-secondary" onclick="resetQuizOnly()">Retake Part 1 Quiz</button>
+        </div>
     </div>
 
-    <!-- MAZE SCREEN -->
+    <!-- =========================================================
+         TAB 3: PART 2 - SURVIVAL MAZE (32 PTS MAX)
+         ========================================================= -->
     <div id="maze-screen" class="screen">
         <div class="progress-bar">
             <div id="maze-progress" class="progress-fill"></div>
         </div>
-        <div id="maze-badge-container"></div>
-        <div class="question-text" id="scenario-title" style="color: var(--primary-color); font-size: 1.1rem; margin-bottom: 6px;"></div>
-        <div class="question-text" id="scenario-text">Scenario text goes here...</div>
-        
-        <div id="scenario-options" class="options-grid"></div>
 
-        <div id="maze-feedback" class="feedback-box"></div>
-        <button id="maze-next-btn" class="btn" style="display: none;" onclick="nextMazeScenario()">Continue Story</button>
+        <div id="maze-active-area">
+            <div class="stage-topbar">
+                <div id="maze-badge-container"></div>
+                <button type="button" class="skip-link-btn" onclick="navigateToTab('result-screen')">View Final Results →</button>
+            </div>
+
+            <div class="question-text" id="scenario-title" style="color: var(--primary-color); font-size: 1.08rem; margin-bottom: 6px;"></div>
+            <div class="question-text" id="scenario-text">Scenario text goes here...</div>
+            <div id="scenario-options" class="options-grid"></div>
+            <div id="maze-feedback" class="feedback-box"></div>
+            <button type="button" id="maze-next-btn" class="btn" style="display: none;" onclick="nextMazeScenario()">Continue Story →</button>
+        </div>
+
+        <div id="maze-completed-area" class="stage-complete-box" style="display: none;">
+            <h3>✅ Part 2: Survival Maze Completed!</h3>
+            <p>You survived all 12 winter scenarios and earned <strong id="maze-done-score">0 / 32</strong> points in the maze. View your final evaluation or replay Part 2.</p>
+            <button type="button" class="btn" onclick="navigateToTab('result-screen')">View Final Results →</button>
+            <button type="button" class="btn-secondary" onclick="resetMazeOnly()">Replay Part 2 Maze</button>
+        </div>
     </div>
 
-    <!-- GAME OVER SCREEN -->
+    <!-- =========================================================
+         GAME OVER SCREEN (TRIGGERED ON FATAL LIFE-OR-DEATH ERROR)
+         ========================================================= -->
     <div id="game-over-screen" class="screen game-over-screen">
         <h2>⚠️ GAME OVER</h2>
-        <p id="game-over-reason" style="margin-bottom: 20px; font-size: 1.15rem; line-height: 1.6; color: #333;"></p>
-        <p style="color: #666; font-size: 0.95rem;">In extreme cold, critical mistakes can be fatal. Always prioritize warmth, safety, and proper survival protocols!</p>
-        <button class="btn" onclick="restartGame()">Try Again</button>
+        <p id="game-over-reason" style="margin-bottom: 18px; font-size: 1.12rem; line-height: 1.6; color: #1e293b;"></p>
+        <p style="color: #475569; font-size: 0.95rem; margin-bottom: 8px;">In extreme cold, critical mistakes can be fatal. Always prioritize warmth, safety, and proper survival protocols!</p>
+        <button type="button" class="btn" onclick="retryMazeAfterGameOver()">Retry Part 2 Survival Maze</button>
+        <button type="button" class="btn-secondary" onclick="restartFullChallenge()">Restart Full Challenge</button>
     </div>
 
-    <!-- FINAL RESULT SCREEN -->
+    <!-- =========================================================
+         TAB 4: FINAL RESULTS SCREEN
+         ========================================================= -->
     <div id="result-screen" class="screen">
-        <h2 style="text-align: center; margin-bottom: 15px; color: var(--primary-color);">Cold Snap Challenge Complete!</h2>
-        <div style="text-align: center; font-size: 2.2rem; font-weight: bold; margin-bottom: 20px;">
+        <h2 style="text-align: center; margin-bottom: 12px; color: var(--primary-color);">Cold Snap Challenge Evaluation</h2>
+        <div style="text-align: center; font-size: 2.15rem; font-weight: 800; margin-bottom: 18px; color: var(--dark-color);">
             Final Score: <span id="final-score">0</span> / 50
         </div>
-        
+
+        <div class="results-breakdown">
+            <div class="breakdown-card">
+                <div class="label">🧠 Part 1: Survival Quiz</div>
+                <div class="pts"><span id="res-part1-score">0</span> / 18</div>
+                <div class="sub" id="res-part1-status">0 of 12 questions answered</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="label">🧭 Part 2: Survival Maze</div>
+                <div class="pts"><span id="res-part2-score">0</span> / 32</div>
+                <div class="sub" id="res-part2-status">0 of 12 scenarios completed</div>
+            </div>
+        </div>
+
         <div id="result-band" class="result-band"></div>
 
-        <button class="btn" onclick="restartGame()">Play Again</button>
+        <button type="button" class="btn" onclick="restartFullChallenge()">Restart Full Challenge</button>
+        <button type="button" class="btn-secondary" onclick="navigateToTab('intro-screen')">← Return to Briefing &amp; Warm-Up</button>
     </div>
 </div>
 
 <script>
-    // GAME STATE
-    let score = 0;
+    /* =========================================================
+       VOCABULARY WARM-UP DATA (8 TERMS)
+       ========================================================= */
+    const VOCAB_DATA = [
+        {
+            id: 1,
+            word: "Polar vortex",
+            def: "A large area of freezing low-pressure air swirling around the Earth's poles that can push extreme cold southward.",
+            hint: "Look for the two-word meteorological term describing swirling Arctic air."
+        },
+        {
+            id: 2,
+            word: "Hypothermia",
+            def: "A dangerous medical condition in which the body loses heat faster than it can produce it, causing core temperature to drop.",
+            hint: "This medical noun starts with 'hypo-' (meaning 'below normal') + 'thermia' (heat)."
+        },
+        {
+            id: 3,
+            word: "Frostbite",
+            def: "Injury caused by freezing of the skin and underlying tissues, most often affecting fingers, toes, ears, and the nose.",
+            hint: "Think of the compound word combining 'frost' and 'bite'."
+        },
+        {
+            id: 4,
+            word: "Wind chill",
+            def: "How cold the air actually feels on exposed skin when wind speed combines with freezing air temperature.",
+            hint: "Look for the two-word phrase combining 'wind' with a synonym for coldness."
+        },
+        {
+            id: 5,
+            word: "Insulation",
+            def: "Material or trapped air layers that slow down the transfer of heat and keep warmth inside a home or clothing.",
+            hint: "Fleece, down feathers, and fiberglass all provide thermal __________."
+        },
+        {
+            id: 6,
+            word: "Moisture-wicking",
+            def: "Fabric designed to pull sweat away from your skin so you stay dry and warm in freezing weather.",
+            hint: "Look for the hyphenated adjective describing technical base-layer fabrics."
+        },
+        {
+            id: 7,
+            word: "Whiteout",
+            def: "A severe blizzard condition in which blowing snow reduces visibility so much that ground and sky look completely white.",
+            hint: "This compound noun describes zero-visibility snow conditions."
+        },
+        {
+            id: 8,
+            word: "Carbon monoxide",
+            def: "An invisible, odorless, deadly gas produced by burning fuel or running car engines without proper ventilation.",
+            hint: "Blocked exhaust pipes and indoor charcoal grills release this toxic gas."
+        }
+    ];
+
+    let selectedBankWord = null;
+
+    /* =========================================================
+       GAME STATE (TRACKING BOTH PARTS INDEPENDENTLY)
+       ========================================================= */
+    let part1Score = 0;
+    let part2Score = 0;
     let currentQuizIndex = 0;
     let currentMazeIndex = 0;
+    let quizInitialized = false;
+    let mazeInitialized = false;
+    let quizCompleted = false;
+    let mazeCompleted = false;
 
-    // PART 1: 12 Questions total (6 T/F @ 1pt + 6 MC @ 2pts = 18 pts max)
+    /* =========================================================
+       PART 1: 12 QUESTIONS (6 T/F @ 1 PT + 6 MC @ 2 PTS = 18 PTS)
+       ========================================================= */
     const quizData = [
         // 6 True / False Questions (1 Point Each)
         {
@@ -449,10 +1195,9 @@
         }
     ];
 
-    // PART 2: MAZE DATA
-    // 10 Standard Scenarios (3, 2, 1, or -1 pt) -> Max 30 pts
-    // 2 Life or Death Scenarios (1 pt or Game Over) -> Max 2 pts
-    // Total Part 2 Max = 32 pts (Grand Total = 50 pts)
+    /* =========================================================
+       PART 2: 12 CHRONOLOGICAL SCENARIOS (32 PTS MAX)
+       ========================================================= */
     const mazeData = [
         {
             time: "7:00 AM",
@@ -596,34 +1341,197 @@
         }
     ];
 
+    /* =========================================================
+       SCORE & SCREEN NAVIGATION UTILITIES
+       ========================================================= */
+    function getTotalScore() {
+        return part1Score + part2Score;
+    }
+
     function updateScoreDisplay() {
-        document.getElementById("score-display").innerText = score;
+        document.getElementById("score-display").innerText = getTotalScore();
     }
 
     function showScreen(screenId) {
         document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
         document.getElementById(screenId).classList.add("active");
+
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.classList.toggle("active", btn.getAttribute("data-tab") === screenId);
+        });
     }
 
-    function startGame() {
-        score = 0;
-        currentQuizIndex = 0;
-        currentMazeIndex = 0;
-        updateScoreDisplay();
-        showQuizQuestion();
-        showScreen("quiz-screen");
+    /**
+     * Persistent Navigation Tab Handler:
+     * Switches immediately to any section and initializes Quiz or Maze
+     * only if not yet loaded, preserving existing progress and scores.
+     */
+    function navigateToTab(targetScreen) {
+        if (targetScreen === "quiz-screen") {
+            if (!quizInitialized) {
+                quizInitialized = true;
+                currentQuizIndex = 0;
+                quizCompleted = false;
+                showQuizQuestion();
+            } else if (quizCompleted) {
+                renderQuizCompletedState();
+            }
+        } else if (targetScreen === "maze-screen") {
+            if (!mazeInitialized) {
+                mazeInitialized = true;
+                currentMazeIndex = 0;
+                mazeCompleted = false;
+                showMazeScenario();
+            } else if (mazeCompleted) {
+                renderMazeCompletedState();
+            }
+        } else if (targetScreen === "result-screen") {
+            updateResultsView();
+        }
+
+        showScreen(targetScreen);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function restartGame() {
-        startGame();
+    function startQuizFromLanding() {
+        navigateToTab("quiz-screen");
     }
 
-    // QUIZ LOGIC
+    function skipToMazeFromLanding() {
+        navigateToTab("maze-screen");
+    }
+
+    /* =========================================================
+       VOCABULARY WARM-UP INTERACTIVE LOGIC
+       ========================================================= */
+    function initVocabWarmup() {
+        const chipsEl = document.getElementById("word-chips-container");
+        const listEl = document.getElementById("vocab-list-container");
+
+        chipsEl.innerHTML = VOCAB_DATA.map(item => `
+            <button type="button" class="word-chip" data-word="${item.word}" onclick="selectWordChip('${item.word}')">
+                <span class="chip-check"></span>${item.word}
+            </button>
+        `).join("");
+
+        const optionsMarkup = VOCAB_DATA
+            .map(item => `<option value="${item.word}">${item.word}</option>`)
+            .join("");
+
+        listEl.innerHTML = VOCAB_DATA.map((item, idx) => `
+            <div class="vocab-item" id="vocab-item-${item.id}" onclick="assignChipToCard(${item.id}, event)">
+                <div class="vocab-row">
+                    <div class="vocab-def">
+                        <span class="vocab-num">${idx + 1}.</span>${item.def}
+                    </div>
+                    <select class="vocab-select" id="vocab-select-${item.id}" aria-label="Select term for definition ${idx + 1}" onchange="onVocabDropdownChange()">
+                        <option value="">-- Choose term --</option>
+                        ${optionsMarkup}
+                    </select>
+                </div>
+                <div class="vocab-fb" id="vocab-fb-${item.id}"></div>
+            </div>
+        `).join("");
+    }
+
+    function selectWordChip(word) {
+        selectedBankWord = (selectedBankWord === word) ? null : word;
+        document.getElementById("bank-status").innerText = selectedBankWord
+            ? `Selected "${selectedBankWord}" — click any definition card or choose from its dropdown`
+            : "Click a word chip to select it, or use any dropdown";
+        refreshWordChipStyles();
+    }
+
+    function assignChipToCard(itemId, event) {
+        if (!selectedBankWord) return;
+        if (event && event.target && event.target.tagName === "SELECT") return;
+
+        document.getElementById(`vocab-select-${itemId}`).value = selectedBankWord;
+        selectedBankWord = null;
+        document.getElementById("bank-status").innerText = "Click a word chip to select it, or use any dropdown";
+        refreshWordChipStyles();
+    }
+
+    function onVocabDropdownChange() {
+        selectedBankWord = null;
+        document.getElementById("bank-status").innerText = "Click a word chip to select it, or use any dropdown";
+        refreshWordChipStyles();
+    }
+
+    function refreshWordChipStyles() {
+        const assignedSet = new Set();
+        VOCAB_DATA.forEach(item => {
+            const val = document.getElementById(`vocab-select-${item.id}`).value;
+            if (val) assignedSet.add(val);
+        });
+
+        document.querySelectorAll(".word-chip").forEach(chip => {
+            const w = chip.getAttribute("data-word");
+            const isAssigned = assignedSet.has(w);
+            chip.classList.toggle("chip-active", w === selectedBankWord);
+            chip.classList.toggle("chip-assigned", isAssigned);
+            chip.querySelector(".chip-check").innerText = isAssigned ? "✓ " : "";
+        });
+    }
+
+    function checkVocabAnswers() {
+        let correctCount = 0;
+
+        VOCAB_DATA.forEach(item => {
+            const cardEl = document.getElementById(`vocab-item-${item.id}`);
+            const selectEl = document.getElementById(`vocab-select-${item.id}`);
+            const fbEl = document.getElementById(`vocab-fb-${item.id}`);
+            const chosen = selectEl.value;
+
+            cardEl.classList.remove("is-correct", "is-incorrect");
+            fbEl.style.display = "block";
+
+            if (chosen === item.word) {
+                correctCount++;
+                cardEl.classList.add("is-correct");
+                fbEl.innerHTML = `<strong style="color: var(--success-color);">✅ Correct!</strong> <strong>${item.word}</strong> matches this definition.`;
+            } else {
+                cardEl.classList.add("is-incorrect");
+                fbEl.innerHTML = `<strong style="color: var(--danger-color);">❌ Clue:</strong> ${item.hint}`;
+            }
+        });
+
+        const badge = document.getElementById("vocab-score-badge");
+        badge.innerText = correctCount === 8
+            ? "Score: 8 / 8 Correct 🏆"
+            : `Score: ${correctCount} / 8 Correct`;
+    }
+
+    function resetVocabExercise() {
+        selectedBankWord = null;
+        document.getElementById("bank-status").innerText = "Click a word chip to select it, or use any dropdown";
+
+        VOCAB_DATA.forEach(item => {
+            const cardEl = document.getElementById(`vocab-item-${item.id}`);
+            const selectEl = document.getElementById(`vocab-select-${item.id}`);
+            const fbEl = document.getElementById(`vocab-fb-${item.id}`);
+
+            selectEl.value = "";
+            cardEl.classList.remove("is-correct", "is-incorrect");
+            fbEl.style.display = "none";
+            fbEl.innerHTML = "";
+        });
+
+        refreshWordChipStyles();
+        document.getElementById("vocab-score-badge").innerText = "Score: 0 / 8 Correct";
+    }
+
+    /* =========================================================
+       PART 1: QUIZ LOGIC (18 PTS MAX)
+       ========================================================= */
     function showQuizQuestion() {
+        document.getElementById("quiz-active-area").style.display = "block";
+        document.getElementById("quiz-completed-area").style.display = "none";
+
         const q = quizData[currentQuizIndex];
-        const progressPct = ((currentQuizIndex) / quizData.length) * 100;
+        const progressPct = (currentQuizIndex / quizData.length) * 100;
         document.getElementById("quiz-progress").style.width = progressPct + "%";
-        
+
         document.getElementById("quiz-feedback").style.display = "none";
         document.getElementById("quiz-next-btn").style.display = "none";
 
@@ -637,6 +1545,7 @@
 
             ["True", "False"].forEach(opt => {
                 const btn = document.createElement("button");
+                btn.type = "button";
                 btn.className = "option-btn";
                 btn.innerText = opt;
                 btn.onclick = () => handleQuizAnswer(opt);
@@ -651,6 +1560,7 @@
 
             opts.forEach(opt => {
                 const btn = document.createElement("button");
+                btn.type = "button";
                 btn.className = "option-btn";
                 btn.innerText = opt.text;
                 btn.onclick = () => handleQuizAnswer(opt.isCorrect);
@@ -667,20 +1577,24 @@
         feedbackEl.style.display = "block";
 
         const btns = document.querySelectorAll("#quiz-options .option-btn");
-        btns.forEach(b => b.disabled = true);
+        btns.forEach(b => { b.disabled = true; });
 
         if (isCorrect) {
             const earnedPts = (q.type === "tf") ? 1 : 2;
-            score += earnedPts;
+            part1Score += earnedPts;
             updateScoreDisplay();
             feedbackEl.className = "feedback-box correct";
-            feedbackEl.innerHTML = `<strong>Correct! (+${earnedPts} pt${earnedPts > 1 ? 's' : ''})</strong><br>${q.explanation}`;
+            feedbackEl.innerHTML = `<strong>Correct! (+${earnedPts} pt${earnedPts > 1 ? "s" : ""})</strong><br>${q.explanation}`;
         } else {
             feedbackEl.className = "feedback-box incorrect";
             feedbackEl.innerHTML = `<strong>Not quite (+0 pts).</strong><br>${q.explanation}`;
         }
 
-        document.getElementById("quiz-next-btn").style.display = "block";
+        const nextBtn = document.getElementById("quiz-next-btn");
+        nextBtn.innerText = (currentQuizIndex === quizData.length - 1)
+            ? "Finish Part 1 & Enter Survival Maze →"
+            : "Next Question →";
+        nextBtn.style.display = "block";
     }
 
     function nextQuizQuestion() {
@@ -688,28 +1602,46 @@
         if (currentQuizIndex < quizData.length) {
             showQuizQuestion();
         } else {
-            showScreen("maze-screen");
-            showMazeScenario();
+            quizCompleted = true;
+            document.getElementById("quiz-progress").style.width = "100%";
+            navigateToTab("maze-screen");
         }
     }
 
-    // MAZE LOGIC
+    function renderQuizCompletedState() {
+        document.getElementById("quiz-progress").style.width = "100%";
+        document.getElementById("quiz-active-area").style.display = "none";
+        document.getElementById("quiz-completed-area").style.display = "block";
+        document.getElementById("quiz-done-score").innerText = `${part1Score} / 18`;
+    }
+
+    function resetQuizOnly() {
+        part1Score = 0;
+        currentQuizIndex = 0;
+        quizCompleted = false;
+        quizInitialized = true;
+        updateScoreDisplay();
+        showQuizQuestion();
+    }
+
+    /* =========================================================
+       PART 2: SURVIVAL MAZE LOGIC (32 PTS MAX)
+       ========================================================= */
     function showMazeScenario() {
+        document.getElementById("maze-active-area").style.display = "block";
+        document.getElementById("maze-completed-area").style.display = "none";
+
         const m = mazeData[currentMazeIndex];
-        const progressPct = ((currentMazeIndex) / mazeData.length) * 100;
+        const progressPct = (currentMazeIndex / mazeData.length) * 100;
         document.getElementById("maze-progress").style.width = progressPct + "%";
 
         document.getElementById("maze-feedback").style.display = "none";
         document.getElementById("maze-next-btn").style.display = "none";
 
         const badgeContainer = document.getElementById("maze-badge-container");
-        badgeContainer.innerHTML = "";
-        
-        if (m.isLifeDeath) {
-            badgeContainer.innerHTML = `<span class="danger-badge" style="background-color: var(--danger-color);">⚠️ LIFE OR DEATH CHOICE</span>`;
-        } else {
-            badgeContainer.innerHTML = `<span class="danger-badge">Part 2: Scenario (${currentMazeIndex + 1}/12)</span>`;
-        }
+        badgeContainer.innerHTML = m.isLifeDeath
+            ? `<span class="danger-badge" style="background-color: var(--danger-color);">⚠️ LIFE OR DEATH CHOICE</span>`
+            : `<span class="danger-badge">Part 2: Scenario (${currentMazeIndex + 1}/12)</span>`;
 
         document.getElementById("scenario-title").innerText = `🕒 ${m.time} - ${m.title}`;
         document.getElementById("scenario-text").innerText = m.text;
@@ -722,6 +1654,7 @@
 
         shuffledChoices.forEach(choice => {
             const btn = document.createElement("button");
+            btn.type = "button";
             btn.className = "option-btn";
             if (m.isLifeDeath) btn.classList.add("life-or-death");
             btn.innerText = choice.text;
@@ -736,7 +1669,7 @@
 
         if (isLifeDeath) {
             const btns = document.querySelectorAll("#scenario-options .option-btn");
-            btns.forEach(b => b.disabled = true);
+            btns.forEach(b => { b.disabled = true; });
 
             if (choice.fatal) {
                 document.getElementById("game-over-reason").innerText = choice.feedback;
@@ -744,17 +1677,20 @@
                 return;
             }
 
-            score += 1;
+            part2Score += 1;
             updateScoreDisplay();
             feedbackEl.className = "feedback-box correct";
             feedbackEl.innerHTML = `<strong>LIFE SAVER! (+1 pt)</strong><br>${choice.feedback}`;
+            document.getElementById("maze-next-btn").innerText = (currentMazeIndex === mazeData.length - 1)
+                ? "Complete Challenge & See Results →"
+                : "Continue Story →";
             document.getElementById("maze-next-btn").style.display = "block";
             return;
         }
 
-        // Standard Scenarios Handling (-1 forces choose again)
+        // Standard Scenarios (-1 disables option and forces choosing again)
         if (choice.pts === -1) {
-            score -= 1;
+            part2Score -= 1;
             updateScoreDisplay();
 
             clickedBtn.disabled = true;
@@ -763,14 +1699,13 @@
 
             feedbackEl.className = "feedback-box incorrect";
             feedbackEl.innerHTML = `<strong>❌ Dangerous Choice (-1 pt)!</strong><br>${choice.feedback}<br><em>Select another option to continue.</em>`;
-            
             document.getElementById("maze-next-btn").style.display = "none";
         } else {
-            score += choice.pts;
+            part2Score += choice.pts;
             updateScoreDisplay();
 
             const btns = document.querySelectorAll("#scenario-options .option-btn");
-            btns.forEach(b => b.disabled = true);
+            btns.forEach(b => { b.disabled = true; });
 
             if (choice.pts === 3) {
                 feedbackEl.className = "feedback-box correct";
@@ -786,7 +1721,11 @@
                 feedbackEl.innerHTML = `<strong>Fair Choice (+1 pt)</strong><br>${choice.feedback}`;
             }
 
-            document.getElementById("maze-next-btn").style.display = "block";
+            const nextBtn = document.getElementById("maze-next-btn");
+            nextBtn.innerText = (currentMazeIndex === mazeData.length - 1)
+                ? "Complete Challenge & See Results →"
+                : "Continue Story →";
+            nextBtn.style.display = "block";
         }
     }
 
@@ -795,31 +1734,64 @@
         if (currentMazeIndex < mazeData.length) {
             showMazeScenario();
         } else {
-            showFinalResults();
+            mazeCompleted = true;
+            document.getElementById("maze-progress").style.width = "100%";
+            navigateToTab("result-screen");
         }
     }
 
-    // FINAL RESULTS (Scored out of 50 Max Points)
-    function showFinalResults() {
-        document.getElementById("final-score").innerText = score;
-        const resultBandEl = document.getElementById("result-band");
+    function renderMazeCompletedState() {
+        document.getElementById("maze-progress").style.width = "100%";
+        document.getElementById("maze-active-area").style.display = "none";
+        document.getElementById("maze-completed-area").style.display = "block";
+        document.getElementById("maze-done-score").innerText = `${part2Score} / 32`;
+    }
 
+    function resetMazeOnly() {
+        part2Score = 0;
+        currentMazeIndex = 0;
+        mazeCompleted = false;
+        mazeInitialized = true;
+        updateScoreDisplay();
+        showMazeScenario();
+    }
+
+    function retryMazeAfterGameOver() {
+        resetMazeOnly();
+        showScreen("maze-screen");
+    }
+
+    /* =========================================================
+       FINAL RESULTS & FULL RESTART
+       ========================================================= */
+    function updateResultsView() {
+        const total = getTotalScore();
+        document.getElementById("final-score").innerText = total;
+        document.getElementById("res-part1-score").innerText = part1Score;
+        document.getElementById("res-part2-score").innerText = part2Score;
+
+        const qAnswered = quizCompleted ? 12 : currentQuizIndex;
+        const mAnswered = mazeCompleted ? 12 : currentMazeIndex;
+        document.getElementById("res-part1-status").innerText = `${qAnswered} of 12 questions completed`;
+        document.getElementById("res-part2-status").innerText = `${mAnswered} of 12 scenarios completed`;
+
+        const resultBandEl = document.getElementById("result-band");
         let title = "";
         let desc = "";
         let bgColor = "";
         let textColor = "";
 
-        if (score >= 43) {
+        if (total >= 43) {
             title = "🏆 Polar Master!";
             desc = "Outstanding job! You possess master-level winter survival skills. You know precisely how to manage freezing temps, protect your home, and keep others safe in extreme cold!";
             bgColor = "var(--success-bg)";
             textColor = "var(--success-color)";
-        } else if (score >= 32) {
+        } else if (total >= 32) {
             title = "🧊 Winter Survivor";
             desc = "Great work! You made mostly smart survival decisions and proved you can handle a severe cold snap. Review a few tips to become a true winter expert!";
             bgColor = "#e0f7fa";
             textColor = "#006064";
-        } else if (score >= 20) {
+        } else if (total >= 20) {
             title = "🌤️ Frosty Novice";
             desc = "Good effort! You survived the winter storm, but made some risky choices that cost penalty points or comfort. Play again to master your cold weather response!";
             bgColor = "var(--warning-bg)";
@@ -834,9 +1806,28 @@
         resultBandEl.style.backgroundColor = bgColor;
         resultBandEl.style.color = textColor;
         resultBandEl.innerHTML = `<h3>${title}</h3><p>${desc}</p>`;
-
-        showScreen("result-screen");
     }
+
+    function restartFullChallenge() {
+        part1Score = 0;
+        part2Score = 0;
+        currentQuizIndex = 0;
+        currentMazeIndex = 0;
+        quizInitialized = true;
+        mazeInitialized = false;
+        quizCompleted = false;
+        mazeCompleted = false;
+
+        updateScoreDisplay();
+        showQuizQuestion();
+        showScreen("quiz-screen");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Initialize the interactive vocabulary match-up when page loads
+    window.addEventListener("DOMContentLoaded", () => {
+        initVocabWarmup();
+    });
 </script>
 
 </body>

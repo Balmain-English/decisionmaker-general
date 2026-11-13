@@ -2,237 +2,2561 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NSW Ultimate Bushwalk Challenge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSW Ultimate Bushwalk Challenge — Location-Branched Edition</title>
     <style>
-        :root { --forest: #1b3022; --moss: #395734; --clay: #7d5c49; --stone: #d9d9d9; --leaf: #a3c585; }
-        body { background-color: #0f1a13; font-family: 'Trebuchet MS', sans-serif; color: var(--stone); display: flex; justify-content: center; padding: 20px; }
-        #game-container { background: linear-gradient(to bottom, #243b29, #1b261d); max-width: 750px; width: 100%; border: 4px solid var(--clay); border-radius: 20px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        h1 { color: var(--leaf); text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-top: 0; }
-        .score-box { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; font-size: 1.2em; color: #ffd700; border: 1px solid var(--moss); margin-bottom: 20px; text-align: center; }
-        .scene-text { line-height: 1.7; font-size: 1.2em; margin-bottom: 25px; border-left: 4px solid var(--leaf); padding-left: 15px; }
-        .choice-btn { display: block; width: 100%; padding: 16px; margin: 12px 0; background: var(--moss); border: 1px solid var(--leaf); color: white; border-radius: 12px; cursor: pointer; text-align: left; font-size: 1.1em; transition: all 0.2s ease; }
-        .choice-btn:hover { background: #4a7043; transform: translateX(8px); }
-        #feedback-screen { display: none; text-align: center; animation: fadeIn 0.5s; }
-        .points-earn { color: #ffd700; font-weight: bold; font-size: 1.3em; margin: 15px 0; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .death { color: #ff4d4d; font-weight: bold; border: 2px solid #ff4d4d; padding: 20px; border-radius: 10px; }
+        :root {
+            --forest-dark: #0f1a13;
+            --forest: #1b3022;
+            --panel-top: #243b29;
+            --panel-bot: #18241b;
+            --moss: #395734;
+            --moss-hover: #4a7043;
+            --clay: #8c6650;
+            --stone: #e6ebe7;
+            --muted: #b8c7bc;
+            --leaf: #a3c585;
+            --gold: #ffd700;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --blue-park: #4ea8de;
+            --coastal-park: #2ec4b6;
+            --alpine-park: #a0c4ff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--forest-dark);
+            background-image: radial-gradient(circle at top, #1b3022 0%, #0b130e 100%);
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            color: var(--stone);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #game-container {
+            background: linear-gradient(to bottom, var(--panel-top), var(--panel-bot));
+            max-width: 840px;
+            width: 100%;
+            border: 4px solid var(--clay);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.85);
+        }
+
+        /* HEADER & HUD */
+        .top-header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .edition-badge {
+            display: inline-block;
+            background: rgba(163, 197, 133, 0.16);
+            border: 1px solid var(--leaf);
+            color: var(--leaf);
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            color: var(--leaf);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 4px 0 14px 0;
+            font-size: clamp(1.45rem, 4vw, 2.05rem);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .hud-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.42);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--moss);
+            margin-bottom: 16px;
+        }
+
+        .hud-item {
+            font-size: 1.05rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .hud-score {
+            color: var(--gold);
+        }
+
+        .hud-park {
+            color: var(--leaf);
+        }
+
+        /* NAVIGATION TABS */
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(163, 197, 133, 0.25);
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid transparent;
+            padding: 11px 10px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            background: rgba(163, 197, 133, 0.12);
+            color: white;
+        }
+
+        .tab-btn.active {
+            background: var(--moss);
+            color: var(--gold);
+            border-color: var(--leaf);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* LANDING & WARMER STYLES */
+        .briefing-card {
+            background: rgba(0, 0, 0, 0.32);
+            border-left: 5px solid var(--leaf);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            line-height: 1.65;
+        }
+
+        .briefing-card h2 {
+            color: var(--leaf);
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.35rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin: 18px 0;
+        }
+
+        .feature-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(163, 197, 133, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .feature-box h3 {
+            color: var(--gold);
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
+        }
+
+        .feature-box p {
+            margin: 0;
+            font-size: 0.92rem;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .primary-btn {
+            flex: 1;
+            min-width: 220px;
+            padding: 15px 20px;
+            background: var(--moss);
+            border: 2px solid var(--leaf);
+            color: white;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .primary-btn:hover {
+            background: var(--moss-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .secondary-btn {
+            flex: 1;
+            min-width: 220px;
+            padding: 15px 20px;
+            background: rgba(255, 215, 0, 0.14);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255, 215, 0, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .section-block {
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(163, 197, 133, 0.28);
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .section-block h2 {
+            color: var(--leaf);
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+            border-bottom: 1px solid rgba(163, 197, 133, 0.25);
+            padding-bottom: 8px;
+        }
+
+        .discussion-list {
+            margin: 0 0 16px 0;
+            padding-left: 22px;
+            line-height: 1.65;
+        }
+
+        .discussion-list li {
+            margin-bottom: 10px;
+        }
+
+        .phrases-box {
+            background: rgba(163, 197, 133, 0.1);
+            border: 1px dashed var(--leaf);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 0.94rem;
+        }
+
+        .phrases-box strong {
+            color: var(--gold);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .phrase-pill {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(163, 197, 133, 0.35);
+            padding: 4px 10px;
+            border-radius: 15px;
+            margin: 3px 4px 3px 0;
+            font-size: 0.88rem;
+            color: var(--stone);
+        }
+
+        /* VOCABULARY EXERCISE */
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.38);
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border: 1px solid var(--moss);
+        }
+
+        .word-chip {
+            background: var(--moss);
+            color: white;
+            border: 1px solid var(--leaf);
+            padding: 6px 13px;
+            border-radius: 20px;
+            font-size: 0.92rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .word-chip:hover {
+            background: var(--moss-hover);
+        }
+
+        .word-chip.selected-chip {
+            background: var(--gold);
+            color: #142218;
+            border-color: white;
+            transform: scale(1.05);
+        }
+
+        .word-chip.used-chip {
+            opacity: 0.45;
+            text-decoration: line-through;
+        }
+
+        .vocab-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .vocab-row {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 13px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .vocab-row.correct-row {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.12);
+        }
+
+        .vocab-row.wrong-row {
+            border-color: var(--danger);
+            background: rgba(231, 76, 60, 0.12);
+        }
+
+        .vocab-top {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vocab-def {
+            flex: 1;
+            min-width: 240px;
+            font-size: 0.97rem;
+            line-height: 1.45;
+        }
+
+        .vocab-select {
+            background: #142218;
+            color: white;
+            border: 1px solid var(--leaf);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            min-width: 195px;
+            cursor: pointer;
+        }
+
+        .vocab-fb {
+            font-size: 0.88rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        .vocab-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        /* PARK SELECTION CARDS */
+        .park-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .park-card {
+            background: rgba(0, 0, 0, 0.36);
+            border: 2px solid var(--moss);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .park-card:hover {
+            border-color: var(--gold);
+            background: rgba(57, 87, 52, 0.35);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+        }
+
+        .park-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .park-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--gold);
+            margin: 0;
+        }
+
+        .park-tag {
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 4px 11px;
+            border-radius: 14px;
+            background: rgba(163, 197, 133, 0.18);
+            color: var(--leaf);
+            border: 1px solid var(--leaf);
+        }
+
+        .park-desc {
+            font-size: 0.98rem;
+            line-height: 1.55;
+            color: var(--stone);
+            margin: 0 0 12px 0;
+        }
+
+        .landmarks-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .landmark-pill {
+            font-size: 0.82rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 12px;
+            color: #d8e6dc;
+        }
+
+        .park-hazards {
+            font-size: 0.88rem;
+            color: #f8c471;
+            font-weight: bold;
+        }
+
+        /* ACTIVE EXPEDITION GAMEPLAY */
+        .progress-wrap {
+            margin-bottom: 18px;
+        }
+
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .switch-park-link {
+            background: transparent;
+            border: 1px solid rgba(163, 197, 133, 0.45);
+            color: var(--leaf);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .switch-park-link:hover {
+            background: rgba(163, 197, 133, 0.18);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(163, 197, 133, 0.25);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--leaf), var(--gold));
+            transition: width 0.35s ease;
+        }
+
+        .landmark-banner {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.14);
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .emergency-banner {
+            display: inline-block;
+            background: rgba(231, 76, 60, 0.22);
+            border: 1px solid var(--danger);
+            color: #ff8a80;
+            font-size: 0.88rem;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            animation: pulseAlert 1.6s infinite;
+        }
+
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.45); }
+            70% { box-shadow: 0 0 0 8px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        .scene-title {
+            font-size: 1.25rem;
+            color: var(--leaf);
+            margin: 0 0 10px 0;
+        }
+
+        .scene-text {
+            line-height: 1.68;
+            font-size: 1.08rem;
+            margin-bottom: 22px;
+            border-left: 4px solid var(--leaf);
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.26);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .scene-text.emergency-scene {
+            border-left-color: var(--danger);
+            background: rgba(231, 76, 60, 0.12);
+        }
+
+        .choice-btn {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
+            padding: 15px 18px;
+            margin: 10px 0;
+            background: var(--moss);
+            border: 1px solid var(--leaf);
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            font-size: 1.02rem;
+            line-height: 1.45;
+            transition: all 0.2s ease;
+        }
+
+        .choice-btn:hover:not(:disabled) {
+            background: var(--moss-hover);
+            transform: translateX(6px);
+            border-color: var(--gold);
+        }
+
+        .choice-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        .choice-btn.eliminated-choice {
+            background: rgba(231, 76, 60, 0.18);
+            border-color: var(--danger);
+            color: #ffb3ad;
+            text-decoration: line-through;
+            opacity: 0.65;
+        }
+
+        .choice-btn.chosen-best {
+            background: rgba(46, 204, 113, 0.24);
+            border-color: #2ecc71;
+            opacity: 1;
+        }
+
+        .choice-btn.chosen-ok {
+            background: rgba(243, 156, 18, 0.22);
+            border-color: var(--warning);
+            opacity: 1;
+        }
+
+        .choice-letter {
+            background: rgba(0, 0, 0, 0.38);
+            color: var(--gold);
+            font-weight: bold;
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* EXPANDED INLINE FEEDBACK CARD */
+        .feedback-card {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 2px solid var(--leaf);
+            animation: fadeIn 0.35s ease;
+        }
+
+        .feedback-card.fb-best {
+            border-color: #2ecc71;
+            background: rgba(39, 174, 96, 0.14);
+        }
+
+        .feedback-card.fb-good {
+            border-color: var(--leaf);
+            background: rgba(163, 197, 133, 0.14);
+        }
+
+        .feedback-card.fb-fair {
+            border-color: var(--warning);
+            background: rgba(243, 156, 18, 0.14);
+        }
+
+        .feedback-card.fb-retry {
+            border-color: var(--danger);
+            background: rgba(231, 76, 60, 0.16);
+        }
+
+        .fb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .fb-badge {
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        .fb-pts-pill {
+            background: rgba(0, 0, 0, 0.45);
+            color: var(--gold);
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .fb-narrative {
+            font-size: 1.02rem;
+            line-height: 1.6;
+            color: var(--stone);
+            margin: 0 0 12px 0;
+        }
+
+        .insight-box {
+            background: rgba(0, 0, 0, 0.36);
+            border-left: 4px solid var(--gold);
+            padding: 12px 14px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.94rem;
+            line-height: 1.55;
+            color: #e2ece5;
+        }
+
+        .insight-box strong {
+            color: var(--gold);
+        }
+
+        /* DEATH & FINAL REPORT */
+        .death-box {
+            background: rgba(231, 76, 60, 0.16);
+            border: 2px solid var(--danger);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .death-box h2 {
+            color: #ff7675;
+            margin-top: 0;
+        }
+
+        .report-card {
+            background: rgba(0, 0, 0, 0.36);
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 26px;
+            text-align: center;
+        }
+
+        .rank-pill {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.18);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 7px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+        }
+
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .stat-tile {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(163, 197, 133, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .stat-tile span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-tile strong {
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1>🥾 Bushwalking NSW: 36 Point Challenge</h1>
-    <div class="score-box">Expedition Points: <span id="score">0</span></div>
-
-    <div id="main-ui">
-        <div id="scene-desc" class="scene-text"></div>
-        <div id="choices-area"></div>
+    <div class="top-header">
+        <div class="edition-badge">🇦🇺 NSW National Parks ESL Survival Simulation</div>
+        <h1>🥾 Bushwalking NSW: 36-Point Challenge</h1>
     </div>
 
-    <div id="feedback-screen">
-        <h3 id="fb-title">Decision Analysis</h3>
-        <p id="fb-text" style="font-style: italic; color: #ced4da;"></p>
-        <p class="points-earn" id="fb-points"></p>
-        <button class="choice-btn" id="continue-btn" style="text-align:center">Step Forward ➔</button>
+    <div class="hud-bar">
+        <div class="hud-item hud-park">📍 Park: <span id="hud-park-name">Not Selected</span></div>
+        <div class="hud-item hud-score">⭐ Expedition Points: <span id="score">0</span> / 36</div>
+    </div>
+
+    <!-- NAVIGATION TABS -->
+    <div class="nav-tabs" role="tablist">
+        <button class="tab-btn active" id="tab-btn-briefing" onclick="switchTab('briefing')">🏕️ 1. Briefing & Warm-Up</button>
+        <button class="tab-btn" id="tab-btn-trek" onclick="switchTab('trek')">🧭 2. Choose Park & Trek</button>
+        <button class="tab-btn" id="tab-btn-report" onclick="switchTab('report')">🏆 3. Expedition Report</button>
+    </div>
+
+    <!-- TAB 1: LANDING PAGE & ESL WARM-UP -->
+    <div id="panel-briefing" class="tab-panel active">
+        <div class="briefing-card">
+            <h2>Welcome to the New South Wales Wilderness!</h2>
+            <p>
+                You are setting out on a self-supported <strong>3-day bushwalk</strong> in New South Wales, Australia. Unlike a standard hike, <strong>your initial destination choice completely shapes your journey</strong>: each National Park features its own iconic landmarks, microclimates, native wildlife, and environmental hazards.
+            </p>
+            <div class="feature-grid">
+                <div class="feature-box">
+                    <h3>🗺️ 3 Distinct Park Routes</h3>
+                    <p>Choose the <strong>Blue Mountains</strong>, <strong>Royal National Park</strong>, or <strong>Kosciuszko High Country</strong>—each with 12 custom scenarios.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>⚠️ Location-Specific Crises</h3>
+                    <p>Face iconic hazards like <strong>Figure Eight Pools</strong> rogue waves, <strong>Grand Canyon</strong> snakes, or <strong>Main Range</strong> whiteouts.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>⭐ 36-Point Scoring</h3>
+                    <p>Earn <strong>+3, +2, or +1</strong> across 10 field decisions and 2 life-or-death emergencies. Dangerous mistakes cost <strong>-1 pt</strong> and require a rethink.</p>
+                </div>
+            </div>
+            <div class="cta-row">
+                <button class="primary-btn" onclick="document.getElementById('warmer-section').scrollIntoView({behavior:'smooth'})">Start Pre-Trek Warm-Up ↓</button>
+                <button class="secondary-btn" onclick="switchTab('trek')">Skip Warm-Up & Choose Park →</button>
+            </div>
+        </div>
+
+        <div id="warmer-section" class="section-block">
+            <h2>💬 Part A: Pre-Trek Discussion Questions</h2>
+            <ol class="discussion-list">
+                <li>Have you ever gone hiking or camping in a remote natural area? What equipment was most essential for your safety?</li>
+                <li>How do the dangers of hiking along <strong>ocean sea cliffs</strong> differ from hiking in <strong>deep rainforest canyons</strong> or <strong>high alpine mountains</strong>?</li>
+                <li>What does the bushwalking rule <em>"Leave No Trace"</em> require hikers to do with rubbish, campfires, and wildlife?</li>
+                <li>Why should hikers always check local warnings (such as <strong>Total Fire Bans</strong> or <strong>hazardous surf alerts</strong>) before leaving the trailhead?</li>
+            </ol>
+            <div class="phrases-box">
+                <strong>🗣️ Useful Speaking Phrases for Pair/Group Discussion:</strong>
+                <span class="phrase-pill">"In my experience, the biggest risk is..."</span>
+                <span class="phrase-pill">"Unlike coastal trails, alpine terrain requires..."</span>
+                <span class="phrase-pill">"Before setting off, it is vital to check..."</span>
+                <span class="phrase-pill">"If an emergency happens, hikers should..."</span>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2>📚 Part B: Australian Bushwalking Vocabulary Match-Up</h2>
+            <p style="margin-top:0; color:var(--muted); font-size:0.95rem;">
+                Click a term in the <strong>Word Bank</strong> (or use the dropdown menus) to match all 8 NSW bushwalking terms with their definitions.
+            </p>
+
+            <div class="word-bank" id="word-bank"></div>
+            <div class="vocab-grid" id="vocab-grid"></div>
+
+            <div class="vocab-controls">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="primary-btn" style="min-width:150px; padding:11px 18px;" onclick="checkVocab()">Check Answers</button>
+                    <button class="secondary-btn" style="min-width:120px; padding:11px 18px;" onclick="resetVocab()">Reset</button>
+                </div>
+                <div id="vocab-score-label" style="font-weight:bold; color:var(--gold); font-size:1.05rem;">Score: 0 / 8 Correct</div>
+            </div>
+
+            <div style="margin-top:20px;">
+                <button class="primary-btn" style="width:100%;" onclick="switchTab('trek')">Ready for the Bush! Choose Your National Park →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: DESTINATION SELECTOR & ACTIVE TREK -->
+    <div id="panel-trek" class="tab-panel">
+        <!-- DESTINATION PICKER -->
+        <div id="park-selector-view">
+            <h2 style="color:var(--leaf); margin-top:0;">Choose Your NSW National Park (0 Points — Sets Your Route)</h2>
+            <p style="color:var(--muted); line-height:1.55; margin-bottom:14px;">
+                Every park below unlocks a completely unique 3-day expedition (10 decisions + 2 emergencies) built around its real landmarks, geography, and weather patterns.
+            </p>
+
+            <div class="park-grid">
+                <div class="park-card" onclick="selectPark('bluemountains')">
+                    <div class="park-header">
+                        <h3 class="park-title">⛰️ 1. Blue Mountains National Park</h3>
+                        <span class="park-tag">Sandstone Canyons & Mist</span>
+                    </div>
+                    <p class="park-desc">
+                        Descend sheer sandstone staircases from the Katoomba escarpment into ancient coachwood rainforests and misty valleys.
+                    </p>
+                    <div class="landmarks-strip">
+                        <span class="landmark-pill">🗿 The Three Sisters</span>
+                        <span class="landmark-pill">🪜 Giant Stairway</span>
+                        <span class="landmark-pill">🌿 Grand Canyon Track</span>
+                        <span class="landmark-pill">💦 Wentworth Falls</span>
+                        <span class="landmark-pill">🏰 Ruined Castle</span>
+                    </div>
+                    <div class="park-hazards">⚠️ Key Hazards: Sudden valley whiteout mist, cliff lightning, steep steps, Red-Bellied Black Snakes & Blue Gum limbs.</div>
+                </div>
+
+                <div class="park-card" onclick="selectPark('royal')">
+                    <div class="park-header">
+                        <h3 class="park-title">🌊 2. Royal National Park (The Coast Track)</h3>
+                        <span class="park-tag">Sea Cliffs & Wave Platforms</span>
+                    </div>
+                    <p class="park-desc">
+                        Trek 26km along dramatic Tasman Sea sandstone cliffs from Bundeena to Otford, crossing tidal lagoons and subtropical palm jungle.
+                    </p>
+                    <div class="landmarks-strip">
+                        <span class="landmark-pill">🍰 Wedding Cake Rock</span>
+                        <span class="landmark-pill">🎱 Figure Eight Pools</span>
+                        <span class="landmark-pill">🏖️ Wattamolla Lagoon</span>
+                        <span class="landmark-pill">🦅 Eagle Rock & Curracurrong</span>
+                        <span class="landmark-pill">🌴 Palm Jungle</span>
+                    </div>
+                    <div class="park-hazards">⚠️ Key Hazards: Rogue ocean waves on rock shelves, Southerly Buster cliff gales, zero-shade UV exposure & paralysis ticks.</div>
+                </div>
+
+                <div class="park-card" onclick="selectPark('kosciuszko')">
+                    <div class="park-header">
+                        <h3 class="park-title">🏔️ 3. Kosciuszko National Park (Main Range)</h3>
+                        <span class="park-tag">Alpine Summits & Glacial Lakes</span>
+                    </div>
+                    <p class="park-desc">
+                        Traverse Australia's highest alpine plateau above the treeline from Charlotte Pass, passing glacial cirques and historic stone huts.
+                    </p>
+                    <div class="landmarks-strip">
+                        <span class="landmark-pill">🇦🇺 Mt Kosciuszko (2,228m)</span>
+                        <span class="landmark-pill">💎 Blue Lake Cirque</span>
+                        <span class="landmark-pill">🏠 Seaman's Hut</span>
+                        <span class="landmark-pill">❄️ Snowy River Headwaters</span>
+                        <span class="landmark-pill">🌳 Twisted Snow Gums</span>
+                    </div>
+                    <div class="park-hazards">⚠️ Key Hazards: Sudden summer blizzards & whiteouts, hypothermia, icy river fords, high-altitude UV & fragile alpine flora.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVE SCENARIO VIEW -->
+        <div id="active-trek-view" style="display:none;">
+            <div class="progress-wrap">
+                <div class="progress-meta">
+                    <span id="step-label">Stage 1 of 12</span>
+                    <button class="switch-park-link" onclick="resetToParkSelector()">↺ Change National Park</button>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div id="main-ui">
+                <div id="stage-badge-area"></div>
+                <h2 class="scene-title" id="scene-title"></h2>
+                <div id="scene-desc" class="scene-text"></div>
+                <div id="choices-area"></div>
+
+                <!-- INLINE EXPANDED FEEDBACK CARD -->
+                <div id="feedback-card" class="feedback-card">
+                    <div class="fb-header">
+                        <span class="fb-badge" id="fb-title">Decision Analysis</span>
+                        <span class="fb-pts-pill" id="fb-points"></span>
+                    </div>
+                    <p class="fb-narrative" id="fb-text"></p>
+                    <div class="insight-box" id="fb-insight"></div>
+                    <button class="primary-btn" id="continue-btn" style="width:100%; margin-top:16px;" onclick="advanceStep()">Step Forward Along the Track ➔</button>
+                </div>
+            </div>
+
+            <div id="death-area" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- TAB 3: EXPEDITION REPORT -->
+    <div id="panel-report" class="tab-panel">
+        <div id="report-content">
+            <div class="report-card">
+                <h2 style="color:var(--leaf); margin-top:0;">Expedition Not Yet Completed</h2>
+                <p style="color:var(--muted); line-height:1.6;">
+                    Select one of the three NSW National Parks and complete all 12 stages of your 3-day trek to unlock your official Ranger Debriefing and final score out of 36 points.
+                </p>
+                <button class="primary-btn" onclick="switchTab('trek')">Go to National Park Selection →</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    let score = 0;
-    let step = 0;
-
-    const stages = [
+    // ==========================================
+    // 1. ESL WARMER VOCABULARY DATA
+    // ==========================================
+    const VOCAB_ITEMS = [
         {
-            text: "Select your destination for this 3-day trek. This choice sets your environment but yields no points.",
-            choices: [
-                { text: "Blue Mountains National Park (Rugged Canyons)", pts: 0, fb: "You have chosen the stunning Blue Mountains. This area is famous for steep stairs, misty valleys, and unpredictable mountain weather. Ensure your navigation skills are sharp for these sandstone tracks!" },
-                { text: "Royal National Park (Coastal Cliffs)", pts: 0, fb: "You are heading to the coast! This park offers beautiful ocean views and whale watching, but the sun is very strong here. You will need to manage your hydration carefully on the sand." },
-                { text: "Kosciuszko National Park (High Country)", pts: 0, fb: "A high-country adventure! You will be walking among Australia's highest peaks. The air is thin and the weather can turn from sun to snow in minutes. Preparation is absolutely vital here." }
-            ]
+            term: "Escarpment",
+            def: "A long, steep cliff or sandstone ridge separating a high plateau from a deep valley below.",
+            clue: "Look for the geological term describing the steep cliffs at Katoomba and Echo Point."
         },
         {
-            text: "Decision 1: You are packing your supplies. Your bag is getting quite heavy. What do you decide to prioritize?",
-            choices: [
-                { text: "Pack extra water and a high-quality first aid kit.", pts: 3, fb: "This is a very wise decision. In the Australian bush, medical emergencies and dehydration are common risks. Prioritizing safety over extra comfort shows you are a responsible and prepared hiker. Well done!" },
-                { text: "Pack more food and a heavy, comfortable pillow.", pts: 2, fb: "A comfortable sleep is helpful, but the extra weight of a heavy pillow might cause back pain. You have enough food, which is good, but remember that water is usually more important." },
-                { text: "Pack a heavy camera and a thick book to read at night.", pts: 1, fb: "You will have beautiful photos, but your bag is now dangerously heavy. On a 3-day trip, every kilogram counts. This weight will slow you down and make the steep climbs very difficult." },
-                { text: "Leave the map behind because you have a phone.", pts: -1, retry: true, fb: "Dangerous choice! Phone batteries die and GPS signals fail in deep valleys. You must always carry a physical map in the NSW wilderness. Please reconsider your packing strategy." }
-            ]
+            term: "Topographic map",
+            def: "A detailed navigation map that uses contour lines to show elevation, valleys, ridges, and steep slopes.",
+            clue: "Which item helps you read elevation and terrain when phone GPS fails?"
         },
         {
-            text: "Decision 2: Before leaving, you notice the weather forecast predicts a 'high wind' warning. How do you respond?",
-            choices: [
-                { text: "Check your route for areas protected from the wind.", pts: 3, fb: "Excellent planning. High winds can make ridge-walking dangerous and cause falling branches. By identifying safer, lower-ground paths, you are proactively managing risk. This is the mark of a skilled, intelligent trekker." },
-                { text: "Pack extra tent pegs and a sturdier windbreaker jacket.", pts: 2, fb: "Good practical thinking. This will help you survive the conditions, but it doesn't change the fact that walking on high cliffs in high winds is still risky. Always stay alert to your surroundings." },
-                { text: "Stick to your original plan and hope the wind stops.", pts: 1, fb: "This is a passive approach. The Australian weather can be very stubborn and extreme. Depending on luck rather than a plan can lead to difficult situations if the wind gets stronger. Be careful!" },
-                { text: "Ignore the forecast; weather apps are usually wrong.", pts: -1, retry: true, fb: "Incorrect. Modern meteorological data is very accurate for NSW parks. Ignoring a professional warning is a major safety error. Please try to make a more informed decision for your safety." }
-            ]
+            term: "Hypothermia",
+            def: "A dangerous medical emergency where the body loses heat faster than it can produce it, causing shivering and confusion.",
+            clue: "Think of the cold-weather condition caused by wind chill, wet clothes, or alpine blizzards."
         },
         {
-            text: "🚨 EMERGENCY 1: You hear a loud rustle. A large Red-Bellied Black Snake is coiled on the path 1 meter away!",
-            emergency: true,
-            choices: [
-                { text: "Freeze immediately, then slowly back away several meters.", pts: 3, fb: "Perfect! You stayed calm and gave the snake space. Snakes only strike when they feel trapped. By backing away slowly, you allowed the snake to feel safe enough to eventually leave the path." },
-                { text: "Stomp your feet loudly and shout to scare it away.", pts: 0, death: "The snake feels threatened by your aggression! It strikes your leg before you can move. You are miles from help. A goanna watches as the venom takes hold. GAME OVER." },
-                { text: "Try to run past it quickly before it can react.", pts: 0, death: "You startled the snake! It strikes out of reflex. You fall into the scrub, bitten and alone. The goannas are already moving closer. GAME OVER." }
-            ]
+            term: "King tide / Swell",
+            def: "Unusually high coastal water levels and powerful ocean waves that can surge suddenly across rock platforms.",
+            clue: "Which coastal hazard makes rock shelves like Figure Eight Pools dangerous?"
         },
         {
-            text: "Decision 3: You reach a river crossing. The water is moving fast after last night's rain. What is your plan?",
-            choices: [
-                { text: "Search upstream for a wider, shallower point to cross.", pts: 3, fb: "A very smart move! Shallow, wider sections have slower currents. Taking the time to find a safer crossing point prevents you from being swept away. Patience is a vital skill in the bush." },
-                { text: "Unclip your bag's waist belt and walk across carefully.", pts: 2, fb: "Good safety technique. Unclipping the belt means you can ditch the heavy bag if you fall. However, crossing fast water is still dangerous. Always look for the safest path first if possible." },
-                { text: "Walk across in your boots to ensure you have better grip.", pts: 1, fb: "You will have grip, but now your boots are soaking wet. Walking in wet boots for two more days will cause severe blisters and foot pain. Consider the long-term comfort of your feet!" },
-                { text: "Try to jump across the rocks to stay completely dry.", pts: -1, retry: true, fb: "Too risky! River rocks are incredibly slippery (like ice). A fall here could result in a broken bone or head injury. Please find a more stable way to cross the water." }
-            ]
+            term: "Whiteout",
+            def: "An extreme weather condition in thick cloud or blizzard snow where visibility drops to near zero and landmarks vanish.",
+            clue: "What happens when dense mountain mist or snow blends ground and sky together?"
         },
         {
-            text: "Decision 4: It is midday and the temperature is rising. You are feeling very thirsty but your water is half-gone.",
-            choices: [
-                { text: "Rest in the shade and take small, frequent sips.", pts: 3, fb: "This is the best way to manage heat. Resting during the hottest part of the day reduces your sweat rate, and small sips hydrate you more effectively than gulping. Very sensible!" },
-                { text: "Drink a large amount now to 'pre-hydrate' your body.", pts: 2, fb: "Hydration is good, but drinking too much at once can lead to a 'full' stomach feeling without lasting hydration. You should try to conserve your water for the long afternoon walk." },
-                { text: "Keep walking fast to reach the next stream sooner.", pts: 1, fb: "This is dangerous. Pushing your body harder in the heat will make you sweat more and increase your thirst. If the next stream is dry, you will be in a very serious situation!" },
-                { text: "Drink from a stagnant pond you found near the trail.", pts: -1, retry: true, fb: "No! Stagnant water in Australia often contains dangerous bacteria or parasites. This could make you violently ill within hours. You must find a safer way to manage your thirst." }
-            ]
+            term: "Total Fire Ban",
+            def: "An official legal rule prohibiting all open campfires and certain stoves during extreme bushfire danger.",
+            clue: "Which legal restriction prevents sparks in dry Australian eucalyptus forests?"
         },
         {
-            text: "Decision 5: You are choosing a spot to pitch your tent for the night. Where is the safest place?",
-            choices: [
-                { text: "Clear, flat ground away from large, overhanging trees.", pts: 3, fb: "Excellent! You are avoiding 'widow-makers' (falling branches). Eucalyptus trees can drop large limbs without warning, even in good weather. Sleeping in the open is the safest choice for a bushcamper." },
-                { text: "In a soft, sandy dry creek bed near the water.", pts: 2, fb: "It is comfortable and flat, but dry creek beds are dangerous if it rains in the mountains. A flash flood could arrive while you sleep. Always check the sky before choosing a low spot." },
-                { text: "On the highest ridge to see the sunrise in the morning.", pts: 1, fb: "A beautiful view, but you are exposed to high winds and lightning. Ridges are much colder and more difficult to secure a tent on. Consider the weather before the scenery!" },
-                { text: "Under a massive Gum tree to protect you from the rain.", pts: -1, retry: true, fb: "Stay away! Large Gum trees are famous for dropping heavy branches unexpectedly. This is a very common cause of injury in the NSW bush. Choose a clearer area for your tent." }
-            ]
+            term: "Widow-maker",
+            def: "A loose or heavy overhead eucalyptus branch that can snap and fall onto a tent without warning.",
+            clue: "Why do experienced NSW campers avoid pitching tents directly under giant Gum trees?"
         },
         {
-            text: "Decision 6: You want to cook dinner, but there is a 'Total Fire Ban' today. How do you proceed?",
-            choices: [
-                { text: "Eat a cold meal and do not use any flame at all.", pts: 3, fb: "Perfectly responsible. During a Total Fire Ban, any spark can start a catastrophe. By following the law and eating cold food, you are protecting the forest and the community. Great job!" },
-                { text: "Check your permit to see if gas stoves are allowed.", pts: 2, fb: "A good legal step. In some parks, gas is okay, but in others, it is strictly forbidden during bans. Always double-check, but remember that 'no flame' is always the safest option." },
-                { text: "Build a very small fire inside a circle of stones.", pts: 1, fb: "Extremely risky and illegal. Even a small fire can throw sparks into dry grass. You are risking a massive bushfire and a very large fine from the National Parks rangers." },
-                { text: "Light a large fire to keep the mosquitoes away.", pts: -1, retry: true, fb: "Absolutely not! This is the most dangerous thing you could do during a fire ban. You could destroy the entire park and put lives at risk. Please rethink your cooking plan." }
-            ]
-        },
-        {
-            text: "🚨 EMERGENCY 2: A sudden storm arrives. Lightning is striking the ridges and it's pouring rain!",
-            emergency: true,
-            choices: [
-                { text: "Move to a mid-slope area, avoid tall trees and water.", pts: 3, fb: "Superb safety logic. You avoided the high points (lightning) and the low points (flooding). By finding a neutral, mid-slope position away from tall trees, you maximized your survival chances. Well played!" },
-                { text: "Run to the highest peak to signal for an emergency rescue.", pts: 0, death: "A bolt of lightning strikes the peak while you are standing there. You are instantly fried. A goanna arrives early for the feast. GAME OVER." },
-                { text: "Take shelter in a small cave at the bottom of a gully.", pts: 0, death: "The gully suddenly fills with a wall of water from the mountain runoff. You are trapped in the cave as it floods. The goannas wait downstream. GAME OVER." }
-            ]
-        },
-        {
-            text: "Decision 7: Day 3. You find a tick attached to your arm. It is small and dark. How do you remove it?",
-            choices: [
-                { text: "Use fine-tipped tweezers to pull it out by the head.", pts: 3, fb: "Correct medical procedure. Removing the tick cleanly without squeezing the body prevents toxins from entering your blood. You have handled this common NSW bush nuisance perfectly. Stay healthy!" },
-                { text: "Apply a drop of peppermint oil to make it release.", pts: 2, fb: "This is a common 'home remedy,' but it can actually cause the tick to vomit into your skin, increasing the risk of infection. Tweezers are always the professionally recommended tool." },
-                { text: "Pull it out quickly with your fingernails.", pts: 1, fb: "You got it out, but you probably left the head inside your skin. This can cause a painful infection or a small lump that lasts for weeks. Use a tool for a cleaner result next time." },
-                { text: "Burn it with a match so it drops off naturally.", pts: -1, retry: true, fb: "Don't do that! Burning the tick is dangerous for your skin and makes the tick inject more 'poison' into you. It is a very old and unsafe method. Try a more modern approach." }
-            ]
-        },
-        {
-            text: "Decision 8: You see a group of tourists trying to feed a wild Wallaby. What is your reaction?",
-            choices: [
-                { text: "Explain politely that human food makes the animals sick.", pts: 3, fb: "Excellent advocacy. Most people don't know that bread and snacks can kill native animals. By educating them politely, you are helping to keep the NSW wildlife wild and healthy. Top marks!" },
-                { text: "Ignore them and keep walking to save your energy.", pts: 2, fb: "This is fine, as it's not your job to police others. However, as a member of the hiking community, a small word of advice can sometimes save an animal's life. Keep moving!" },
-                { text: "Take a video to post on social media and complain.", pts: 1, fb: "While you are right to be annoyed, complaining online doesn't help the wallaby in the moment. Direct, polite communication is usually much more effective for conservation. Think about the animal!" },
-                { text: "Give the Wallaby some of your trail mix too.", pts: -1, retry: true, fb: "Stop! Never feed wildlife. Human food causes 'Lumpy Jaw' and other fatal diseases in wallabies. You must protect the environment, not feed it. Please choose a better action." }
-            ]
-        },
-        {
-            text: "Decision 9: You are very tired and your knees hurt. You still have 4km to go. How do you finish?",
-            choices: [
-                { text: "Take a 10-minute break and use your walking poles.", pts: 3, fb: "Very smart. Short breaks prevent total exhaustion, and poles reduce the impact on your knees by 25%. You are managing your physical resources perfectly to reach the finish line safely." },
-                { text: "Push through the pain and run to the finish line.", pts: 2, fb: "You will finish faster, but you are risking a trip or a fall. When you are tired, your coordination is lower. Be very careful on the uneven track as you move quickly." },
-                { text: "Discard some of your heavy gear to lighten the load.", pts: 1, fb: "This is a desperate move. Leaving gear in the park is littering and you might need those supplies if you have another delay. It is better to rest and move slowly than to leave items." },
-                { text: "Stop and wait for a helicopter to see you and help.", pts: -1, retry: true, fb: "No! Sore knees are not a life-threatening emergency. Rescues are for people in real danger. You need to find the mental strength to walk out. Try a different strategy." }
-            ]
-        },
-        {
-            text: "Decision 10: You reached the trailhead! Your car is in sight. What is the very last thing you do?",
-            choices: [
-                { text: "Check yourself for more ticks and log your return.", pts: 3, fb: "Perfect ending! Letting others know you are back safely is the final step of a professional hike. Checking for ticks again ensures you don't bring any 'hitchhikers' home. Congratulations on a great trip!" },
-                { text: "Get in the car and drive to the nearest burger shop.", pts: 2, fb: "You certainly earned that burger! However, don't forget to tell your emergency contact that you are safe. It prevents unnecessary worry and potential false alarms for the rescue services." },
-                { text: "Throw your dirty boots in the bin and drive home.", pts: 1, fb: "You made it! But boots can usually be cleaned and reused. Also, checking your body for leeches or ticks before driving is a much more comfortable way to end your adventure. Well done!" },
-                { text: "Leave your leftover trash in the parking lot.", pts: -1, retry: true, fb: "Absolutely not! You must 'Leave No Trace.' Take your rubbish home with you to keep the National Parks beautiful for the next hiker. Please finish your trip with respect for nature." }
-            ]
+            term: "PLB (Locator Beacon)",
+            def: "A waterproof satellite distress device carried by hikers to call emergency rescue in remote areas with no mobile signal.",
+            clue: "Which satellite device works inside deep canyons and alpine ranges when mobile phones have zero bars?"
         }
     ];
 
-    function renderNode() {
-        if (step >= stages.length) return showFinal();
-        
-        const stage = stages[step];
-        document.getElementById('main-ui').style.display = "block";
-        document.getElementById('feedback-screen').style.display = "none";
-        document.getElementById('scene-desc').innerText = stage.text;
-        
+    let selectedWordChip = null;
+
+    function initVocab() {
+        const bank = document.getElementById('word-bank');
+        const grid = document.getElementById('vocab-grid');
+        bank.innerHTML = '';
+        grid.innerHTML = '';
+
+        const shuffledTerms = [...VOCAB_ITEMS].sort(() => Math.random() - 0.5);
+
+        shuffledTerms.forEach(item => {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'word-chip';
+            chip.textContent = item.term;
+            chip.dataset.term = item.term;
+            chip.onclick = () => selectChip(chip);
+            bank.appendChild(chip);
+        });
+
+        VOCAB_ITEMS.forEach((item, idx) => {
+            const row = document.createElement('div');
+            row.className = 'vocab-row';
+            row.id = `vrow-${idx}`;
+
+            const optionsHtml = shuffledTerms
+                .map(t => `<option value="${t.term}">${t.term}</option>`)
+                .join('');
+
+            row.innerHTML = `
+                <div class="vocab-top">
+                    <div class="vocab-def"><strong>${idx + 1}.</strong> ${item.def}</div>
+                    <select class="vocab-select" id="vsel-${idx}" onchange="onVocabSelectChange()">
+                        <option value="">-- Select Term --</option>
+                        ${optionsHtml}
+                    </select>
+                </div>
+                <div class="vocab-fb" id="vfb-${idx}"></div>
+            `;
+            row.onclick = (e) => {
+                if (e.target.tagName !== 'SELECT' && selectedWordChip) {
+                    const sel = document.getElementById(`vsel-${idx}`);
+                    sel.value = selectedWordChip;
+                    selectedWordChip = null;
+                    updateChipStates();
+                }
+            };
+            grid.appendChild(row);
+        });
+    }
+
+    function selectChip(chip) {
+        const term = chip.dataset.term;
+        selectedWordChip = (selectedWordChip === term) ? null : term;
+        updateChipStates();
+    }
+
+    function onVocabSelectChange() {
+        selectedWordChip = null;
+        updateChipStates();
+    }
+
+    function updateChipStates() {
+        const usedValues = new Set();
+        VOCAB_ITEMS.forEach((_, idx) => {
+            const val = document.getElementById(`vsel-${idx}`).value;
+            if (val) usedValues.add(val);
+        });
+
+        document.querySelectorAll('.word-chip').forEach(chip => {
+            const t = chip.dataset.term;
+            chip.classList.toggle('selected-chip', selectedWordChip === t);
+            chip.classList.toggle('used-chip', usedValues.has(t) && selectedWordChip !== t);
+        });
+    }
+
+    function checkVocab() {
+        let correctCount = 0;
+        VOCAB_ITEMS.forEach((item, idx) => {
+            const row = document.getElementById(`vrow-${idx}`);
+            const sel = document.getElementById(`vsel-${idx}`);
+            const fb = document.getElementById(`vfb-${idx}`);
+            row.classList.remove('correct-row', 'wrong-row');
+            fb.style.display = 'block';
+
+            if (sel.value === item.term) {
+                correctCount++;
+                row.classList.add('correct-row');
+                fb.style.color = '#2ecc71';
+                fb.textContent = `✓ Correct! "${item.term}" is ready for your trail briefing.`;
+            } else {
+                row.classList.add('wrong-row');
+                fb.style.color = '#ff8a80';
+                fb.textContent = sel.value
+                    ? `✗ Not quite ("${sel.value}"). Hint: ${item.clue}`
+                    : `✗ Unanswered. Hint: ${item.clue}`;
+            }
+        });
+        document.getElementById('vocab-score-label').textContent = `Score: ${correctCount} / ${VOCAB_ITEMS.length} Correct`;
+    }
+
+    function resetVocab() {
+        selectedWordChip = null;
+        initVocab();
+        document.getElementById('vocab-score-label').textContent = `Score: 0 / ${VOCAB_ITEMS.length} Correct`;
+    }
+
+    // ==========================================
+    // 2. LOCATION-SPECIFIC CAMPAIGNS (12 STAGES EACH)
+    // ==========================================
+    const PARK_CAMPAIGNS = {
+        bluemountains: {
+            name: "Blue Mountains National Park",
+            shortName: "⛰️ Blue Mountains",
+            icon: "⛰️",
+            summary: "You traversed the sandstone escarpments of Katoomba, descended the Giant Stairway past The Three Sisters, navigated the fern gullies of the Grand Canyon Track, and ascended from Jamison Valley.",
+            stages: [
+                {
+                    landmark: "📍 Echo Point & Katoomba Escarpment (1,015m)",
+                    title: "Decision 1: Packing for the Sandstone Canyons",
+                    text: "You are sorting your pack at Echo Point overlooking The Three Sisters before descending 300 vertical meters into Jamison Valley. Your pack is getting heavy. What do you prioritize?",
+                    choices: [
+                        {
+                            text: "Pack 3 liters of water, a topographic map of Jamison Valley, thermal layers, and a snake-bite compression bandage.",
+                            pts: 3,
+                            fb: "Outstanding preparation! Deep sandstone canyons block mobile GPS signals and trap cold, damp air at the valley floor even on warm days.",
+                            insight: "In the Blue Mountains, temperatures at the bottom of Jamison Valley can be 6–8°C colder than at Katoomba, and steep climbs demand heavy hydration."
+                        },
+                        {
+                            text: "Pack plenty of trail food, warm clothes, and a thick foam sleeping pillow for comfort.",
+                            pts: 2,
+                            fb: "You will sleep comfortably, and warm layers are smart for the valley chill. However, carrying a bulky pillow up 900+ steps will strain your knees and lower back.",
+                            insight: "Every extra kilogram multiplies knee impact on steep sandstone staircases like the Giant Stairway and Furber Steps."
+                        },
+                        {
+                            text: "Pack a heavy DSLR zoom lens to photograph The Three Sisters and a thick hardcover novel.",
+                            pts: 1,
+                            fb: "Your photos of the sandstone pillars will look stunning, but excess non-essential weight slows your pace and drains your energy on steep canyon ascents.",
+                            insight: "Experienced canyon walkers use lightweight dry-bags and prioritize safety gear over heavy luxury items."
+                        },
+                        {
+                            text: "Leave your paper topographic map in the car because you downloaded a map on your phone.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Dangerous navigation error! Sheer 200-meter sandstone cliffs in Jamison Valley bounce and block GPS signals, and cold valley air drains phone batteries rapidly.",
+                            insight: "NSW National Parks & Wildlife Service (NPWS) warns that smartphone GPS frequently fails inside narrow Blue Mountains slot canyons."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 The Three Sisters & Giant Stairway",
+                    title: "Decision 2: Valley Mist & High Wind Warning",
+                    text: "Before stepping onto the narrow iron-railed Giant Stairway beside The Three Sisters, a weather alert warns of an East Coast Low bringing dense valley mist and 65 km/h cliff gusts.",
+                    choices: [
+                        {
+                            text: "Adjust your route to stay below the exposed escarpment rim in sheltered valley forest and carry a PLB beacon.",
+                            pts: 3,
+                            fb: "Masterful route management! Dropping below the cliff rim shelters you from violent wind gusts while keeping you on well-marked valley tracks.",
+                            insight: "When thick cloud ('whiteout mist') rolls up from Jamison Valley, cliff-edge tracks become disorienting and hazardous."
+                        },
+                        {
+                            text: "Put on a waterproof shell jacket and grip the Giant Stairway handrails tightly during gusts.",
+                            pts: 2,
+                            fb: "Practical personal protection, though walking along exposed cliff lookouts in gale-force gusts still exposes you to falling eucalyptus branches.",
+                            insight: "High winds funneled up canyon walls can create sudden upward updrafts along the Katoomba escarpment."
+                        },
+                        {
+                            text: "Continue along the exposed Prince Henry Cliff Walk and hope the cloud clears by noon.",
+                            pts: 1,
+                            fb: "Relying on luck along unfenced cliff edges in low visibility is risky. Blue Mountains mist can persist for hours without lifting.",
+                            insight: "Never walk near unfenced sandstone drop-offs when visibility drops below 20 meters."
+                        },
+                        {
+                            text: "Ignore the warning; the sun is shining at Echo Point right now so the valley must be fine.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Incorrect! Mountain weather changes in minutes as moist coastal air hits the Great Dividing Range and condenses into thick fog.",
+                            insight: "Always respect Bureau of Meteorology mountain wind warnings—microclimates shift dramatically across the escarpment."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Grand Canyon Track, Blackheath (Fern Gully)",
+                    title: "🚨 EMERGENCY 1: Red-Bellied Black Snake on the Ledge!",
+                    emergency: true,
+                    text: "While winding beneath overhanging sandstone walls and giant tree ferns on the Grand Canyon Track, you hear a sharp rustle. A glossy 1.5-meter Red-Bellied Black Snake is coiled directly across the narrow track 1 meter ahead!",
+                    choices: [
+                        {
+                            text: "Freeze completely still, keep everyone calm, and slowly step backward several meters until it slithers into the ferns.",
+                            pts: 3,
+                            fb: "Textbook snake safety! Red-Bellied Black Snakes are shy and only strike when cornered or stepped on. Giving it an escape route allowed it to glide quietly off the sandstone.",
+                            insight: "Snakes detect ground vibrations rather than airborne sounds; standing still stops you from appearing like an attacking predator."
+                        },
+                        {
+                            text: "Stomp your boots loudly and wave your trekking pole to scare it off the ledge.",
+                            pts: 0,
+                            death: "Trapped against the vertical sandstone wall with nowhere to retreat, the Red-Bellied Black Snake strikes your ankle in self-defense! Deep inside the Grand Canyon gully with zero phone reception, help is hours away. EXPEDITION TERMINATED."
+                        },
+                        {
+                            text: "Sprint quickly past the snake before it has time to uncoil.",
+                            pts: 0,
+                            death: "Your sudden lunge triggers an instant defensive strike! You slip on the damp moss and tumble down the gully with venom entering your bloodstream. EXPEDITION TERMINATED."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Upper Wentworth Falls & Greaves Creek Cascades",
+                    title: "Decision 3: Swollen Creek Crossing Above the Falls",
+                    text: "Overnight rain has swollen the dark tannin-stained creek just 40 meters upstream from the sheer 100-meter drop of Wentworth Falls. Stepping stones are submerged.",
+                    choices: [
+                        {
+                            text: "Hike 300 meters further upstream to a wide, shallow, flat gravel bar far from the waterfall lip before crossing.",
+                            pts: 3,
+                            fb: "Brilliant safety judgment! Moving upstream creates a vital safety buffer away from the waterfall edge, and wider sections always have slower, shallower currents.",
+                            insight: "Never cross fast-moving water immediately above a waterfall—a single slip on wet ironstone leaves zero margin for recovery."
+                        },
+                        {
+                            text: "Unbuckle your pack's hip belt and use two trekking poles to brace yourself across the knee-deep water.",
+                            pts: 2,
+                            fb: "Good river-crossing technique—unbuckling your hip belt lets you escape a heavy pack if you fall—though crossing closer to the waterfall drop remains unnecessarily tense.",
+                            insight: "Always unclip sternum and waist straps before fording any flowing creek so your pack cannot drag you underwater."
+                        },
+                        {
+                            text: "Keep your leather hiking boots on and wade straight through the deeper channel for traction.",
+                            pts: 1,
+                            fb: "You kept your footing, but your boots and wool socks are now waterlogged. Hiking two more days in wet boots invites severe blisters and trench foot.",
+                            insight: "Remove socks and insoles—or wear lightweight camp sandals—when fording creeks if you have dry footwear waiting."
+                        },
+                        {
+                            text: "Take a running leap across the wet, algae-covered boulders right near the lookout.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Too reckless! Wet sandstone coated in green moss is as slick as ice, and you are meters from a vertical cliff drop.",
+                            insight: "Slipping on wet rock ledges is the single most common cause of serious rescue callouts in the Blue Mountains."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Jamison Valley Climb toward Ruined Castle",
+                    title: "Decision 4: Steep Ascent in Humid Afternoon Heat",
+                    text: "You are climbing the steep historic miners' track toward the rocky outcrop of Ruined Castle. It is 31°C under the eucalyptus canopy and your water supply is half empty.",
+                    choices: [
+                        {
+                            text: "Rest in the cool shade of a coachwood tree for 15 minutes and take small, regular sips of water.",
+                            pts: 3,
+                            fb: "Smart pacing! Resting during the peak afternoon heat dramatically lowers your sweat rate, and steady sips let your body absorb fluids efficiently.",
+                            insight: "Creek water in Jamison Valley often drains old mining seams and campgrounds—always filter or boil valley water before refilling."
+                        },
+                        {
+                            text: "Drink half a liter immediately to 'pre-hydrate' before tackling the final boulder scramble.",
+                            pts: 2,
+                            fb: "Staying hydrated is helpful, though gulping large amounts at once passes through your system quickly and leaves you short of water for tomorrow morning.",
+                            insight: "Add electrolyte tablets during steep NSW summer climbs to replace sodium lost through heavy perspiration."
+                        },
+                        {
+                            text: "Push harder and climb faster so you reach the breezy summit of Ruined Castle sooner.",
+                            pts: 1,
+                            fb: "Exerting yourself harder in high humidity spikes your core temperature and rapidly exhausts your remaining water reserves.",
+                            insight: "Heat exhaustion is a major hazard on steep Blue Mountains climbs between November and March."
+                        },
+                        {
+                            text: "Refill your bottle from a stagnant green rock pool beside the old coal-mine shaft.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Stop! Stagnant water near old Katoomba coal workings can harbor Giardia parasites and heavy-metal runoff.",
+                            insight: "Never drink untreated standing water in NSW parks; always carry purification tablets or a 0.1-micron filter."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Acacia Flat Campground (Blue Gum Forest)",
+                    title: "Decision 5: Pitching Camp Beneath Ancient Blue Gums",
+                    text: "You arrive at the remote Acacia Flat campground in the Grose Valley, surrounded by towering 50-meter Sydney Blue Gums. Where do you pitch your tent?",
+                    choices: [
+                        {
+                            text: "On level, well-drained ground in a natural clearing well away from overhanging eucalyptus branches and the creek bank.",
+                            pts: 3,
+                            fb: "Text-book bushcraft! You avoided both overhead falling limbs and sudden flash-flood runoff from Govetts Creek.",
+                            insight: "Eucalyptus trees shed heavy branches ('widow-makers') unpredictably—especially after hot days or sudden wind shifts."
+                        },
+                        {
+                            text: "On the soft, flat sandy bank right beside Govetts Creek for easy morning water access.",
+                            pts: 2,
+                            fb: "The sand is comfortable, but narrow Blue Mountains gorges funnel rainwater rapidly—a storm 10km upstream can flood creek banks overnight.",
+                            insight: "Always pitch tents at least 20 meters away from valley creeks and well above high-water debris lines."
+                        },
+                        {
+                            text: "High up on an exposed sandstone ridge above the forest to catch the sunrise.",
+                            pts: 1,
+                            fb: "You will get a great sunrise view, but rocky ridge tops offer zero wind protection and expose your tent to lightning.",
+                            insight: "Sheltered mid-elevation clearings provide the best balance of safety, warmth, and drainage."
+                        },
+                        {
+                            text: "Directly under the largest, oldest Blue Gum tree trunk to use its canopy as a rain umbrella.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Never camp under large eucalyptus limbs! Even in calm weather, mature Blue Gums can drop massive branches without warning.",
+                            insight: "Checking 'Look Up, Look Down, Look Around' is the golden rule of Australian campsite selection."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Grose Valley / Govetts Leap Ridge",
+                    title: "Decision 6: Dinner During a Total Fire Ban",
+                    text: "You are hungry after a 16km trek, but an NPWS sign confirms a strict Total Fire Ban across the Greater Blue Mountains due to dry westerly winds.",
+                    choices: [
+                        {
+                            text: "Prepare a nutritious no-cook dinner (wraps, nuts, dried fruit, and cheese) with zero flame or sparks.",
+                            pts: 3,
+                            fb: "Exemplary environmental stewardship! Dry eucalyptus oil vapor and stringybark litter can ignite from a single stray spark.",
+                            insight: "During a NSW Total Fire Ban, all solid-fuel fires are illegal and heavy on-the-spot fines apply to protect communities and wildlife."
+                        },
+                        {
+                            text: "Check the exact NPWS park alert to verify whether regulated liquid/gas stoves are permitted in your zone.",
+                            pts: 2,
+                            fb: "Checking official park regulations is responsible, though during severe fire danger even gas stoves are banned outside designated picnic shelters.",
+                            insight: "Always check the NSW Rural Fire Service 'Fires Near Me' app or park trailhead boards before igniting any stove."
+                        },
+                        {
+                            text: "Build a tiny twig fire inside a stone ring scraped down to bare sand.",
+                            pts: 1,
+                            fb: "Illegal and dangerous! Dry westerly gusts can carry glowing eucalyptus embers hundreds of meters into dry heath.",
+                            insight: "Many catastrophic Blue Mountains bushfires started from 'small' unattended or wind-blown campfires."
+                        },
+                        {
+                            text: "Light a smoky campfire to keep valley mosquitoes away while you boil water.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Absolutely forbidden! Lighting an open fire during a Total Fire Ban risks a devastating crown fire across the heritage-listed forest.",
+                            insight: "Use insect repellent and a head-net instead of smoke, and strictly obey Total Fire Ban laws."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Narrow Neck Plateau Escarpment",
+                    title: "🚨 EMERGENCY 2: Electrical Storm on Narrow Neck!",
+                    emergency: true,
+                    text: "As you cross the narrow sandstone land-bridge of Narrow Neck Plateau, purple thunderclouds explode overhead! Lightning strikes the ironstone ridge 300 meters away and hail begins pelting down.",
+                    choices: [
+                        {
+                            text: "Descend immediately off the exposed plateau to a sheltered mid-slope hollow away from tall isolated trees and metal poles.",
+                            pts: 3,
+                            fb: "Life-saving decision! Narrow Neck is a high, exposed lightning rod during storms. Moving down to a uniform mid-slope position away from isolated trees drastically lowers strike risk.",
+                            insight: "If caught in an alpine or plateau storm, crouch low on your foam sleeping mat with feet together—never lie flat on wet rock."
+                        },
+                        {
+                            text: "Sprint to the highest ironstone lookout tower on Narrow Neck to get a mobile signal for rescue.",
+                            pts: 0,
+                            death: "Standing at the highest metallic point on Narrow Neck Plateau during an electrical storm attracts a direct lightning bolt! EXPEDITION TERMINATED."
+                        },
+                        {
+                            text: "Crawl into a narrow drainage slot cave at the very bottom of the canyon gully.",
+                            pts: 0,
+                            death: "Within three minutes, torrential hail and runoff pour off the plateau into the slot gully as a roaring flash flood, trapping you inside! EXPEDITION TERMINATED."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Leura Forest Fern Gully",
+                    title: "Decision 7: Day 3 — Paralysis Tick Discovery",
+                    text: "While resting under the giant coachwood trees of Leura Forest on Day 3, you spot a small grey-blue NSW Paralysis Tick embedded in your forearm.",
+                    choices: [
+                        {
+                            text: "Use fine-tipped tick tweezers to grasp it flush against the skin and pull straight upward steadily without squeezing its body.",
+                            pts: 3,
+                            fb: "Spot-on medical care! Pulling cleanly by the mouthparts prevents the tick from injecting neurotoxins into your bloodstream.",
+                            insight: "NSW coastal and Blue Mountains gullies are home to the Australian Paralysis Tick (*Ixodes holocyclus*)—never squeeze its abdomen."
+                        },
+                        {
+                            text: "Apply an ether-based freezing spray from your first-aid kit so the tick drops off cleanly.",
+                            pts: 2,
+                            fb: "Freezing sprays are recommended by Australian allergy specialists, though fine-tipped tweezers remain the standard backcountry tool when removed promptly.",
+                            insight: "Monitor the bite site for 48 hours for redness, swelling, or allergic reactions."
+                        },
+                        {
+                            text: "Pinch it between your fingernails and yank it out sideways.",
+                            pts: 1,
+                            fb: "Squeezing the tick's body forces saliva and toxins into your skin and often leaves the mouthparts embedded, risking local infection.",
+                            insight: "Keep a dedicated pair of fine-pointed tweezers in the top pocket of your first-aid kit."
+                        },
+                        {
+                            text: "Hold a lit match near the tick's back so it backs out of your skin.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Dangerous myth! Burning a tick causes it to regurgitate toxins directly into your wound and can burn your skin.",
+                            insight: "Never apply heat, methylated spirits, or petroleum jelly to an attached Australian tick."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Wentworth Falls Picnic & Lookout Area",
+                    title: "Decision 8: Tourists Feeding a Superb Lyrebird",
+                    text: "Near the Wentworth Falls track, you see visitors tossing salted potato chips to a wild Superb Lyrebird and a flock of Crimson Rosellas.",
+                    choices: [
+                        {
+                            text: "Politely explain that processed human food causes fatal liver and beak diseases in native birds and ruins natural foraging.",
+                            pts: 3,
+                            fb: "Great conservation advocacy! Most visitors simply don't realize that salty, oily human snacks harm native Australian birds.",
+                            insight: "Superb Lyrebirds are famous for mimicking camera shutters, chainsaws, and kookaburras—keep them wild by never feeding them."
+                        },
+                        {
+                            text: "Give a polite nod and continue walking so you stay on schedule for your afternoon train.",
+                            pts: 2,
+                            fb: "Avoiding confrontation is understandable, though a friendly 15-second explanation often stops visitors from feeding wildlife.",
+                            insight: "Fed birds lose their natural fear of humans and gather near car parks, increasing road-strike deaths."
+                        },
+                        {
+                            text: "Film them on your phone from behind a bush to post an angry rant online later.",
+                            pts: 1,
+                            fb: "Recording doesn't stop the Lyrebird from eating the salted chips right now. Calm, friendly education works far better.",
+                            insight: "Positive peer education is one of the most effective ways hikers protect national parks."
+                        },
+                        {
+                            text: "Pull out your own trail mix and toss sultanas and almonds to get a closer photo.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Stop! Feeding wildlife in NSW National Parks is illegal and disrupts natural ecosystems across the Blue Mountains.",
+                            insight: "Use your camera zoom rather than food lures to photograph native birds and wallabies."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Furber Steps / Golden Stairs Ascent",
+                    title: "Decision 9: Knee Fatigue on the Final Climb",
+                    text: "You have 4km and 500 steep sandstone steps left to climb back to the Katoomba plateau. Your knees ache from three days of canyon descents.",
+                    choices: [
+                        {
+                            text: "Take a 10-minute hydration break, adjust your trekking poles for uphill support, and climb at a steady rhythmic pace.",
+                            pts: 3,
+                            fb: "Smart pacing! Short recovery breaks restore muscle glycogen, and properly adjusted poles transfer up to 25% of joint load to your upper body.",
+                            insight: "Step onto lower sandstone ledges rather than taking giant lunging steps to protect tired knee ligaments."
+                        },
+                        {
+                            text: "Ignore the ache and power-walk rapidly up the steps to get it over with quickly.",
+                            pts: 2,
+                            fb: "You make fast time, but rushing up uneven wet stone steps when fatigued sharply increases your risk of tripping or twisting an ankle.",
+                            insight: "Most hiking injuries occur in the final two hours of a trip when fatigue lowers concentration."
+                        },
+                        {
+                            text: "Leave your extra water bottles and stove hidden behind a boulder to lighten your pack.",
+                            pts: 1,
+                            fb: "Dumping equipment in a national park violates Leave No Trace principles and leaves you vulnerable if an unexpected delay occurs.",
+                            insight: "Carry out everything you carried in—no exceptions."
+                        },
+                        {
+                            text: "Sit down on the Furber Steps and activate your emergency PLB beacon for a helicopter lift.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Misuse of rescue resources! Tired knees are normal after a Blue Mountains trek—PLBs are strictly for life-threatening emergencies.",
+                            insight: "False emergency activations tie up NSW Police Rescue helicopters needed for critically injured hikers."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Katoomba Trailhead & NPWS Heritage Centre",
+                    title: "Decision 10: Safe Return & Biosecurity Check",
+                    text: "You step off the final sandstone step onto the Katoomba trailhead! Your transport is waiting. What is your final duty as a responsible bushwalker?",
+                    choices: [
+                        {
+                            text: "Log your safe return on your NPWS trip intention, brush valley soil off your boots, and perform a final tick check.",
+                            pts: 3,
+                            fb: "Flawless finish! Signing off prevents unnecessary search-and-rescue callouts, and brushing soil stops root-rot fungus (*Phytophthora*) spreading between trails.",
+                            insight: "Boot-cleaning stations in the Blue Mountains protect rare ancient plants like the Wollemi Pine from soil-borne pathogens."
+                        },
+                        {
+                            text: "Head straight to a Katoomba café for a hot meat pie and text your emergency contact once you sit down.",
+                            pts: 2,
+                            fb: "You earned that hot pie! Just make sure your emergency contact receives your message promptly before your check-in deadline.",
+                            insight: "Always notify your nominated safety contact within 30 minutes of exiting the track."
+                        },
+                        {
+                            text: "Toss your muddy socks in the car park bin and drive straight back to Sydney.",
+                            pts: 1,
+                            fb: "You made it back safely, though checking for ticks before driving and cleaning your gear at home is much smarter.",
+                            insight: "A thorough post-hike body check catches tiny nymph ticks before they attach."
+                        },
+                        {
+                            text: "Leave your empty food wrappers and banana peels beside the overflowing car park bin.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Never leave litter! Wind blows loose wrappers straight into Jamison Valley, and currawongs tear open bags.",
+                            insight: "Pack all rubbish home with you to keep NSW National Parks pristine."
+                        }
+                    ]
+                }
+            ]
+        },
+
+        royal: {
+            name: "Royal National Park (The Coast Track)",
+            shortName: "🌊 Royal National Park",
+            icon: "🌊",
+            summary: "You hiked the dramatic 26km Coast Track from Bundeena to Otford, navigated Wedding Cake Rock and Figure Eight Pools, crossed Wattamolla Lagoon, and weathered a Tasman Sea Southerly Buster.",
+            stages: [
+                {
+                    landmark: "📍 Bundeena Ferry Wharf & Jibbon Headland",
+                    title: "Decision 1: Packing for the Exposed Coast Track",
+                    text: "You step off the Cronulla ferry at Bundeena to start the 26km Coast Track toward Otford. Much of the trail crosses open coastal heathland above 60-meter sea cliffs. What do you prioritize?",
+                    choices: [
+                        {
+                            text: "Pack 3.5 liters of water, SPF 50+ sunscreen, a wide-brim sun hat, a tide chart, and a first-aid kit.",
+                            pts: 3,
+                            fb: "Brilliant coastal preparation! Unlike shaded mountain forests, the Coast Track has long treeless stretches with intense UV reflection off white sandstone.",
+                            insight: "There are very few reliable drinking water taps between Bundeena and Garie Beach—carrying ample water is critical."
+                        },
+                        {
+                            text: "Pack high-energy snacks, warm fleece layers, and a heavy beach towel for swimming at Marley.",
+                            pts: 2,
+                            fb: "Snacks and layers are useful, though a heavy cotton beach towel absorbs water and adds unnecessary weight over 26km of coastal hills.",
+                            insight: "Lightweight microfiber travel towels dry fast and save valuable pack space on coastal treks."
+                        },
+                        {
+                            text: "Pack a heavy telephoto camera to spot migrating Humpback Whales and a thick paperback novel.",
+                            pts: 1,
+                            fb: "Spotting Humpback Whales from Marley Headland is unforgettable, but heavy camera gear slows you down on the steep climbs near Little Marley.",
+                            insight: "May to November is peak whale-watching season along Royal National Park's sea cliffs."
+                        },
+                        {
+                            text: "Bring only one 500ml water bottle because you plan to drink ocean water if you get thirsty.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Never drink seawater! Saltwater dehydrates your body rapidly and causes severe illness.",
+                            insight: "Always carry at least 3 liters of fresh water per person on Royal National Park's Coast Track."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Wedding Cake Rock & Marley Headland",
+                    title: "Decision 2: Hazardous Surf & King Tide Alert",
+                    text: "As you approach the famous pure-white sandstone block of Wedding Cake Rock, a Bureau of Meteorology alert warns of a 3.5-meter Tasman Sea swell and King Tide.",
+                    choices: [
+                        {
+                            text: "Stay strictly behind safety fences on the upper cliff track and check exact low-tide windows before approaching any rock shelves.",
+                            pts: 3,
+                            fb: "Smart coastal judgment! High swells send powerful surges sweeping across low sandstone platforms, and undercut cliff edges can collapse without warning.",
+                            insight: "Wedding Cake Rock is geologically unstable and fenced off—staying on the main track protects both you and the fragile sandstone."
+                        },
+                        {
+                            text: "Pack a windproof rain shell and keep a wide 10-meter buffer from all wet rock edges.",
+                            pts: 2,
+                            fb: "Keeping a safe distance from wet rock is good practice, though checking the official tide chart is essential before visiting Figure Eight Pools later.",
+                            insight: "Wet dark rock on coastal platforms shows where waves have recently washed—never step onto wet intertidal rock."
+                        },
+                        {
+                            text: "Continue along the cliff edge as planned and assume the waves will calm down by midday.",
+                            pts: 1,
+                            fb: "Ocean swells build across thousands of kilometers of the Tasman Sea and do not drop suddenly.",
+                            insight: "Always plan coastal rock-platform visits around dead low tide with a calm swell forecast."
+                        },
+                        {
+                            text: "Ignore the surf warning; big waves make much better dramatic photos near the cliff drop.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Extremely dangerous! Every year hikers are swept off NSW rock platforms while taking photos near big swells.",
+                            insight: "Never turn your back on the Tasman Sea when walking near coastal rock shelves."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Figure Eight Pools Rock Shelf (Burning Palms)",
+                    title: "🚨 EMERGENCY 1: Rogue Set Wave at Figure Eight Pools!",
+                    emergency: true,
+                    text: "You reach the wave-cut rock platform near Figure Eight Pools. Suddenly, the ocean draws back and a massive 4-meter 'king set' wave surges over the outer reef shelf straight toward you!",
+                    choices: [
+                        {
+                            text: "Drop low immediately onto rough high sandstone away from the edge, brace your hands and feet in rock crevices, and wait for the wash to recede before climbing to the grass slope.",
+                            pts: 3,
+                            fb: "Heroic survival instinct! Trying to outrun a wave across slippery algae often causes falls into deep surge channels. Bracing low on rough high rock lets the whitewater pass without sweeping you into the sea.",
+                            insight: "NPWS warns that Figure Eight Pools is only safe at low tide during low swell—never stand near the outer shelf edge."
+                        },
+                        {
+                            text: "Turn your back to the sea and sprint wildly across the wet, green algae-covered shelf.",
+                            pts: 0,
+                            death: "Your boots lose traction on the slick green marine algae! The surging Tasman Sea wave sweeps you off the ledge into a boiling rock surge channel. EXPEDITION TERMINATED."
+                        },
+                        {
+                            text: "Jump into the ocean outside the shelf to swim around the breaking wave.",
+                            pts: 0,
+                            death: "Violent backwash and powerful coastal rips slam you against the barnacle-covered cliff face! EXPEDITION TERMINATED."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Wattamolla Lagoon & Waterfall Cove",
+                    title: "Decision 3: Crossing the Tidal Lagoon Mouth",
+                    text: "You arrive at Wattamolla, where a freshwater waterfall feeds a turquoise lagoon separated from the ocean by a shifting sandbar. The incoming tide is pushing water across the inlet.",
+                    choices: [
+                        {
+                            text: "Walk upstream to the shallow inner sandbar at the calm lagoon edge, unbuckle your pack waist strap, and wade across calmly.",
+                            pts: 3,
+                            fb: "Excellent coastal navigation! Crossing inside the sheltered lagoon avoids ocean wave surges and dangerous rip currents at the river mouth.",
+                            insight: "Coastal lagoon mouths look calm on the surface but can hide strong tidal outflow currents—always cross well inside the sandbar."
+                        },
+                        {
+                            text: "Wait 45 minutes on the beach for the tide to turn before wading across with your boots off.",
+                            pts: 2,
+                            fb: "Patience is great when you have time, and taking your boots off keeps your footwear dry for the afternoon trek to Garie Beach.",
+                            insight: "Dry feet prevent painful sand-chafing blisters on long coastal hikes."
+                        },
+                        {
+                            text: "Wade straight through in your hiking boots so you don't waste time unlacing.",
+                            pts: 1,
+                            fb: "Now your boots are full of saltwater and fine beach sand, which acts like sandpaper on your skin for the next 12 kilometers.",
+                            insight: "Always rinse sand off your ankles and socks before putting boots back on."
+                        },
+                        {
+                            text: "Try to jump across the narrowest wave-washed channel right where ocean waves crash onto the bar.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Dangerous! Soft wet sand gives way underfoot, and incoming surf at a lagoon mouth can knock you off balance into a rip.",
+                            insight: "Never cross a coastal inlet right at the surf break."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Open Banksia Heathland (Wattamolla to Garie)",
+                    title: "Decision 4: Midday UV & Heat Exposure on the Cliffs",
+                    text: "It is 1:00 PM on the treeless sandstone plateau between Wattamolla and Garie Beach. There is zero shade, the temperature is 32°C, and your water is half gone.",
+                    choices: [
+                        {
+                            text: "Pause behind a tall sandstone boulder for shade, reapply sunscreen, and take small, frequent sips of water.",
+                            pts: 3,
+                            fb: "Smart heat management! Using rock outcrops for shade reduces solar heat gain while steady sips maintain blood volume without wasting water.",
+                            insight: "Australian coastal UV levels reach 'Extreme' (11+) even when a cool sea breeze makes your skin feel comfortable."
+                        },
+                        {
+                            text: "Drink a large amount of water right now before climbing the steep hill down into Garie Beach.",
+                            pts: 2,
+                            fb: "Hydrating before a climb helps, though gulping too much at once leaves little reserve if the Garie kiosk is closed.",
+                            insight: "Always treat coastal kiosks as a bonus rather than a guaranteed water source."
+                        },
+                        {
+                            text: "Speed-walk as fast as possible across the exposed plateau to reach the trees near Garie sooner.",
+                            pts: 1,
+                            fb: "Increasing your pace in direct midday sun spikes heat stress and accelerates dehydration.",
+                            insight: "Slow your pace during peak UV hours (11 AM – 3 PM) on exposed coastal headlands."
+                        },
+                        {
+                            text: "Drink brackish, stagnant water from a tiny rock puddle left by salt spray.",
+                            pts: -1,
+                            retry: true,
+                            fb: "No! Coastal rock puddles are salty and contaminated by seabird droppings—drinking them causes severe dehydration and stomach illness.",
+                            insight: "Never drink untreated rock-pool water along coastal cliffs."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 North Era Campground (Above Garie Beach)",
+                    title: "Decision 5: Setting Camp on the Coastal Headland",
+                    text: "You reach North Era, the scenic ocean-view campground nestled in a grassy valley just behind the beach. Sea breezes are freshening. Where do you pitch your tent?",
+                    choices: [
+                        {
+                            text: "On flat grassy ground tucked behind the coastal sand dune, angled into the wind with all guy-lines pegged securely.",
+                            pts: 3,
+                            fb: "Spot-on coastal camping! The grassy dune hollow blocks ocean gales while avoiding overhead trees and tidal surge zones.",
+                            insight: "Aerodynamic tent pitching—pointing the narrowest end into the prevailing wind—prevents poles from snapping in coastal gusts."
+                        },
+                        {
+                            text: "On the soft sand at the top edge of Garie Beach so you can fall asleep listening to the waves.",
+                            pts: 2,
+                            fb: "Romantic, but high night tides can creep surprisingly far up NSW beaches, and sand stakes pull out easily in strong winds.",
+                            insight: "Camping directly on beaches is prohibited in Royal National Park—always use designated campgrounds like North Era."
+                        },
+                        {
+                            text: "Right on the exposed headland crest above North Era for a panoramic ocean sunrise.",
+                            pts: 1,
+                            fb: "Headland crests take the full brunt of night winds off the Tasman Sea, making sleep noisy and risking torn tent fabric.",
+                            insight: "Choose natural hollows behind coastal dunes for wind protection."
+                        },
+                        {
+                            text: "Directly underneath an old, dead coastal Banksia/Eucalyptus snag to block the sea mist.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Unsafe! Salt-weathered dead limbs snap easily when coastal winds pick up overnight.",
+                            insight: "Always inspect overhead branches before pegging down your tent."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 North Era / Burning Palms Coastal Valley",
+                    title: "Decision 6: Dinner During a Coastal Total Fire Ban",
+                    text: "Dry onshore winds are blowing across the coastal heathland, and a Total Fire Ban is active across the Sydney and Illawarra regions.",
+                    choices: [
+                        {
+                            text: "Enjoy a hearty cold meal (tuna wraps, crackers, dried apricots, and nuts) with no flame or stove.",
+                            pts: 3,
+                            fb: "Completely safe and legal! Coastal winds can whip a tiny spark into dry coastal banksia scrub in seconds.",
+                            insight: "Wood fires are permanently banned in Royal National Park at all times—even outside Total Fire Ban days."
+                        },
+                        {
+                            text: "Check the NPWS coastal noticeboard to verify if enclosed gas stoves are allowed in the campground.",
+                            pts: 2,
+                            fb: "Checking local signage is a great habit, though during severe fire weather all open-flame camp stoves are prohibited.",
+                            insight: "Always pack at least one full day of no-cook meals when hiking in NSW."
+                        },
+                        {
+                            text: "Dig a shallow pit in the sand and light a tiny driftwood fire shielded by your backpack.",
+                            pts: 1,
+                            fb: "Illegal and dangerous! Driftwood fires are strictly banned in Royal National Park and wind-blown sparks ignite nearby grass.",
+                            insight: "Buried beach embers stay hot for days and severely burn barefoot walkers the next morning."
+                        },
+                        {
+                            text: "Build a roaring driftwood bonfire on the beach to signal passing ships.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Absolutely not! Beach bonfires are illegal in Royal National Park and pose a massive bushfire threat to the surrounding cliffs.",
+                            insight: "Respect park fire rules at all times to protect fragile coastal habitats."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Eagle Rock & Curracurrong Falls Cliff Edge",
+                    title: "🚨 EMERGENCY 2: Southerly Buster Gale at Eagle Rock!",
+                    emergency: true,
+                    text: "Approaching Eagle Rock—where Curracurrong Falls plunges straight into the Tasman Sea—a notorious NSW 'Southerly Buster' hits! Gale-force winds blow the waterfall straight upward and lightning flashes offshore.",
+                    choices: [
+                        {
+                            text: "Step immediately away from the exposed cliff edge, crouch low in a sheltered dip among low coastal scrub, and wait out the squall.",
+                            pts: 3,
+                            fb: "Superb coastal survival response! Southerly Busters bring violent 90 km/h gusts that can blow hikers off exposed cliff edges, but the worst squall passes within 20–30 minutes.",
+                            insight: "When a Southerly Buster hits the NSW coast, temperatures can drop 12°C in 15 minutes—put on waterproof layers immediately."
+                        },
+                        {
+                            text: "Climb onto the tip of Eagle Rock to take a dramatic photo of the waterfall blowing upside down.",
+                            pts: 0,
+                            death: "A sudden 95 km/h Southerly Buster gust sweeps across the wet sandstone overhang, blowing you straight off the 60-meter sea cliff into the boiling surf! EXPEDITION TERMINATED."
+                        },
+                        {
+                            text: "Take shelter inside a narrow sea-level blowhole cave at the base of the cliff.",
+                            pts: 0,
+                            death: "Massive gale-driven swells surge straight into the sea cave, trapping you against the rock roof! EXPEDITION TERMINATED."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Palm Jungle Subtropical Rainforest",
+                    title: "Decision 7: Day 3 — Paralysis Tick in Palm Jungle",
+                    text: "After hiking through the humid, shaded canopy of Cabbage Tree Palms in Palm Jungle on Day 3, you feel an itch behind your ear and find a small paralysis tick.",
+                    choices: [
+                        {
+                            text: "Use fine-tipped tweezers from your first-aid kit to grip the tick's head right against the skin and pull straight out steadily.",
+                            pts: 3,
+                            fb: "Perfect technique! Removing the tick cleanly without crushing its body prevents toxin release.",
+                            insight: "Palm Jungle's warm, humid microclimate is a prime habitat for NSW paralysis ticks and bush leeches."
+                        },
+                        {
+                            text: "Ask your hiking partner to apply tick-freezing spray so it detaches cleanly.",
+                            pts: 2,
+                            fb: "Freezing sprays work well when available, though fine-tipped tweezers are essential when hiking without a pharmacy nearby.",
+                            insight: "Wearing light-colored long sleeves and tucking trousers into socks helps spot ticks before they attach."
+                        },
+                        {
+                            text: "Scratch it off quickly with your fingernail while walking up the hill.",
+                            pts: 1,
+                            fb: "Scratching squeezes the tick's body and often leaves the head embedded in your skin, causing painful inflammation.",
+                            insight: "Always stop walking and use a mirror or partner's help for ticks behind the ear or neck."
+                        },
+                        {
+                            text: "Dab hot melted wax or a glowing cigarette/match tip onto the tick.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Never burn a tick! Heat causes it to inject more neurotoxin into your skin and risks burning your ear.",
+                            insight: "Use mechanical tweezers or freezing spray—never heat or chemicals."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Burning Palms Heritage Shack Community & Lookout",
+                    title: "Decision 8: Hikers Climbing Fences & Feeding Seabirds",
+                    text: "Near the coastal lookouts, you see a group of day-trippers climbing over a safety barrier onto an undercut sandstone ledge while throwing bread to White-bellied Sea-Eagles and gulls.",
+                    choices: [
+                        {
+                            text: "Politely warn them that sandstone cliff edges are undercut and fragile, and explain that human food harms wild coastal birds.",
+                            pts: 3,
+                            fb: "Calm, effective leadership! You protected both human lives and native wildlife without escalating tension.",
+                            insight: "Coastal sandstone erodes from underneath by sea spray, making overhanging ledges far weaker than they look from above."
+                        },
+                        {
+                            text: "Keep walking past quietly so you don't get involved in someone else's business.",
+                            pts: 2,
+                            fb: "While you aren't a park ranger, a quick friendly heads-up about cliff undercutting can prevent a fatal fall.",
+                            insight: "Safety barriers in Royal National Park exist because fatal collapses have occurred on unfenced overhangs."
+                        },
+                        {
+                            text: "Take photos of them breaking the rules to complain on social media later.",
+                            pts: 1,
+                            fb: "Posting later doesn't protect them from an undercut ledge right now. A polite spoken warning is much more helpful.",
+                            insight: "Speak up kindly when you see fellow walkers standing on unstable coastal overhangs."
+                        },
+                        {
+                            text: "Climb over the fence yourself to show them a better spot to feed the gulls.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Reckless! Crossing safety barriers puts your life in danger and encourages others to take fatal risks.",
+                            insight: "Always stay behind official cliff safety barriers along the Coast Track."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Otford Ridge Final Climb",
+                    title: "Decision 9: Sand Blisters & Steep Ascent to Otford",
+                    text: "The final 4km climbs relentlessly out of Palm Jungle up the steep escarpment to Otford Lookout. Your calves are cramping and a blister is forming on your heel.",
+                    choices: [
+                        {
+                            text: "Stop for 10 minutes, apply a blister dressing (Compeed/mole-skin) before the skin tears, drink electrolytes, and use trekking poles.",
+                            pts: 3,
+                            fb: "Pro-level foot care! Treating a 'hot spot' immediately prevents a torn blister, and poles ease the steep climb out of Palm Jungle.",
+                            insight: "Never ignore a 'hot spot' on your heel—stopping for 5 minutes to tape it saves days of painful recovery."
+                        },
+                        {
+                            text: "Push straight up the steep hill without stopping so you catch the earlier train at Otford.",
+                            pts: 2,
+                            fb: "You make the train, but ignoring a friction hot spot turns it into a raw, bleeding blister by the time you reach the top.",
+                            insight: "Carrying pre-cut blister plasters in an accessible pocket makes quick foot care effortless."
+                        },
+                        {
+                            text: "Leave your damp tent and heavy water bladder behind in the Palm Jungle bushes to lighten your load.",
+                            pts: 1,
+                            fb: "Littering in a national park damages the rainforest and leaves you without shelter if you twist an ankle on the final hill.",
+                            insight: "True bushwalkers always carry out every piece of gear they bring."
+                        },
+                        {
+                            text: "Sit on the Otford track and press SOS on your PLB rescue beacon because your feet hurt.",
+                            pts: -1,
+                            retry: true,
+                            fb: "No! Blisters and tired legs are normal trekking discomforts, not life-threatening emergencies.",
+                            insight: "Save emergency rescue beacons strictly for severe trauma, medical crisis, or being genuinely lost."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Otford Lookout & Station Trailhead",
+                    title: "Decision 10: Trailhead Finish & Coastal Etiquette",
+                    text: "You emerge from the forest canopy at Otford Lookout overlooking the sweeping Illawarra coastline! What is your final step before heading home?",
+                    choices: [
+                        {
+                            text: "Notify your emergency contact of your safe arrival, do a thorough tick check, and pack all rubbish out with you.",
+                            pts: 3,
+                            fb: "Textbook completion! Confirming your safe exit closes your trip plan, and a post-jungle tick check keeps you safe at home.",
+                            insight: "Always double-check behind knees, waistline, and scalp after exiting Palm Jungle."
+                        },
+                        {
+                            text: "Grab an ice-cold drink at the Otford kiosk and message your safety contact once you board the train.",
+                            pts: 2,
+                            fb: "Well deserved! Just be sure to send that message before entering the Stanwell Park rail tunnels where signal drops.",
+                            insight: "Send your safe-return confirmation while you have strong reception at the lookout."
+                        },
+                        {
+                            text: "Throw your sandy socks in the lookout bin and head straight to the platform.",
+                            pts: 1,
+                            fb: "A quick rinse at home saves good merino socks, and don't forget to check for ticks before sitting on the train!",
+                            insight: "Merino wool hiking socks easily wash clean of coastal sand and last for hundreds of kilometers."
+                        },
+                        {
+                            text: "Leave your empty electrolyte bottles and snack wrappers beside the Otford Lookout sign.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Never litter at a lookout! Coastal winds blow plastic bottles straight off the cliff into the ocean below.",
+                            insight: "Leave No Trace means leaving every trailhead cleaner than you found it."
+                        }
+                    ]
+                }
+            ]
+        },
+
+        kosciuszko: {
+            name: "Kosciuszko National Park (Main Range)",
+            shortName: "🏔️ Kosciuszko Alpine",
+            icon: "🏔️",
+            summary: "You trekked across Australia's highest alpine plateau from Charlotte Pass to Mount Kosciuszko (2,228m), navigated a Main Range whiteout above Blue Lake, and sheltered near historic Seaman's Hut.",
+            stages: [
+                {
+                    landmark: "📍 Charlotte Pass Trailhead (1,837m)",
+                    title: "Decision 1: Packing for Australia's High Country",
+                    text: "You are preparing your pack at Charlotte Pass to hike the 22km Main Range loop above the treeline. Even in summer, alpine blizzards can strike without warning. What do you prioritize?",
+                    choices: [
+                        {
+                            text: "Pack a waterproof-breathable shell jacket, merino thermal layers, beanie, gloves, compass/map, and a high-energy first-aid kit.",
+                            pts: 3,
+                            fb: "Textbook alpine preparation! Above 1,800 meters in the Snowy Mountains, four-season layering and compass navigation are mandatory even in January.",
+                            insight: "Snowfalls and sub-zero wind chills have been recorded on Mount Kosciuszko in every single month of the year."
+                        },
+                        {
+                            text: "Pack plenty of high-calorie mountain food and a thick fleece blanket for cold nights.",
+                            pts: 2,
+                            fb: "High-calorie food fuels body heat in cold air, though a waterproof wind-shell is far lighter and more effective against sleet than a heavy blanket.",
+                            insight: "In alpine terrain, windproof outer layers stop convective heat loss far better than thick non-windproof fabrics."
+                        },
+                        {
+                            text: "Pack a heavy camera tripod for sunrise shots over Blue Lake and a thick hardcover book.",
+                            pts: 1,
+                            fb: "Blue Lake looks extraordinary at dawn, but carrying heavy non-essential items across steep 2,100m ridges drains stamina rapidly.",
+                            insight: "Keep your alpine pack light so you can move swiftly if a weather front approaches."
+                        },
+                        {
+                            text: "Pack only cotton t-shirts, shorts, and light sneakers because it is sunny at Charlotte Pass.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Life-threatening mistake! Cotton holds moisture and loses 90% of its warmth when wet ('cotton kills'), risking rapid hypothermia above the treeline.",
+                            insight: "Never wear cotton clothing on the Main Range—always choose merino wool or synthetic moisture-wicking layers."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Snowy River Lookout & Carruthers Peak Approach",
+                    title: "Decision 2: Alpine Gale & Freezing Level Warning",
+                    text: "Before ascending toward Carruthers Peak (2,145m), the NPWS alpine forecast warns of 80 km/h westerly gales and cloud descending onto the Main Range.",
+                    choices: [
+                        {
+                            text: "Switch to a lower, more sheltered valley route near the Snow Gum treeline and verify your compass bearings before cloud arrives.",
+                            pts: 3,
+                            fb: "Outstanding alpine judgment! Staying near the treeline avoids severe wind-chill exposure on the open Main Range ridge.",
+                            insight: "Wind chill at 2,200m in 80 km/h gusts can drop effective temperatures below -10°C even during summer."
+                        },
+                        {
+                            text: "Put on your waterproof shell, beanie, and gloves right away and carry a registered PLB beacon.",
+                            pts: 2,
+                            fb: "Smart thermal layering and carrying a PLB are vital, though walking across exposed 2,100m ridges in gale-force gusts remains exhausting.",
+                            insight: "Put warm layers on *before* you start shivering—prevention is much easier than rewarming."
+                        },
+                        {
+                            text: "Stick to the exposed summit ridge plan and hope the wind drops before you reach Mount Kosciuszko.",
+                            pts: 1,
+                            fb: "Relying on hope above the treeline is risky; alpine weather fronts often intensify over the afternoon.",
+                            insight: "Experienced mountaineers always keep a low-elevation turnaround plan ready."
+                        },
+                        {
+                            text: "Ignore the alpine weather warning; Australia is a warm country so mountain forecasts exaggerate.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Dangerous misconception! The Snowy Mountains experience true sub-alpine blizzards that have claimed lives even in summer.",
+                            insight: "Always respect Snowy Mountains Bureau of Meteorology alpine warnings."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Blue Lake Glacial Cirque (1,900m)",
+                    title: "🚨 EMERGENCY 1: Sudden Whiteout Above Blue Lake!",
+                    emergency: true,
+                    text: "While traversing the steep ridge overlooking the ancient glacial cirque of Blue Lake, thick freezing cloud slams across the plateau! Visibility drops to 3 meters and the next trail marker vanishes.",
+                    choices: [
+                        {
+                            text: "Stop immediately at the last visible trail marker, put on all waterproof/thermal layers, take a compass bearing, and stay together until visibility improves or follow the marked track back safely.",
+                            pts: 3,
+                            fb: "Textbook alpine whiteout survival! Wandering blindly off the Main Range track risks walking straight off the steep glacial cliffs above Blue Lake. Staying anchored and using a compass keeps you alive.",
+                            insight: "In a whiteout, the human brain loses depth perception—never walk forward without a verified trail marker or compass bearing."
+                        },
+                        {
+                            text: "Run blindly off the track toward where you think Blue Lake is to get down to the water.",
+                            pts: 0,
+                            death: "Disoriented in the 3-meter whiteout, you step straight off the sheer 150-meter glacial cliff rim overlooking Blue Lake! EXPEDITION TERMINATED."
+                        },
+                        {
+                            text: "Split up from your hiking partner so each person searches a different direction for the next pole.",
+                            pts: 0,
+                            death: "Within 30 seconds in the dense cloud, you lose voice and visual contact in sub-zero wind chill! EXPEDITION TERMINATED."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Snowy River Headwaters Crossing",
+                    title: "Decision 3: Fording the Icy Snowy River",
+                    text: "You reach the upper Snowy River crossing below Charlotte Pass. Spring snowmelt has raised the crystal-clear, near-freezing water to knee depth across smooth granite boulders.",
+                    choices: [
+                        {
+                            text: "Scout 150 meters upstream for a wide, shallow gravel braid, unbuckle your pack waist strap, and cross carefully with trekking poles.",
+                            pts: 3,
+                            fb: "Flawless river craft! Wider sections spread the snowmelt shallower and slower, and unclipping your waist belt prevents entrapment.",
+                            insight: "Snowmelt water in the Snowy River stays around 2–5°C—immersion rapidly numbs feet and impairs balance."
+                        },
+                        {
+                            text: "Unclip your pack waist belt, wear camp sandals for foot protection, and cross steadily using two poles.",
+                            pts: 2,
+                            fb: "Great technique—protecting your feet from sharp granite while keeping your hiking boots dry prevents cold-foot injuries later.",
+                            insight: "Dry your feet thoroughly with a small cloth immediately after crossing icy alpine streams."
+                        },
+                        {
+                            text: "Wade straight through in your waterproof hiking boots so you don't get cold feet.",
+                            pts: 1,
+                            fb: "Water pours straight over the top of your ankle cuffs! Now your boots are full of icy meltwater for the rest of the trek.",
+                            insight: "Even Gore-Tex boots cannot keep water out when it flows over the top of the cuff."
+                        },
+                        {
+                            text: "Try to leap from one wet, rounded granite boulder to the next across the deepest current.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Too dangerous! Submerged granite boulders are coated in slick biofilm; a fall into 3°C snowmelt risks head injury and rapid hypothermia.",
+                            insight: "Always wade steadily on a wide gravel bed rather than jumping across wet river boulders."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Carruthers Peak & Mount Twynam Ridge (2,196m)",
+                    title: "Decision 4: High-Altitude Sun & Silent Dehydration",
+                    text: "The sky clears into brilliant alpine sunshine at 2,150m. A cool breeze masks the intense high-altitude UV, and your water is half empty.",
+                    choices: [
+                        {
+                            text: "Pause in the lee of a granite tor, apply SPF 50+ sunscreen and lip balm, and take small, frequent sips of water.",
+                            pts: 3,
+                            fb: "Smart high-altitude care! At 2,200m, UV radiation is ~25% stronger than at sea level, and dry mountain air dehydrates you with every breath.",
+                            insight: "Cool alpine breezes trick hikers into forgetting to drink—monitor hydration closely above 2,000 meters."
+                        },
+                        {
+                            text: "Drink a large gulp of water now before tackling the final climb toward Rawson Pass.",
+                            pts: 2,
+                            fb: "Good hydration before a climb, though steady small sips conserve your supply better until you can filter water at a high creek.",
+                            insight: "Always filter or boil alpine creek water—even high mountain streams can carry bacteria from wildlife."
+                        },
+                        {
+                            text: "Push fast along the exposed ridge without stopping so you reach Mount Kosciuszko summit sooner.",
+                            pts: 1,
+                            fb: "High altitude has thinner air—rushing without pacing or hydration causes altitude headaches and rapid fatigue.",
+                            insight: "Maintain a steady 'conversational pace' when hiking above 2,000 meters."
+                        },
+                        {
+                            text: "Eat handfuls of unmelted snow from a drift beside the track instead of drinking water.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Harmful myth! Eating frozen snow drains massive body heat to melt it internally and risks lowering your core temperature.",
+                            insight: "Always melt and warm snow on a stove before drinking it in alpine environments."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Illawong & Twisted Snow Gum Woodland (1,780m)",
+                    title: "Decision 5: Choosing a Protected Alpine Campsite",
+                    text: "Evening approaches and temperatures are dropping toward 0°C. Remember: camping is strictly banned in the fragile glacial lake catchments (Blue Lake, Hedley Tarn, Lake Albina). Where do you camp?",
+                    choices: [
+                        {
+                            text: "Pitch your tent on durable ground sheltered inside the gnarled Snow Gum woodland well away from glacial lake catchments.",
+                            pts: 3,
+                            fb: "Spot-on alpine ethics and safety! Snow Gums act as a natural windbreak, and camping outside glacial lake catchments obeys NPWS conservation laws.",
+                            insight: "Glacial lakes in Kosciuszko are among mainland Australia's rarest ecosystems—camping near them is strictly prohibited."
+                        },
+                        {
+                            text: "Camp in a flat grassy valley clearing below the treeline, several meters back from the alpine stream.",
+                            pts: 2,
+                            fb: "Good flat ground and safe from flash rises, though slightly more exposed to cold katabatic night air draining down the valley.",
+                            insight: "Cold air sinks into valley bottoms at night—a slightly elevated bench among Snow Gums is often 3–4°C warmer."
+                        },
+                        {
+                            text: "Pitch your tent right on the exposed saddle of Rawson Pass (2,100m) for sunset photos.",
+                            pts: 1,
+                            fb: "Exposing your tent to sub-zero ridge winds at 2,100m risks snapped poles and severe cold stress overnight.",
+                            insight: "Always drop below the exposed Main Range ridge before nightfall."
+                        },
+                        {
+                            text: "Pitch your tent right on the fragile moss shore of Blue Lake so you can wash dishes in the glacial water.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Strictly illegal and ecologically destructive! Camping within the Blue Lake catchment damages rare alpine flora and pollutes pristine glacial waters.",
+                            insight: "Respect Kosciuszko National Park's glacial lake no-camping zones."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Kosciuszko Alpine Zone (Above 1,830m)",
+                    title: "Decision 6: Cooking Dinner in the Alpine Zone",
+                    text: "You are ready for a hot dinner as frost forms on the grass. In Kosciuszko National Park, all wood campfires are permanently banned above the treeline to protect slow-growing Snow Gums.",
+                    choices: [
+                        {
+                            text: "Cook a warm, high-calorie meal using your enclosed liquid/gas camp stove inside a wind-shielded tent vestibule (with full ventilation).",
+                            pts: 3,
+                            fb: "Exemplary alpine practice! A hot meal fuels internal heat generation while leaving zero scars on the fragile alpine soil.",
+                            insight: "A single dead Snow Gum branch takes decades to grow in harsh alpine winters—never burn alpine wood."
+                        },
+                        {
+                            text: "Eat a cold, high-calorie meal of cheese, salami, nuts, and chocolate if wind makes lighting your stove tricky.",
+                            pts: 2,
+                            fb: "Safe and compliant with park rules, though a hot drink and warm meal provide a major thermal boost before a frosty night.",
+                            insight: "Fats and complex carbohydrates digest slowly, keeping your internal body furnace warm while you sleep."
+                        },
+                        {
+                            text: "Gather fallen Snow Gum twigs to build a tiny cooking fire on a flat granite slab.",
+                            pts: 1,
+                            fb: "Illegal in the alpine zone! Even small fires permanently scar fragile alpine peat soils and strip wildlife habitat.",
+                            insight: "Alpine peat soils take centuries to recover from fire scars."
+                        },
+                        {
+                            text: "Bring your camp stove completely inside a zipped-up, unventilated tent to warm the air while cooking.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Lethal danger! Burning a stove inside a sealed tent produces deadly, odorless carbon monoxide gas and risks a catastrophic tent fire.",
+                            insight: "Never operate any fuel stove inside an enclosed, unventilated tent."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Etheridge Ridge & Historic Seaman's Hut (2,030m)",
+                    title: "🚨 EMERGENCY 2: Sudden Blizzard Near Seaman's Hut!",
+                    emergency: true,
+                    text: "As you climb toward Mount Kosciuszko past historic Seaman's Hut (built in 1929 after two skiers perished in a blizzard), a violent squall hits! Horizontal sleet freezes on your jacket and lightning strikes the summit.",
+                    choices: [
+                        {
+                            text: "Retreat immediately into the stone refuge of Seaman's Hut (or drop into a sheltered lee hollow in full waterproofs) until the blizzard and lightning pass.",
+                            pts: 3,
+                            fb: "Life-saving alpine wisdom! Historic Seaman's Hut was built specifically as an emergency survival shelter for hikers and skiers caught in sudden Main Range blizzards.",
+                            insight: "Turning back from a summit when a blizzard strikes is the hallmark of every great mountaineer—the mountain will always be there tomorrow."
+                        },
+                        {
+                            text: "Push on to the rocky summit cairn of Mount Kosciuszko (2,228m) to stand at Australia's highest point during the lightning storm.",
+                            pts: 0,
+                            death: "Standing at 2,228 meters on the highest exposed granite peak in Australia during an electrical blizzard attracts a fatal lightning strike! EXPEDITION TERMINATED."
+                        },
+                        {
+                            text: "Take off your wet outer shell and run downhill in just your base shirt to warm up faster.",
+                            pts: 0,
+                            death: "Without a windproof shell in 80 km/h freezing sleet, wind chill strips your core heat within minutes, triggering fatal hypothermia! EXPEDITION TERMINATED."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Rawson Pass & Alpine Herbfield",
+                    title: "Decision 7: Day 3 — Early Mild Hypothermia Check",
+                    text: "After a frosty night, your hiking partner is shivering persistently, stumbling slightly on the boardwalk, and speaking slowly. What is your immediate response?",
+                    choices: [
+                        {
+                            text: "Stop in a wind-sheltered spot, replace any damp layers with dry thermal fleece/down, wrap them in an emergency foil/sleeping bag, and give warm sweet tea and chocolate.",
+                            pts: 3,
+                            fb: "Textbook wilderness first aid! Those are classic early signs of mild hypothermia. Insulation from wind plus warm sugars restarts the body's internal heating.",
+                            insight: "Never give alcohol or caffeine to a hypothermic person—warm sugary drinks provide immediate fuel for shivering muscles."
+                        },
+                        {
+                            text: "Put an extra waterproof jacket over their damp shirt and keep walking briskly downhill toward Charlotte Pass.",
+                            pts: 2,
+                            fb: "Descending to warmer elevation helps, but leaving a damp inner layer against the skin continues drawing heat away from their core.",
+                            insight: "Always swap wet base layers for dry wool or synthetic clothes before adding outer shells."
+                        },
+                        {
+                            text: "Tell them to do 50 star-jumps in the cold wind to get their blood pumping.",
+                            pts: 1,
+                            fb: "Vigorous exercise forces cold blood from the arms and legs back to the heart ('afterdrop') and exhausts critical energy reserves.",
+                            insight: "Gentle rewarming and dry insulation are far safer than sudden intense exercise."
+                        },
+                        {
+                            text: "Rub their cold hands and cheeks vigorously with snow to stimulate circulation.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Harmful myth! Rubbing cold or frostnipped skin with snow damages fragile tissue and accelerates heat loss.",
+                            insight: "Warm cold extremities gently using dry layers or tucked inside warm armpits."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Mount Kosciuszko Raised Steel Mesh Boardwalk",
+                    title: "Decision 8: Protecting Fragile Alpine Feldmark & Wildlife",
+                    text: "Along the raised steel mesh walkway near Mount Kosciuszko, you see hikers stepping off the boardwalk onto delicate flowering alpine cushion plants while tossing sandwich crusts toward rocky Mountain Pygmy-possum habitat.",
+                    choices: [
+                        {
+                            text: "Politely explain that the raised walkway protects rare alpine plants that take decades to recover from a single footprint, and that food scraps attract predators.",
+                            pts: 3,
+                            fb: "Outstanding conservation leadership! Kosciuszko's alpine feldmark plants grow only millimeters per year, and discarded food attracts foxes and ravens that prey on endangered Mountain Pygmy-possums.",
+                            insight: "The raised steel boardwalk was built specifically to prevent soil erosion and protect endemic alpine wildflowers."
+                        },
+                        {
+                            text: "Stay strictly on the steel walkway yourself and continue toward the lookout without saying anything.",
+                            pts: 2,
+                            fb: "Following the rules yourself is great, though a friendly word often stops visitors who simply didn't know why the mesh walkway is elevated.",
+                            insight: "Over 100,000 visitors walk the Kosciuszko summit track each year—staying on the path keeps the alpine ecosystem intact."
+                        },
+                        {
+                            text: "Take photos of their footprints in the cushion plants to post angrily on social media.",
+                            pts: 1,
+                            fb: "Online outrage doesn't stop further trampling right now. Polite, real-time education protects the plants immediately.",
+                            insight: "Calm explanation works wonders when visitors understand how fragile alpine tundra really is."
+                        },
+                        {
+                            text: "Step off the boardwalk yourself onto the wildflowers to take a better group selfie.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Stop! Stepping off the raised walkway crushes rare endemic alpine plants and triggers severe wind erosion.",
+                            insight: "Always stay on formed tracks and raised boardwalks in the Kosciuszko alpine zone."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Summit Track Descent Toward Charlotte Pass",
+                    title: "Decision 9: Knee Strain on the 9km Descent",
+                    text: "You have 4km of downhill gravel track left to Charlotte Pass. Your knees are aching from the long descent and a brisk afternoon headwind is blowing.",
+                    choices: [
+                        {
+                            text: "Take a 10-minute rest in a wind-sheltered dip, lengthen your trekking poles slightly for downhill stability, and walk with short, controlled steps.",
+                            pts: 3,
+                            fb: "Pro alpine technique! Lengthening poles by 5cm for descents absorbs shock before it hits your knees, and short steps prevent slips on loose granite gravel.",
+                            insight: "Downhill walking places up to 3x your body weight on knee joints—poles and short steps protect them."
+                        },
+                        {
+                            text: "Jog quickly down the gravel road to finish before the wind gets colder.",
+                            pts: 2,
+                            fb: "You lose elevation quickly, but jogging with a heavy pack on loose granite gravel risks a painful ankle roll.",
+                            insight: "Keep your center of gravity balanced over your feet on steep alpine gravel."
+                        },
+                        {
+                            text: "Hide your extra fuel canister and spare fleece behind a granite boulder to lighten your pack.",
+                            pts: 1,
+                            fb: "Leaving gear in the alpine zone is littering and leaves you unprepared if a sudden weather shift occurs in the final kilometer.",
+                            insight: "Carry every item all the way back to the trailhead."
+                        },
+                        {
+                            text: "Sit beside the road and activate your emergency PLB rescue beacon for a ride to Charlotte Pass.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Incorrect! Sore knees on a formed track are not a life-threatening emergency—save rescue beacons for real crises.",
+                            insight: "False PLB activations divert Alpine Rescue teams from true emergencies."
+                        }
+                    ]
+                },
+                {
+                    landmark: "📍 Charlotte Pass Trailhead & NPWS Log",
+                    title: "Decision 10: Safe Return from the Roof of Australia",
+                    text: "You reach the Charlotte Pass trailhead! The Snowy Mountains stand gleaming behind you. What is your final action to complete your alpine expedition?",
+                    choices: [
+                        {
+                            text: "Sign off your safe return on your NPWS trip intention, brush alpine soil from your boots, and pack out all rubbish and micro-litter.",
+                            pts: 3,
+                            fb: "World-class finish! Logging your safe return closes the safety loop, and boot cleaning prevents invasive lowland weeds from spreading into the alpine zone.",
+                            insight: "Alpine ecosystems are highly vulnerable to invasive seeds carried on muddy hiking boots."
+                        },
+                        {
+                            text: "Drive down to Jindabyne for a warm meal and message your emergency contact once you arrive in town.",
+                            pts: 2,
+                            fb: "A warm meal in Jindabyne is well earned—just send your safe-return text as soon as you get mobile reception near Perisher or Jindabyne.",
+                            insight: "Mobile reception is patchy at Charlotte Pass; let your safety contact know where your first reception point will be."
+                        },
+                        {
+                            text: "Throw your worn wool socks in the car park bin and drive straight home.",
+                            pts: 1,
+                            fb: "You completed the trek safely, though good merino socks can be washed and reused for many more mountain adventures.",
+                            insight: "Inspect and dry your alpine tent and sleeping bag as soon as you get home to prevent mildew."
+                        },
+                        {
+                            text: "Leave your empty food packets and orange peels beside the Charlotte Pass snow pole.",
+                            pts: -1,
+                            retry: true,
+                            fb: "Never leave rubbish or food scraps in the alpine zone! Freezing temperatures stop organic matter from decomposing for years.",
+                            insight: "Even fruit peels take years to break down in cold alpine climates—pack everything out."
+                        }
+                    ]
+                }
+            ]
+        }
+    };
+
+    // ==========================================
+    // 3. GAME STATE & NAVIGATION LOGIC
+    // ==========================================
+    let score = 0;
+    let selectedParkKey = null;
+    let currentStep = 0;
+    let stepResolved = false;
+    let expeditionCompleted = false;
+    let expeditionFailed = false;
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+        document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+        document.getElementById(`panel-${tabName}`).classList.add('active');
+    }
+
+    function updateScoreUI() {
+        document.getElementById('score').textContent = score;
+    }
+
+    function selectPark(parkKey) {
+        selectedParkKey = parkKey;
+        score = 0;
+        currentStep = 0;
+        stepResolved = false;
+        expeditionCompleted = false;
+        expeditionFailed = false;
+
+        updateScoreUI();
+        const park = PARK_CAMPAIGNS[parkKey];
+        document.getElementById('hud-park-name').textContent = park.shortName;
+
+        document.getElementById('park-selector-view').style.display = 'none';
+        document.getElementById('active-trek-view').style.display = 'block';
+        document.getElementById('main-ui').style.display = 'block';
+        document.getElementById('death-area').style.display = 'none';
+
+        renderStage();
+    }
+
+    function resetToParkSelector() {
+        score = 0;
+        selectedParkKey = null;
+        currentStep = 0;
+        expeditionCompleted = false;
+        expeditionFailed = false;
+        updateScoreUI();
+        document.getElementById('hud-park-name').textContent = 'Not Selected';
+        document.getElementById('park-selector-view').style.display = 'block';
+        document.getElementById('active-trek-view').style.display = 'none';
+    }
+
+    function renderStage() {
+        const park = PARK_CAMPAIGNS[selectedParkKey];
+        const totalStages = park.stages.length;
+
+        if (currentStep >= totalStages) {
+            completeExpedition();
+            return;
+        }
+
+        stepResolved = false;
+        const stage = park.stages[currentStep];
+
+        // Progress UI
+        document.getElementById('step-label').textContent = `${park.shortName} — Stage ${currentStep + 1} of ${totalStages}`;
+        document.getElementById('progress-fill').style.width = `${(currentStep / totalStages) * 100}%`;
+
+        // Badges & Title
+        const badgeArea = document.getElementById('stage-badge-area');
+        const sceneDesc = document.getElementById('scene-desc');
+
+        if (stage.emergency) {
+            badgeArea.innerHTML = `<div class="emergency-banner">🚨 LIFE-OR-DEATH WILDERNESS EMERGENCY (${stage.landmark})</div>`;
+            sceneDesc.className = 'scene-text emergency-scene';
+        } else {
+            badgeArea.innerHTML = `<div class="landmark-banner">${stage.landmark}</div>`;
+            sceneDesc.className = 'scene-text';
+        }
+
+        document.getElementById('scene-title').textContent = stage.title;
+        sceneDesc.textContent = stage.text;
+
+        // Reset Feedback Card
+        const fbCard = document.getElementById('feedback-card');
+        fbCard.style.display = 'none';
+        fbCard.className = 'feedback-card';
+
+        // Render Shuffled Choices
         const area = document.getElementById('choices-area');
         area.innerHTML = '';
 
-        let shuffled = [...stage.choices].sort(() => Math.random() - 0.5);
+        const shuffled = [...stage.choices].sort(() => Math.random() - 0.5);
+        const letters = ['A', 'B', 'C', 'D'];
 
-        shuffled.forEach(c => {
+        shuffled.forEach((choice, idx) => {
             const btn = document.createElement('button');
+            btn.type = 'button';
             btn.className = 'choice-btn';
-            btn.innerText = c.text;
-            btn.onclick = () => handleChoice(c);
+            btn.innerHTML = `
+                <span class="choice-letter">${letters[idx]}</span>
+                <span>${choice.text}</span>
+            `;
+            btn.onclick = () => handleChoice(choice, btn);
             area.appendChild(btn);
         });
     }
 
-    function handleChoice(c) {
-        if (c.retry) {
+    function handleChoice(choice, btnEl) {
+        if (stepResolved) return;
+
+        // 1. Fatal Emergency Choice
+        if (choice.death) {
+            expeditionFailed = true;
+            document.getElementById('main-ui').style.display = 'none';
+            const deathArea = document.getElementById('death-area');
+            deathArea.style.display = 'block';
+            deathArea.innerHTML = `
+                <div class="death-box">
+                    <h2>💀 EXPEDITION TERMINATED</h2>
+                    <p style="font-size:1.1rem; line-height:1.65; color:#ffeceb;">${choice.death}</p>
+                    <div class="cta-row" style="justify-content:center; margin-top:20px;">
+                        <button class="primary-btn" onclick="selectPark('${selectedParkKey}')">↺ Retry ${PARK_CAMPAIGNS[selectedParkKey].name}</button>
+                        <button class="secondary-btn" onclick="resetToParkSelector()">🗺️ Choose Another National Park</button>
+                    </div>
+                </div>
+            `;
+            renderFailedReport(choice.death);
+            return;
+        }
+
+        const fbCard = document.getElementById('feedback-card');
+        const fbTitle = document.getElementById('fb-title');
+        const fbPoints = document.getElementById('fb-points');
+        const fbText = document.getElementById('fb-text');
+        const fbInsight = document.getElementById('fb-insight');
+        const continueBtn = document.getElementById('continue-btn');
+
+        fbCard.style.display = 'block';
+
+        // 2. Dangerous (-1) Choice -> Inline Warning + Force Re-selection
+        if (choice.retry) {
             score -= 1;
-            updateScore();
-            alert("⚠️ " + c.fb);
+            updateScoreUI();
+
+            btnEl.disabled = true;
+            btnEl.classList.add('eliminated-choice');
+
+            fbCard.className = 'feedback-card fb-retry';
+            fbTitle.style.color = '#ff8a80';
+            fbTitle.textContent = '⚠️ Unsafe Bushcraft Decision — Reconsider Your Choice!';
+            fbPoints.textContent = '-1 Point (Select a safer option above)';
+            fbText.textContent = choice.fb;
+            fbInsight.innerHTML = `<strong>🧭 Bushcraft & Park Insight:</strong> ${choice.insight}`;
+            continueBtn.style.display = 'none';
             return;
         }
 
-        if (c.death) {
-            document.getElementById('main-ui').innerHTML = `<div class="death">💀 EXPEDITION TERMINATED<br><br>${c.death}</div><button class="choice-btn" onclick="location.reload()" style="text-align:center">Restart from the Trailhead</button>`;
-            return;
-        }
+        // 3. Valid Choice (+3, +2, or +1)
+        stepResolved = true;
+        score += choice.pts;
+        updateScoreUI();
 
-        score += c.pts;
-        updateScore();
-        
-        document.getElementById('main-ui').style.display = "none";
-        document.getElementById('feedback-screen').style.display = "block";
-        document.getElementById('fb-text').innerText = c.fb;
-        document.getElementById('fb-points').innerText = c.pts > 0 ? `+${c.pts} Points` : "Adventure Starts Now!";
-        
-        document.getElementById('continue-btn').onclick = () => {
-            step++;
-            renderNode();
-        };
-    }
+        document.querySelectorAll('#choices-area .choice-btn').forEach(b => {
+            b.disabled = true;
+        });
 
-    function updateScore() {
-        document.getElementById('score').innerText = score;
-    }
-
-    function showFinal() {
-        document.getElementById('main-ui').style.display = "none";
-        document.getElementById('feedback-screen').style.display = "block";
-        document.getElementById('continue-btn').style.display = "none";
-        
-        let msg = "";
-        if (score >= 30) {
-            msg = `Incredible performance! With ${score} points, you are a Master of the NSW Bush. You navigated through emergencies and difficult choices with the wisdom of a professional ranger. Your respect for nature and safety is outstanding. You are fully prepared for any adventure the Australian wilderness can offer. Truly world-class!`;
-        } else if (score >= 18) {
-            msg = `Well done! You finished with ${score} points, showing you are a steady and capable hiker. You understood the core concepts of bush safety and successfully managed two major emergencies. With a little more focus on packing and environment details, you'll be a pro in no time. A very successful expedition!`;
+        if (choice.pts === 3) {
+            btnEl.classList.add('chosen-best');
+            fbCard.className = 'feedback-card fb-best';
+            fbTitle.style.color = '#2ecc71';
+            fbTitle.textContent = '🌟 Expert Bushcraft Choice!';
+        } else if (choice.pts === 2) {
+            btnEl.classList.add('chosen-ok');
+            fbCard.className = 'feedback-card fb-good';
+            fbTitle.style.color = '#a3c585';
+            fbTitle.textContent = '✅ Solid Field Decision';
         } else {
-            msg = `You survived the trip with ${score} points, but it was a rocky journey. You made it back to the car, but several of your decisions put you or the environment at risk. The Australian bush is a wonderful place, but it requires more study and preparation. Review the feedback and try again to improve!`;
+            btnEl.classList.add('chosen-ok');
+            fbCard.className = 'feedback-card fb-fair';
+            fbTitle.style.color = '#f39c12';
+            fbTitle.textContent = '⚡ Risky / Suboptimal Choice';
         }
-        
-        document.getElementById('fb-title').innerText = "Final Expedition Report";
-        document.getElementById('fb-text').innerHTML = `<div style="font-style:normal; color:white; font-size:1.1em;">${msg}</div>`;
-        document.getElementById('fb-points').innerHTML = `Final Score: ${score}/36<br><button class="choice-btn" onclick="location.reload()" style="text-align:center">Start a New Trip</button>`;
+
+        fbPoints.textContent = `+${choice.pts} Point${choice.pts > 1 ? 's' : ''}`;
+        fbText.textContent = choice.fb;
+        fbInsight.innerHTML = `<strong>🧭 Bushcraft & Park Insight:</strong> ${choice.insight}`;
+        continueBtn.style.display = 'block';
+        continueBtn.textContent = (currentStep === PARK_CAMPAIGNS[selectedParkKey].stages.length - 1)
+            ? 'Finish Trek & View Expedition Report 🏆'
+            : 'Step Forward Along the Track ➔';
     }
 
-    renderNode();
+    function advanceStep() {
+        currentStep++;
+        renderStage();
+    }
+
+    function renderFailedReport(deathText) {
+        const park = PARK_CAMPAIGNS[selectedParkKey];
+        document.getElementById('report-content').innerHTML = `
+            <div class="death-box">
+                <h2>💀 Rescue Report: ${park.name}</h2>
+                <p style="line-height:1.6;">${deathText}</p>
+                <p style="color:var(--gold); font-weight:bold;">Score at Time of Incident: ${score} / 36</p>
+                <div class="cta-row" style="justify-content:center;">
+                    <button class="primary-btn" onclick="switchTab('trek'); selectPark('${selectedParkKey}')">↺ Try ${park.shortName} Again</button>
+                    <button class="secondary-btn" onclick="switchTab('trek'); resetToParkSelector()">🗺️ Explore Another Park</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function completeExpedition() {
+        expeditionCompleted = true;
+        document.getElementById('progress-fill').style.width = '100%';
+        const park = PARK_CAMPAIGNS[selectedParkKey];
+
+        let rankTitle = '';
+        let rankMsg = '';
+
+        if (score >= 30) {
+            rankTitle = '🏆 Master NSW National Parks Ranger';
+            rankMsg = `Extraordinary performance in ${park.name}! With ${score} out of 36 points, you handled every location-specific terrain challenge, wildlife encounter, and sudden weather emergency with textbook Australian bushcraft.`;
+        } else if (score >= 20) {
+            rankTitle = '🥾 Experienced Australian Bushwalker';
+            rankMsg = `Well done! You completed the ${park.name} trek with ${score} out of 36 points. You showed strong outdoor awareness and survived both major emergencies, with just a few minor packing or pacing improvements to master.`;
+        } else {
+            rankTitle = '🧭 Apprentice Trail Walker';
+            rankMsg = `You made it back to the ${park.name} trailhead with ${score} out of 36 points, though several risky choices cost you valuable points along the way. Review the Bushcraft Insights and try another NSW National Park to sharpen your skills!`;
+        }
+
+        document.getElementById('report-content').innerHTML = `
+            <div class="report-card">
+                <div class="rank-pill">${rankTitle}</div>
+                <h2 style="color:var(--leaf); margin:0 0 10px 0;">${park.icon} ${park.name} — Complete!</h2>
+                <p style="color:var(--stone); line-height:1.6; max-width:650px; margin:0 auto 14px auto;">
+                    ${park.summary}
+                </p>
+                <p style="color:var(--muted); line-height:1.6; max-width:650px; margin:0 auto;">
+                    ${rankMsg}
+                </p>
+
+                <div class="report-stats">
+                    <div class="stat-tile">
+                        <span>Final Score</span>
+                        <strong>${score} / 36 pts</strong>
+                    </div>
+                    <div class="stat-tile">
+                        <span>Stages Completed</span>
+                        <strong>12 / 12</strong>
+                    </div>
+                    <div class="stat-tile">
+                        <span>Park Mastered</span>
+                        <strong>${park.shortName}</strong>
+                    </div>
+                </div>
+
+                <div class="cta-row">
+                    <button class="primary-btn" onclick="switchTab('trek'); resetToParkSelector()">🗺️ Trek a Different NSW National Park</button>
+                    <button class="secondary-btn" onclick="switchTab('trek'); selectPark('${selectedParkKey}')">↺ Replay ${park.shortName}</button>
+                </div>
+            </div>
+        `;
+
+        switchTab('report');
+    }
+
+    // Initialize Vocabulary Warm-Up on Load
+    initVocab();
 </script>
 
 </body>

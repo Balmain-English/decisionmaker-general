@@ -1,377 +1,1881 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Village Kick-Off — Excellence Edition</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Village Kick-Off — Excellence Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
-        :root {
-            --pitch-green: #2d5a27;
-            --grass-light: #3a7532;
-            --line-white: #ffffff;
-            --card-yellow: #f1c40f;
-            --gold: #d4af37;
-            --dark: #1a1a1a;
-            --text: #f0f0f0;
-            --danger: #e74c3c;
-            --r: 12px;
-        }
+  :root {
+    --pitch-green: #2d5a27;
+    --grass-light: #3a7532;
+    --line-white: #ffffff;
+    --card-yellow: #f1c40f;
+    --gold: #d4af37;
+    --dark: #1a1a1a;
+    --text: #f0f0f0;
+    --danger: #e74c3c;
+    --r: 12px;
+  }
 
-        body {
-            font-family: 'Source Sans 3', Arial, sans-serif;
-            background-color: var(--dark);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
+  * {
+    box-sizing: border-box;
+  }
 
-        #game-container {
-            width: 100%;
-            max-width: 800px;
-            background: var(--pitch-green);
-            border: 4px solid var(--line-white);
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            background-image: linear-gradient(90deg, transparent 50%, rgba(255,255,255,0.05) 50%);
-            background-size: 100px 100%;
-        }
+  body {
+    font-family: 'Source Sans 3', Arial, sans-serif;
+    background-color: var(--dark);
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 14px 40px;
+    line-height: 1.55;
+  }
 
-        h1 {
-            font-family: 'Bangers', cursive;
-            font-size: clamp(2rem, 8vw, 3.5rem);
-            text-align: center;
-            color: var(--line-white);
-            text-shadow: 3px 3px 0px var(--dark);
-            margin-top: 0;
-        }
+  /* =========================================================
+     MAIN FOOTBALL PITCH CONTAINER
+     ========================================================= */
+  #game-container {
+    width: 100%;
+    max-width: 840px;
+    background-color: var(--pitch-green);
+    background-image: linear-gradient(90deg, transparent 50%, rgba(255, 255, 255, 0.05) 50%);
+    background-size: 100px 100%;
+    border: 4px solid var(--line-white);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+    position: relative;
+    overflow: hidden;
+  }
 
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(0,0,0,0.4);
-            padding: 0.7rem 1rem;
-            border-radius: 5px;
-            margin-bottom: 1.5rem;
-            font-weight: bold;
-            border-bottom: 2px solid var(--line-white);
-        }
+  /* Subtle pitch center-circle watermark accent */
+  #game-container::before {
+    content: "";
+    position: absolute;
+    top: -90px;
+    right: -90px;
+    width: 240px;
+    height: 240px;
+    border: 3px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    pointer-events: none;
+  }
 
-        .vocab-strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 1rem;
-        }
+  h1, h2.display-heading {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 1.5px;
+    color: var(--line-white);
+    text-shadow: 3px 3px 0px var(--dark);
+    margin-top: 0;
+  }
 
-        .vpill {
-            font-size: 11px;
-            background: rgba(255,255,255,0.2);
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 1px solid var(--line-white);
-        }
+  h1 {
+    font-size: clamp(2.2rem, 7vw, 3.6rem);
+    text-align: center;
+    margin-bottom: 0.4rem;
+    line-height: 1.1;
+  }
 
-        .question-box {
-            background: rgba(255,255,255,0.1);
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            font-size: 1.2rem;
-            border-left: 6px solid var(--card-yellow);
-        }
+  /* =========================================================
+     1. LANDING PAGE (#landingPage)
+     ========================================================= */
+  #landingPage {
+    display: block;
+    text-align: center;
+  }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
+  .edition-badge {
+    display: inline-block;
+    background: var(--dark);
+    color: var(--card-yellow);
+    border: 2px solid var(--card-yellow);
+    padding: 5px 16px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
 
-        .opt-btn {
-            background: var(--line-white);
-            color: var(--pitch-green);
-            border: none;
-            padding: 1rem;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s ease;
-            text-align: left;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+  .subtitle-banner {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--card-yellow);
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    margin-bottom: 18px;
+    text-shadow: 1px 1px 0 var(--dark);
+  }
 
-        .opt-btn:hover:not(:disabled) {
-            background: var(--card-yellow);
-            transform: translateX(5px);
-        }
+  .briefing-box {
+    background: rgba(26, 26, 26, 0.72);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-left: 6px solid var(--card-yellow);
+    border-radius: var(--r);
+    padding: 1.35rem 1.5rem;
+    text-align: left;
+    margin-bottom: 1.6rem;
+    font-size: 1.08rem;
+    color: var(--text);
+  }
 
-        .opt-letter {
-            background: var(--pitch-green);
-            color: white;
-            width: 25px;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
+  .briefing-box strong {
+    color: var(--card-yellow);
+  }
 
-        .feedback {
-            display: none;
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            border-radius: 8px;
-            background: var(--dark);
-            border: 2px solid var(--gold);
-        }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 1.8rem;
+    text-align: left;
+  }
 
-        .fb-bad { border-color: var(--danger); color: #ff9999; }
+  .feature-card {
+    background: rgba(26, 26, 26, 0.65);
+    border: 2px solid rgba(255, 255, 255, 0.28);
+    border-top: 5px solid var(--card-yellow);
+    border-radius: var(--r);
+    padding: 1.15rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
 
-        .next-btn {
-            width: 100%;
-            margin-top: 15px;
-            padding: 12px;
-            background: var(--gold);
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+  .feature-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--card-yellow);
+  }
 
-        #result-screen { display: none; text-align: center; }
-    </style>
+  .feature-card h3 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--card-yellow);
+  }
+
+  .feature-card p {
+    margin: 0;
+    font-size: 0.94rem;
+    color: var(--text);
+  }
+
+  .landing-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-pitch-yellow {
+    width: 100%;
+    background: var(--card-yellow);
+    color: var(--dark);
+    border: 3px solid var(--dark);
+    padding: 1rem 1.4rem;
+    border-radius: 10px;
+    font-family: 'Source Sans 3', Arial, sans-serif;
+    font-size: 1.12rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--dark);
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+
+  .btn-pitch-yellow:hover {
+    background: #ffe047;
+    transform: translateY(-2px);
+  }
+
+  .btn-pitch-white {
+    width: 100%;
+    background: var(--line-white);
+    color: var(--pitch-green);
+    border: 3px solid var(--line-white);
+    padding: 0.95rem 1.4rem;
+    border-radius: 10px;
+    font-family: 'Source Sans 3', Arial, sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-pitch-white:hover {
+    background: var(--card-yellow);
+    border-color: var(--card-yellow);
+    color: var(--dark);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================
+     SHARED TOP NAVIGATION STRIP
+     ========================================================= */
+  .top-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .nav-pill-btn {
+    background: var(--dark);
+    color: var(--line-white);
+    border: 2px solid var(--line-white);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .nav-pill-btn:hover {
+    background: var(--card-yellow);
+    color: var(--dark);
+    border-color: var(--card-yellow);
+  }
+
+  .section-kicker {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--card-yellow);
+  }
+
+  /* =========================================================
+     2. INTERACTIVE WARMER PAGE (#warmerPage)
+     ========================================================= */
+  #warmerPage {
+    display: none;
+  }
+
+  .warmer-section {
+    background: rgba(26, 26, 26, 0.72);
+    border: 2px solid rgba(255, 255, 255, 0.28);
+    border-left: 6px solid var(--card-yellow);
+    border-radius: var(--r);
+    padding: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .warmer-section h2 {
+    margin: 0 0 6px;
+    font-size: 1.45rem;
+    color: var(--card-yellow);
+  }
+
+  .warmer-lead {
+    margin: 0 0 1.1rem;
+    color: #e2e8f0;
+    font-size: 0.98rem;
+  }
+
+  .discussion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 1.2rem;
+  }
+
+  .prompt-card {
+    background: rgba(45, 90, 39, 0.75);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .prompt-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--card-yellow);
+    margin-bottom: 4px;
+  }
+
+  .prompt-card p {
+    margin: 0;
+    font-size: 0.97rem;
+    color: var(--line-white);
+  }
+
+  .phrases-helper {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1.5px dashed var(--gold);
+    border-radius: 10px;
+    padding: 1rem 1.15rem;
+  }
+
+  .phrases-helper h3 {
+    margin: 0 0 8px;
+    font-size: 0.98rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .phrases-list {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 6px 18px;
+  }
+
+  .phrases-list li {
+    font-size: 0.94rem;
+    color: #f8fafc;
+  }
+
+  .phrases-list li em {
+    color: var(--card-yellow);
+    font-weight: 700;
+  }
+
+  /* Clickable Tactical Word Bank */
+  .word-bank-box {
+    background: rgba(0, 0, 0, 0.45);
+    border: 2px dashed var(--card-yellow);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .word-bank-title {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--card-yellow);
+    margin-bottom: 10px;
+  }
+
+  .word-bank-hint {
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #cbd5e1;
+  }
+
+  .word-bank-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .bank-chip {
+    background: var(--line-white);
+    color: var(--pitch-green);
+    border: 2px solid var(--line-white);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .bank-chip:hover {
+    background: var(--card-yellow);
+    border-color: var(--card-yellow);
+    color: var(--dark);
+    transform: translateY(-1px);
+  }
+
+  .bank-chip.selected-chip {
+    background: var(--card-yellow);
+    border-color: var(--dark);
+    color: var(--dark);
+    box-shadow: 0 0 0 3px var(--card-yellow);
+    transform: scale(1.04);
+  }
+
+  .bank-chip.used-chip {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #cbd5e1;
+    text-decoration: line-through;
+  }
+
+  .bank-chip.used-chip.selected-chip {
+    text-decoration: none;
+    background: var(--card-yellow);
+    color: var(--dark);
+  }
+
+  /* 8 Definition Cards */
+  .vocab-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .vocab-card {
+    background: rgba(45, 90, 39, 0.72);
+    border: 2px solid rgba(255, 255, 255, 0.28);
+    border-radius: 10px;
+    padding: 0.95rem 1rem;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .vocab-card.card-correct {
+    border-color: #2ecc71;
+    background: rgba(39, 174, 96, 0.26);
+  }
+
+  .vocab-card.card-wrong {
+    border-color: var(--danger);
+    background: rgba(231, 76, 60, 0.24);
+  }
+
+  .vocab-card-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .vocab-def {
+    flex: 1 1 320px;
+    font-size: 0.97rem;
+    color: var(--line-white);
+  }
+
+  .vocab-idx {
+    font-weight: 800;
+    color: var(--card-yellow);
+    margin-right: 6px;
+  }
+
+  .vocab-select {
+    flex: 0 1 215px;
+    min-width: 190px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 2px solid var(--line-white);
+    background: var(--line-white);
+    color: var(--pitch-green);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .vocab-select:focus {
+    outline: none;
+    border-color: var(--card-yellow);
+    background: #fffdf2;
+  }
+
+  .vocab-item-fb {
+    display: none;
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.3);
+    font-size: 0.92rem;
+  }
+
+  .vocab-actions-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1.25rem;
+  }
+
+  .btn-check-vocab {
+    background: var(--card-yellow);
+    color: var(--dark);
+    border: 2px solid var(--dark);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 0.96rem;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+
+  .btn-check-vocab:hover {
+    background: #ffe047;
+  }
+
+  .btn-reset-vocab {
+    background: transparent;
+    color: var(--line-white);
+    border: 2px solid var(--line-white);
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.94rem;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+
+  .btn-reset-vocab:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .vocab-score-badge {
+    margin-left: auto;
+    background: var(--dark);
+    border: 2px solid var(--gold);
+    color: var(--card-yellow);
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.95rem;
+  }
+
+  /* =========================================================
+     3. EXPANDED GAMEPLAY (#game-play)
+     ========================================================= */
+  #game-play {
+    display: none;
+  }
+
+  .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 0.8rem 1.1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    border-bottom: 2px solid var(--line-white);
+  }
+
+  .pitch-progress-wrap {
+    flex: 1;
+    min-width: 120px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1.5px solid var(--line-white);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .pitch-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--card-yellow), var(--gold));
+    transition: width 0.4s ease;
+  }
+
+  .vocab-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 1.1rem;
+  }
+
+  .vocab-strip-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--card-yellow);
+    margin-right: 4px;
+  }
+
+  .vpill {
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--line-white);
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line-white);
+  }
+
+  .question-box {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 1.4rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.4rem;
+    font-size: 1.22rem;
+    font-weight: 700;
+    border-left: 6px solid var(--card-yellow);
+    transition: all 0.25s ease;
+  }
+
+  .question-box.emergency-question {
+    background: rgba(26, 26, 26, 0.85);
+    border: 2px solid var(--danger);
+    border-left: 8px solid var(--danger);
+    color: #ffeaa7;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .opt-btn {
+    background: var(--line-white);
+    color: var(--pitch-green);
+    border: 2px solid var(--line-white);
+    padding: 1rem 1.1rem;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1.02rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    text-align: left;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .opt-btn:hover:not(:disabled) {
+    background: var(--card-yellow);
+    border-color: var(--card-yellow);
+    color: var(--dark);
+    transform: translateX(5px);
+  }
+
+  .opt-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
+
+  .opt-btn.opt-chosen {
+    opacity: 1 !important;
+    background: var(--card-yellow);
+    border-color: var(--dark);
+    color: var(--dark);
+    box-shadow: 0 0 0 3px var(--line-white);
+  }
+
+  .opt-btn.opt-blunder {
+    opacity: 0.72 !important;
+    background: #2c1515 !important;
+    border-color: var(--danger) !important;
+    color: #ff9999 !important;
+    text-decoration: line-through;
+  }
+
+  .opt-btn.opt-blunder .opt-letter {
+    background: var(--danger);
+    color: var(--line-white);
+  }
+
+  .opt-letter {
+    background: var(--pitch-green);
+    color: var(--line-white);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+    font-weight: 800;
+    font-size: 0.9rem;
+  }
+
+  .opt-btn:hover:not(:disabled) .opt-letter,
+  .opt-btn.opt-chosen .opt-letter {
+    background: var(--dark);
+    color: var(--card-yellow);
+  }
+
+  /* Expanded Dark Scoreboard Feedback Panel */
+  .feedback {
+    display: none;
+    margin-top: 1.4rem;
+    padding: 1.4rem 1.5rem;
+    border-radius: 10px;
+    background: var(--dark);
+    border: 2px solid var(--gold);
+    color: var(--text);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  }
+
+  .feedback.fb-bad {
+    border-color: var(--danger);
+  }
+
+  .fb-badge {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.88rem;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+    background: rgba(212, 175, 55, 0.2);
+    color: var(--card-yellow);
+    border: 1px solid var(--gold);
+  }
+
+  .feedback.fb-bad .fb-badge {
+    background: rgba(231, 76, 60, 0.22);
+    color: #ff9999;
+    border-color: var(--danger);
+  }
+
+  .fb-narrative {
+    margin: 0 0 12px;
+    font-size: 1.03rem;
+    line-height: 1.6;
+  }
+
+  .director-insight {
+    background: rgba(255, 255, 255, 0.07);
+    border-left: 4px solid var(--card-yellow);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    font-size: 0.96rem;
+    color: #e2e8f0;
+  }
+
+  .feedback.fb-bad .director-insight {
+    border-left-color: var(--danger);
+  }
+
+  .director-insight strong {
+    color: var(--card-yellow);
+  }
+
+  .feedback.fb-bad .director-insight strong {
+    color: #ff9999;
+  }
+
+  .next-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 13px 18px;
+    background: var(--gold);
+    color: var(--dark);
+    border: 2px solid var(--line-white);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .next-btn:hover {
+    background: var(--card-yellow);
+    transform: translateY(-1px);
+  }
+
+  /* =========================================================
+     4. FINAL TROPHY SCREEN (#result-screen)
+     ========================================================= */
+  #result-screen {
+    display: none;
+    text-align: center;
+  }
+
+  .trophy-badge {
+    display: inline-block;
+    background: var(--dark);
+    border: 2px solid var(--gold);
+    color: var(--card-yellow);
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .trophy-badge.red-card-badge {
+    border-color: var(--danger);
+    color: #ff9999;
+  }
+
+  .result-summary-card {
+    background: rgba(26, 26, 26, 0.78);
+    border: 2px solid var(--gold);
+    border-radius: var(--r);
+    padding: 1.4rem;
+    margin: 1.2rem 0 1.6rem;
+  }
+
+  .result-summary-card.red-card-panel {
+    border-color: var(--danger);
+  }
+
+  .score-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .breakdown-pill {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.98rem;
+    color: var(--card-yellow);
+  }
+
+  .result-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) {
+    #game-container {
+      padding: 1.25rem;
+    }
+    .result-actions {
+      grid-template-columns: 1fr;
+    }
+    .vocab-score-badge {
+      margin-left: 0;
+      width: 100%;
+      text-align: center;
+    }
+    .vocab-select {
+      width: 100%;
+      flex: 1 1 100%;
+    }
+  }
+</style>
 </head>
 <body>
 
 <div id="game-container">
-    <div id="start-screen">
-        <h1>THE VILLAGE KICK-OFF</h1>
-        <p style="text-align: center; font-size: 1.1rem; margin-bottom: 20px;">Manage the community sports tournament. Every choice matters. Max score: 30.</p>
-        <button class="opt-btn" style="justify-content: center; width: 100%;" onclick="startGame()">START TOURNAMENT</button>
+
+  <!-- =========================================================
+       1. LANDING PAGE (#landingPage)
+       ========================================================= -->
+  <section id="landingPage">
+    <div class="edition-badge">⚽ ESL Sports Management Edition</div>
+    <h1>THE VILLAGE KICK-OFF</h1>
+    <div class="subtitle-banner">Excellence Edition • Community Football Tournament</div>
+
+    <div class="briefing-box">
+      <strong>Welcome to the Touchline, Director!</strong><br>
+      The Village Council has just appointed <strong>YOU</strong> as the new <strong>Village Tournament Director</strong> for Greenmeadow's annual football festival. From setting your initial budget and choosing pitch amenities to handling touchline etiquette and sudden weather emergencies, every decision shapes the tournament's success. Can you reach the <strong>30-point Budget Target</strong> and lift the community trophy?
     </div>
 
-    <div id="game-play" style="display:none;">
-        <div class="stats-bar">
-            <span>Phase: <span id="stat-phase">1</span>/8</span>
-            <span id="stat-score">Budget Pts: 0 / 30</span>
-        </div>
-        <div class="vocab-strip" id="vocab"></div>
-        <div class="question-box" id="question"></div>
-        <div id="options" class="options-grid"></div>
-        
-        <div class="feedback" id="feedback">
-            <div id="fb-pts" style="font-weight: bold; margin-bottom: 5px; font-size: 0.9rem;"></div>
-            <p id="fb-text"></p>
-            <button class="next-btn" id="next-btn" onclick="nextStep()">CONTINUE →</button>
-        </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>1. Pre-Match Warm-Up &amp; Vocab</h3>
+        <p>Warm up with 4 team-talk speaking prompts and an interactive 8-word tactical vocabulary match-up.</p>
+      </div>
+      <div class="feature-card">
+        <h3>2. 10 Matchday Phases + 2 Sudden-Death Emergencies</h3>
+        <p>Navigate 10 chronological tournament phases plus 2 high-stakes emergencies with Director's Insights on every choice.</p>
+      </div>
+      <div class="feature-card">
+        <h3>3. Budget Points &amp; Manager Rank</h3>
+        <p>Earn up to 30 Budget Points, avoid costly blunders, and earn your official Village Manager Rank.</p>
+      </div>
     </div>
 
-    <div id="result-screen">
-        <h1 id="res-title"></h1>
-        <p id="res-desc" style="font-size: 1.2rem; margin-bottom: 20px;"></p>
-        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-            <span id="math-box"></span>
-        </div>
-        <button class="opt-btn" style="justify-content: center; width: 100%;" onclick="location.reload()">RESTART</button>
+    <div class="landing-actions">
+      <button class="btn-pitch-yellow" onclick="openWarmer()">Start Pre-Match Briefing (Warm-Up) →</button>
+      <button class="btn-pitch-white" onclick="startGame()">Kick Off Directly to Tournament →</button>
     </div>
+  </section>
+
+  <!-- =========================================================
+       2. INTERACTIVE WARMER PAGE (#warmerPage)
+       ========================================================= -->
+  <section id="warmerPage">
+    <div class="top-nav">
+      <button class="nav-pill-btn" onclick="showLanding()">← Back to Briefing</button>
+      <span class="section-kicker">Pre-Match Training Ground</span>
+      <button class="nav-pill-btn" onclick="startGame()">Kick Off →</button>
+    </div>
+
+    <h1>PRE-MATCH BRIEFING</h1>
+
+    <!-- Part 1: Pre-Match Team Talk -->
+    <div class="warmer-section">
+      <h2>Part 1: Pre-Match Team Talk (Discussion Questions)</h2>
+      <p class="warmer-lead">Discuss these four questions with a partner or in small groups before stepping onto the pitch.</p>
+
+      <div class="discussion-grid">
+        <div class="prompt-card">
+          <span class="prompt-label">1 • Community Sports Tournaments</span>
+          <p>Have you ever played in or watched a local football tournament? What makes a community sports day memorable for players and families?</p>
+        </div>
+        <div class="prompt-card">
+          <span class="prompt-label">2 • Teamwork &amp; Volunteers</span>
+          <p>Why does a successful village tournament depend on strong teamwork between referees, parent volunteers, and organizers?</p>
+        </div>
+        <div class="prompt-card">
+          <span class="prompt-label">3 • Smart Budgeting</span>
+          <p>When organizing an event with a limited budget, how do you decide where to spend money and where to save costs?</p>
+        </div>
+        <div class="prompt-card">
+          <span class="prompt-label">4 • Handling Pressure</span>
+          <p>Imagine an angry spectator shouts at a referee or a thunderstorm arrives suddenly. How should a calm leader handle the pressure?</p>
+        </div>
+      </div>
+
+      <div class="phrases-helper">
+        <h3>🗣️ Useful Speaking Phrases</h3>
+        <ul class="phrases-list">
+          <li><em>"In my opinion, the top priority for a tournament director is..."</em></li>
+          <li><em>"To stay within our budget, we should avoid spending too much on..."</em></li>
+          <li><em>"Good teamwork is essential because volunteers help with..."</em></li>
+          <li><em>"If an emergency happens on matchday, a calm leader needs to..."</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Part 2: Tactical Vocabulary Match-Up -->
+    <div class="warmer-section">
+      <h2>Part 2: Tactical Vocabulary Match-Up (8-Word Exercise)</h2>
+      <p class="warmer-lead">Match all 8 tournament management terms to their definitions. You can either use the dropdowns directly or click a word in the Word Bank first and then click a card to assign it!</p>
+
+      <div class="word-bank-box">
+        <div class="word-bank-title">
+          <span>⚽ Tactical Word Bank (8 Terms)</span>
+          <span class="word-bank-hint" id="bankStatusHint">Tip: Click a word to highlight it, or pick from any dropdown</span>
+        </div>
+        <div class="word-bank-chips" id="wordBankChips"></div>
+      </div>
+
+      <div class="vocab-cards" id="vocabCardsContainer"></div>
+
+      <div class="vocab-actions-bar">
+        <button class="btn-check-vocab" onclick="checkVocab()">Check Answers</button>
+        <button class="btn-reset-vocab" onclick="resetVocab()">Reset</button>
+        <div class="vocab-score-badge" id="vocabScoreBadge">0 / 8 Correct</div>
+      </div>
+    </div>
+
+    <button class="btn-pitch-yellow" onclick="startGame()">Enter the Stadium &amp; Kick Off →</button>
+  </section>
+
+  <!-- =========================================================
+       3. EXPANDED GAMEPLAY (#game-play)
+       ========================================================= -->
+  <section id="game-play">
+    <div class="top-nav">
+      <button class="nav-pill-btn" onclick="openWarmer()">📖 Warm-Up &amp; Vocab</button>
+      <span class="section-kicker" id="phaseKicker">Matchday Operations</span>
+      <button class="nav-pill-btn" onclick="showLanding()">🏠 Briefing</button>
+    </div>
+
+    <h1>THE VILLAGE KICK-OFF</h1>
+
+    <div class="stats-bar">
+      <span>Phase: <span id="stat-phase">1</span>/10</span>
+      <div class="pitch-progress-wrap" aria-label="Tournament progress">
+        <div class="pitch-progress-fill" id="pitchProgressFill"></div>
+      </div>
+      <span id="stat-score">Budget Pts: 0 / 30</span>
+    </div>
+
+    <div class="vocab-strip" id="vocab"></div>
+
+    <div class="question-box" id="question"></div>
+
+    <div id="options" class="options-grid"></div>
+
+    <div class="feedback" id="feedback">
+      <div class="fb-badge" id="fb-pts"></div>
+      <p class="fb-narrative" id="fb-text"></p>
+      <div class="director-insight" id="fb-insight"></div>
+      <button class="next-btn" id="next-btn" onclick="nextStep()">CONTINUE →</button>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       4. FINAL TROPHY SCREEN (#result-screen)
+       ========================================================= -->
+  <section id="result-screen">
+    <div class="trophy-badge" id="trophyBadge">Full-Time Whistle • Official Evaluation</div>
+    <h1 id="res-title"></h1>
+
+    <div class="result-summary-card" id="resultCard">
+      <p id="res-desc" style="font-size: 1.15rem; margin: 0 0 12px;"></p>
+      <div class="director-insight" id="res-insight" style="text-align: left; margin-bottom: 14px;"></div>
+      <div class="score-breakdown" id="math-box"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-pitch-yellow" onclick="startGame()">Play Again</button>
+      <button class="btn-pitch-white" onclick="openWarmer()">Review Warm-Up &amp; Vocab</button>
+    </div>
+  </section>
+
 </div>
 
 <script>
+/**
+ * =========================================================
+ * WARMER VOCABULARY DATA (8 EXACT TARGET TERMS)
+ * =========================================================
+ */
+const WARMER_VOCAB = [
+  {
+    id: 1,
+    word: "Budget",
+    def: "The planned amount of money available to organize and run an event without overspending.",
+    confirm: "Keeping tight control of the village budget ensures there is enough money for referees, food, and prizes.",
+    clue: "Think of the total money limit the Village Council gave you to run the tournament."
+  },
+  {
+    id: 2,
+    word: "Amenities",
+    def: "Useful facilities and conveniences at a venue, such as public toilets, changing rooms, and parking spaces.",
+    confirm: "Secondary school sports fields are ideal because they already include essential amenities like restrooms and parking.",
+    clue: "This plural noun describes practical venue conveniences like toilets and car parking."
+  },
+  {
+    id: 3,
+    word: "Registration",
+    def: "The official process of signing up teams and recording player details before a tournament begins.",
+    confirm: "Online registration lets the director know the exact number of teams before kick-off.",
+    clue: "Look for the noun that describes signing up teams and collecting entry details."
+  },
+  {
+    id: 4,
+    word: "Promotion",
+    def: "Publicity and advertising activities used to inform people about an event and encourage high attendance.",
+    confirm: "Posting on local Facebook groups and shop windows provides effective, low-cost promotion.",
+    clue: "This word refers to marketing and spreading the word across the village."
+  },
+  {
+    id: 5,
+    word: "Profit margin",
+    def: "The financial gain remaining after subtracting the cost of supplies from the money earned through sales.",
+    confirm: "Ordering meat pies and hot tea from the local bakery delivers a healthy profit margin at the refreshment stall.",
+    clue: "This two-word business term measures the difference between selling price and supply cost."
+  },
+  {
+    id: 6,
+    word: "Etiquette",
+    def: "The rules of polite, respectful behavior expected from players, coaches, and spectators at a match.",
+    confirm: "Good touchline etiquette means cheering positively and never shouting insults at the referee.",
+    clue: "This noun describes proper sportsmanship and respectful sideline manners."
+  },
+  {
+    id: 7,
+    word: "Surplus",
+    def: "Extra money left over after all tournament expenses and bills have been paid.",
+    confirm: "Reinvesting the financial surplus into the local youth club builds long-term community support.",
+    clue: "This word means the leftover profit remaining at the end of the tournament."
+  },
+  {
+    id: 8,
+    word: "Negligence",
+    def: "Failure to take proper care or follow safety rules, putting players and spectators in avoidable danger.",
+    confirm: "Ignoring a severe lightning storm or broken glass on the pitch is dangerous negligence.",
+    clue: "This noun describes careless disregard for safety that causes dismissal in an emergency."
+  }
+];
+
+let selectedBankWord = null;
+
+/**
+ * Initialize the Interactive Warmer Page (Clickable Word Bank + 8 Definition Cards)
+ */
+function initWarmer() {
+  const bankContainer = document.getElementById("wordBankChips");
+  const cardsContainer = document.getElementById("vocabCardsContainer");
+
+  bankContainer.innerHTML = WARMER_VOCAB.map(item => `
+    <button type="button" class="bank-chip" data-word="${item.word}" onclick="selectBankWord('${item.word}')">
+      ${item.word}
+    </button>
+  `).join("");
+
+  const dropdownOptions = WARMER_VOCAB
+    .map(item => `<option value="${item.word}">${item.word}</option>`)
+    .join("");
+
+  cardsContainer.innerHTML = WARMER_VOCAB.map((item, idx) => `
+    <div class="vocab-card" id="vcard-${item.id}" onclick="assignSelectedWordToCard(${item.id}, event)">
+      <div class="vocab-card-top">
+        <div class="vocab-def">
+          <span class="vocab-idx">${idx + 1}.</span>${item.def}
+        </div>
+        <select class="vocab-select" id="vselect-${item.id}" aria-label="Select vocabulary word for definition ${idx + 1}" onchange="handleDropdownChange()">
+          <option value="">-- Choose term --</option>
+          ${dropdownOptions}
+        </select>
+      </div>
+      <div class="vocab-item-fb" id="vfb-${item.id}"></div>
+    </div>
+  `).join("");
+}
+
+/**
+ * Toggle selection of a word chip in the Tactical Word Bank
+ */
+function selectBankWord(word) {
+  selectedBankWord = (selectedBankWord === word) ? null : word;
+  const hint = document.getElementById("bankStatusHint");
+
+  if (selectedBankWord) {
+    hint.textContent = `Selected: "${selectedBankWord}" — click any definition card or choose from its dropdown`;
+  } else {
+    hint.textContent = "Tip: Click a word to highlight it, or pick from any dropdown";
+  }
+
+  refreshWordBankStates();
+}
+
+/**
+ * If a word chip is highlighted in the Word Bank, clicking a definition card assigns it immediately
+ */
+function assignSelectedWordToCard(cardId, event) {
+  if (!selectedBankWord) return;
+  if (event && event.target && event.target.tagName === "SELECT") return;
+
+  const selectEl = document.getElementById(`vselect-${cardId}`);
+  selectEl.value = selectedBankWord;
+  selectedBankWord = null;
+  document.getElementById("bankStatusHint").textContent = "Tip: Click a word to highlight it, or pick from any dropdown";
+  refreshWordBankStates();
+}
+
+function handleDropdownChange() {
+  selectedBankWord = null;
+  document.getElementById("bankStatusHint").textContent = "Tip: Click a word to highlight it, or pick from any dropdown";
+  refreshWordBankStates();
+}
+
+/**
+ * Sync selected & used visual states across all 8 Word Bank pills
+ */
+function refreshWordBankStates() {
+  const usedWords = new Set();
+  WARMER_VOCAB.forEach(item => {
+    const val = document.getElementById(`vselect-${item.id}`).value;
+    if (val) usedWords.add(val);
+  });
+
+  document.querySelectorAll(".bank-chip").forEach(chip => {
+    const w = chip.getAttribute("data-word");
+    chip.classList.toggle("selected-chip", w === selectedBankWord);
+    chip.classList.toggle("used-chip", usedWords.has(w));
+  });
+}
+
+/**
+ * Check all 8 vocabulary matches and display per-item confirmation or clue feedback
+ */
+function checkVocab() {
+  let correctCount = 0;
+
+  WARMER_VOCAB.forEach(item => {
+    const card = document.getElementById(`vcard-${item.id}`);
+    const select = document.getElementById(`vselect-${item.id}`);
+    const fb = document.getElementById(`vfb-${item.id}`);
+    const val = select.value;
+
+    card.classList.remove("card-correct", "card-wrong");
+    fb.style.display = "block";
+
+    if (val === item.word) {
+      correctCount++;
+      card.classList.add("card-correct");
+      fb.innerHTML = `<strong style="color:#2ecc71;">✓ Goal! Correct match:</strong> ${item.confirm}`;
+    } else if (!val) {
+      card.classList.add("card-wrong");
+      fb.innerHTML = `<strong style="color:#ff9999;">✗ No term selected yet.</strong> <em>Clue:</em> ${item.clue}`;
+    } else {
+      card.classList.add("card-wrong");
+      fb.innerHTML = `<strong style="color:#ff9999;">✗ Off target ("${val}" doesn't match).</strong> <em>Clue:</em> ${item.clue}`;
+    }
+  });
+
+  const badge = document.getElementById("vocabScoreBadge");
+  badge.textContent = correctCount === 8
+    ? "🏆 8 / 8 Correct — Tactical Master!"
+    : `${correctCount} / 8 Correct`;
+}
+
+/**
+ * Reset all 8 vocabulary selections and feedback panels
+ */
+function resetVocab() {
+  selectedBankWord = null;
+  document.getElementById("bankStatusHint").textContent = "Tip: Click a word to highlight it, or pick from any dropdown";
+
+  WARMER_VOCAB.forEach(item => {
+    const card = document.getElementById(`vcard-${item.id}`);
+    const select = document.getElementById(`vselect-${item.id}`);
+    const fb = document.getElementById(`vfb-${item.id}`);
+
+    select.value = "";
+    card.classList.remove("card-correct", "card-wrong");
+    fb.style.display = "none";
+    fb.innerHTML = "";
+  });
+
+  refreshWordBankStates();
+  document.getElementById("vocabScoreBadge").textContent = "0 / 8 Correct";
+}
+
+/**
+ * =========================================================
+ * 10 CHRONOLOGICAL TOURNAMENT PHASES (40 EXPANDED OPTIONS)
+ * Max 3 pts per phase = 30 Budget Points max
+ * =========================================================
+ */
+const DECISIONS = [
+  {
+    q: "1. The Committee is planning the tournament. What is our main goal?",
+    vocab: ["budget", "community", "public relations", "environmentally friendly"],
+    opts: [
+      {
+        t: "A regional tournament for amateur teams from local villages.",
+        pts: 3,
+        fb: "Village captains sign up within hours, thrilled to compete against neighboring parishes in a spirited, affordable cup. Local families rally behind their home teams, uniting the entire community.",
+        insight: "Aligning event scope with your core audience and <strong>budget</strong> maximizes participation while keeping operational costs realistic."
+      },
+      {
+        t: "A training workshop for students with local schools.",
+        pts: 2,
+        fb: "Headteachers praise the initiative and young players enjoy learning basic passing drills. However, ticket and stall income stays modest because fewer adult spectators attend.",
+        insight: "Youth workshops strengthen <strong>public relations</strong> and community goodwill, even though they generate less tournament revenue than a full competition."
+      },
+      {
+        t: "An exhibition match featuring a semi-professional league.",
+        pts: 1,
+        fb: "Spectators admire the fast footwork on display, yet mandatory player appearance fees and extra liability insurance swallow nearly all your starting funds.",
+        insight: "Semi-professional fixtures carry steep insurance and compliance overheads that can strain a small village <strong>budget</strong>."
+      },
+      {
+        t: "A match with celebrities that requires booking expensive hotels.",
+        pts: -1,
+        fb: "The Village Treasurer freezes your account immediately—luxury hotel suites and chauffeur transfers cost triple your entire annual sports grant! You must choose a realistic local plan.",
+        insight: "Failing to check fixed costs against your available <strong>budget</strong> leads to immediate overspending before kick-off."
+      }
+    ]
+  },
+  {
+    q: "2. We need a location for the matches. Where should we play?",
+    vocab: ["amenities", "facility", "parking space", "maintenance"],
+    opts: [
+      {
+        t: "The sports fields at the local secondary school.",
+        pts: 3,
+        fb: "Players love the freshly mowed, level turf, while families appreciate the clean changing rooms, public toilets, and spacious school car park right beside the pitches.",
+        insight: "Selecting a venue with built-in <strong>amenities</strong> and regular turf <strong>maintenance</strong> saves rental money and guarantees a safe playing surface."
+      },
+      {
+        t: "A farmer's field (after moving the cows away).",
+        pts: 2,
+        fb: "The rural scenery feels wonderfully authentic and villagers enjoy a lively picnic atmosphere, though uneven bumps in the grass cause a few hilarious mis-kicks.",
+        insight: "Improvised venues build charm, but directors must inspect ground conditions carefully when basic <strong>amenities</strong> like restrooms are limited."
+      },
+      {
+        t: "The local public park (an open green space).",
+        pts: 1,
+        fb: "Using the park costs zero pounds, yet stray dogs darting across the penalty box and zero dedicated parking create constant interruptions for match officials.",
+        insight: "Open public spaces eliminate venue fees, but lack of perimeter control and visitor <strong>parking space</strong> complicates crowd management."
+      },
+      {
+        t: "A professional stadium in the city (a two-hour drive away).",
+        pts: -1,
+        fb: "Local parents and youth players refuse to make a four-hour round trip for a Saturday village kick-off, leaving the stadium stands completely empty! Keep the tournament local.",
+        insight: "A great sports <strong>facility</strong> fails if travel distance creates a logistical barrier for your core community players."
+      }
+    ]
+  },
+  {
+    q: "3. How should we handle registration and entry fees?",
+    vocab: ["registration", "volunteer", "income", "cash-only"],
+    opts: [
+      {
+        t: "An online sign-up system with a small card processing fee.",
+        pts: 3,
+        fb: "Every captain submits their squad list and entry fee digitally by Thursday evening, giving you an exact headcount and transparent financial records before matchday.",
+        insight: "Structured advance <strong>registration</strong> eliminates morning bottlenecks and lets you forecast tournament <strong>income</strong> accurately."
+      },
+      {
+        t: "Parent volunteers who collect cash at the entrance gate.",
+        pts: 2,
+        fb: "Friendly parent volunteers welcome arrivals warmly with a tin cash box, though counting loose coins while queues form at 9:00 AM slows down the opening whistle.",
+        insight: "<strong>Cash-only</strong> gate collection is simple and familiar, yet requires careful reconciliation and extra <strong>volunteer</strong> staffing during peak arrival."
+      },
+      {
+        t: "Paper tickets sold in advance at the local bakery.",
+        pts: 1,
+        fb: "Regular bakery customers happily pick up tickets alongside their morning loaves, but professional printing costs and missing stub records eat into your net profit.",
+        insight: "Physical ticketing works for local foot traffic, though printing expenses reduce net <strong>income</strong> compared to digital tools."
+      },
+      {
+        t: "An advanced biometric entry system using technology.",
+        pts: -1,
+        fb: "Out on the school playing fields there is zero Wi-Fi signal, so the fingerprint scanners crash immediately while 120 players wait impatiently outside the gate!",
+        insight: "Over-engineered <strong>registration</strong> technology fails without reliable infrastructure—always choose systems suited to your venue environment."
+      }
+    ]
+  },
+  {
+    q: "4. Marketing! How do we encourage a high attendance on Saturday?",
+    vocab: ["promotion", "noticeboard", "engagement", "advertising"],
+    opts: [
+      {
+        t: "Local Facebook groups and the community noticeboard.",
+        pts: 3,
+        fb: "Villagers share your fixture poster across neighborhood social groups while shoppers read the bright flyer on the high-street noticeboard, packing the touchline by kick-off.",
+        insight: "Combining targeted digital <strong>promotion</strong> with trusted local <strong>noticeboard</strong> visibility delivers the highest community <strong>engagement</strong> per pound spent."
+      },
+      {
+        t: "Placing posters in the windows of every local shop.",
+        pts: 2,
+        fb: "The butcher, baker, and post office proudly display your tournament posters in their front windows, sparking friendly match predictions all week long.",
+        insight: "Partnering with local shopkeepers builds personal community trust and steady word-of-mouth <strong>advertising</strong>."
+      },
+      {
+        t: "Distributing flyers to commuters at the train station.",
+        pts: 1,
+        fb: "You hand out hundreds of leaflets at dawn, but rushed city commuters toss most of them straight into recycling bins without reading the village fixture times.",
+        insight: "Broad, untargeted flyer distribution wastes printing resources and produces low audience <strong>engagement</strong>."
+      },
+      {
+        t: "Paying for a commercial on a local television channel.",
+        pts: -1,
+        fb: "A single 30-second regional TV advert drains your entire trophy and referee fund in one stroke, and viewers fifty miles away have no plans to visit Greenmeadow!",
+        insight: "Effective <strong>promotion</strong> matches media reach to your local catchment area rather than overspending on mass broadcast <strong>advertising</strong>."
+      }
+    ]
+  },
+  {
+    q: "5. Match Officials & Equipment! Who runs the pitch and supplies the gear?",
+    vocab: ["match official", "fair play", "equipment", "kick-off"],
+    opts: [
+      {
+        t: "Qualified local referees with spare match balls and corner flags.",
+        pts: 3,
+        fb: "Certified referees arrive early in crisp uniforms, inspect the goal nets, and keep a bag of pumped spare match balls beside the fourth official's table for instant replacements.",
+        insight: "Prepared <strong>match officials</strong> and backup <strong>equipment</strong> prevent match delays and uphold high standards of <strong>fair play</strong>."
+      },
+      {
+        t: "Experienced older youth players acting as volunteer referees.",
+        pts: 2,
+        fb: "The teenage academy players know the offside rule well and keep games moving briskly, though a few vocal coaches challenge close throw-in decisions.",
+        insight: "Youth volunteers are a resourceful staffing option, provided the tournament director backs their authority on the pitch."
+      },
+      {
+        t: "Ask team captains to bring one ball and referee each other.",
+        pts: 1,
+        fb: "Several teams arrive with half-flat training balls, and self-officiated penalty claims trigger lively five-minute debates in the middle of the pitch.",
+        insight: "Relying on participants for core <strong>equipment</strong> and officiating creates inconsistency and slows down <strong>kick-off</strong> schedules."
+      },
+      {
+        t: "Play with a single worn-out ball and let the crowd vote on fouls.",
+        pts: -1,
+        fb: "Within ten minutes the old ball bursts on a fence post and spectators shout conflicting foul calls from opposite sides of the field, halting play completely!",
+        insight: "Neutral <strong>match officials</strong> and reliable match balls are non-negotiable foundations for any organized sport."
+      }
+    ]
+  },
+  {
+    q: "6. How should we structure the fixture schedule for 12 village teams?",
+    vocab: ["schedule", "fixture", "group stage", "knockout"],
+    opts: [
+      {
+        t: "Three 4-team groups of 20-minute matches, followed by semi-finals.",
+        pts: 3,
+        fb: "Every squad gets at least three guaranteed group matches before the top teams advance to exciting knockouts, keeping all 12 teams energized and engaged until afternoon.",
+        insight: "A balanced <strong>group stage</strong> plus <strong>knockout</strong> format guarantees fair playing time while keeping the overall <strong>schedule</strong> predictable."
+      },
+      {
+        t: "A straight single-elimination knockout cup from Round 1.",
+        pts: 2,
+        fb: "The sudden-elimination drama thrills spectators right from 9:30 AM, though six teams are eliminated after just one twenty-minute game and go home early.",
+        insight: "Pure <strong>knockout</strong> brackets are fast to administer, yet early exits reduce spectator dwell time and refreshment sales."
+      },
+      {
+        t: "A massive 12-team league where every team plays all 11 others.",
+        pts: 1,
+        fb: "By match 45 in the late afternoon, exhausted players are cramping up and you realize 66 fixtures cannot possibly finish before dark!",
+        insight: "Always calculate total match minutes against available pitch hours before publishing a tournament <strong>fixture</strong> list."
+      },
+      {
+        t: "Let teams challenge whoever they want whenever a pitch is free.",
+        pts: -1,
+        fb: "Three teams crowd onto Pitch 1 at the same time while Pitch 2 sits empty, and nobody knows who actually qualified for the final! Set a proper timetable.",
+        insight: "Without a structured <strong>schedule</strong>, competitive tournaments collapse into confusion and disputes."
+      }
+    ]
+  },
+  {
+    q: "7. Half-time! What food and drink options are we serving at the stall?",
+    vocab: ["profit margin", "catering", "stock management", "supplier"],
+    opts: [
+      {
+        t: "Meat pies and hot tea ordered from the local bakery.",
+        pts: 3,
+        fb: "Supporters line up eagerly for warm pastry pies and steaming mugs of tea, earning strong stall profits while supporting a trusted village baker.",
+        insight: "Partnering with a local <strong>supplier</strong> for popular, easy-to-serve food maximizes your <strong>profit margin</strong> and simplifies <strong>catering</strong>."
+      },
+      {
+        t: "A traditional barbecue run by committee volunteers.",
+        pts: 2,
+        fb: "The sizzling burger aroma draws hungry crowds all afternoon, though keeping raw meat chilled and managing grill queues keeps three volunteers busy non-stop.",
+        insight: "Live barbecues boost atmosphere, but require strict food-safety temperature control and careful <strong>stock management</strong>."
+      },
+      {
+        t: "Simple sandwiches and bottles of water.",
+        pts: 1,
+        fb: "Players appreciate the cold water bottles, yet many chilly spectators drift off to the village pub down the road in search of a hot meal.",
+        insight: "Basic cold refreshments cover hydration, but miss higher-margin <strong>catering</strong> demand from spectators."
+      },
+      {
+        t: "Premium seafood options like fresh oysters.",
+        pts: -1,
+        fb: "Without refrigerated display counters in the midday sun, the expensive shellfish spoils quickly and several spectators feel queasy! Stick to safe, simple food.",
+        insight: "High-perishability luxury foods destroy your <strong>profit margin</strong> and create serious public health risks outdoors."
+      }
+    ]
+  },
+  {
+    q: "8. An angry parent is shouting at the referee. How do you respond?",
+    vocab: ["etiquette", "behavior", "conflict resolution", "touchline"],
+    opts: [
+      {
+        t: "Politely ask the parent to step back from the sideline area.",
+        pts: 3,
+        fb: "Speaking calmly and firmly, you remind the parent of the village Respect Code; they apologize, step behind the spectator rope, and applause breaks out for the young referee.",
+        insight: "Calm, assertive <strong>conflict resolution</strong> protects match officials and models positive <strong>touchline</strong> <strong>etiquette</strong> for young players."
+      },
+      {
+        t: "Allow the referee to argue directly with the parent.",
+        pts: 2,
+        fb: "The match stops for three tense minutes while the referee and parent trade sharp words before play reluctantly resumes.",
+        insight: "Leaving officials to handle spectator <strong>behavior</strong> alone undermines authority—directors should step in early to de-escalate."
+      },
+      {
+        t: "Ignore the situation and hope the match ends quickly.",
+        pts: 1,
+        fb: "Encouraged by your silence, two more spectators join the shouting, leaving the shaken referee threatening to walk off before the second half.",
+        insight: "Ignoring abusive <strong>behavior</strong> signals tolerance and risks losing valuable volunteer referees."
+      },
+      {
+        t: "Cancel the entire tournament immediately.",
+        pts: -1,
+        fb: "Blowing the final whistle for all 12 teams because one parent lost their temper leaves 150 well-behaved children heartbroken! Manage the individual, not the whole event.",
+        insight: "Proportional <strong>conflict resolution</strong> addresses the specific rule-breaker without punishing the entire community."
+      }
+    ]
+  },
+  {
+    q: "9. The sun is setting but the final match is a draw. What is the plan?",
+    vocab: ["extra time", "penalty shootout", "stadium lighting", "safety regulations"],
+    opts: [
+      {
+        t: "Postpone the final match until Sunday morning.",
+        pts: 3,
+        fb: "Both finalists agree enthusiastically, returning rested on Sunday morning before an even bigger crowd—and giving your refreshment stall a bonus second day of sales!",
+        insight: "Prioritizing visibility and player welfare under <strong>safety regulations</strong> protects everyone while creating an exciting Sunday showcase."
+      },
+      {
+        t: "Proceed immediately to a penalty shootout.",
+        pts: 2,
+        fb: "Ten dramatic spot-kicks decide the champions in front of cheering families while enough natural twilight still illuminates the goalmouth clearly.",
+        insight: "A <strong>penalty shootout</strong> provides a thrilling, time-efficient conclusion without requiring full <strong>extra time</strong> in fading light."
+      },
+      {
+        t: "Pay the school an extra fee for emergency stadium lighting.",
+        pts: 1,
+        fb: "The floodlights buzz to life so extra time can finish safely, though the unbudgeted hourly electricity surcharge swallows most of your afternoon stall profits.",
+        insight: "Last-minute <strong>stadium lighting</strong> solves visibility safely, but unplanned overtime fees erode tournament margins."
+      },
+      {
+        t: "Continue playing in the dark using car headlights to see.",
+        pts: -1,
+        fb: "Blinded by glaring high-beams, a striker collides painfully with a goalpost in the shadows! Playing without proper lighting is a major safety violation.",
+        insight: "Improvised vehicle headlights violate basic pitch <strong>safety regulations</strong> and expose players to severe injury."
+      }
+    ]
+  },
+  {
+    q: "10. The event is over. What is our long-term contribution?",
+    vocab: ["surplus", "reinvestment", "contribution", "facilities"],
+    opts: [
+      {
+        t: "Donate our surplus financial profits to the local youth club.",
+        pts: 3,
+        fb: "Village parents cheer as you present a giant check for new youth training kits, and the Parish Council immediately approves dates for next summer's tournament!",
+        insight: "Transparent community <strong>reinvestment</strong> of your financial <strong>surplus</strong> builds lasting trust and secures future civic support."
+      },
+      {
+        t: "Purchase a modern lawnmower for the community pitches.",
+        pts: 2,
+        fb: "The volunteer groundskeepers thank you warmly—next season's playing surface will be smoother, safer, and easier to maintain for every local team.",
+        insight: "Directing funds into shared pitch <strong>facilities</strong> delivers practical, long-term value across multiple sports."
+      },
+      {
+        t: "Keep the cash hidden in a secure box for unexpected emergencies.",
+        pts: 1,
+        fb: "The money sits safely locked in a cupboard, yet residents begin whispering on social media asking why the tournament profits were never announced publicly.",
+        insight: "Holding an unpublicized reserve lacks financial transparency—community events thrive on clear reporting of any <strong>surplus</strong>."
+      },
+      {
+        t: "Treat the organizing committee to an expensive dinner.",
+        pts: -1,
+        fb: "When villagers discover charity stall donations paid for steaks and champagne for the organizers, angry families demand refunds and your reputation collapses!",
+        insight: "Using community tournament funds for personal perks breaches ethical governance and destroys public trust."
+      }
+    ]
+  }
+];
+
+/**
+ * =========================================================
+ * 2 SUDDEN-DEATH EMERGENCIES
+ * Triggered after Phase 6 (index 5) and Phase 9 (index 8)
+ * =========================================================
+ */
+const SUDDEN_DEATHS = [
+  {
+    afterIndex: 5, // Triggers right after Phase 6
+    done: false,
+    vocab: ["negligence", "emergency protocol", "evacuation", "duty of care"],
+    q: "🚨 SUDDEN-DEATH EMERGENCY 1: Dark storm clouds roll in fast, and a sharp crack of thunder echoes across the valley just as the quarter-finals finish!",
+    opts: [
+      {
+        t: "Blow three long whistles and guide everyone inside the school sports hall.",
+        pts: 0,
+        fb: "Players, referees, and families move briskly into the dry indoor hall within two minutes. Once the lightning passes twenty minutes later, everyone praises your calm leadership!",
+        insight: "Following the 30-30 lightning safety rule fulfills your legal <strong>duty of care</strong> and prevents panic through clear <strong>evacuation</strong> leadership."
+      },
+      {
+        t: "Keep playing through the thunder so the schedule stays on time.",
+        pts: -99,
+        fb: "RED CARD DISMISSAL: Lightning strikes a metal floodlight tower beside Pitch 2, sending terrified families sprinting across the wet grass! The Village Council dismisses you immediately for gross negligence.",
+        insight: "Keeping players on an open field during lightning is textbook <strong>negligence</strong>—no match schedule ever outweighs human life."
+      }
+    ]
+  },
+  {
+    afterIndex: 8, // Triggers right after Phase 9
+    done: false,
+    vocab: ["negligence", "pitch inspection", "hazard", "first aid"],
+    q: "🚨 SUDDEN-DEATH EMERGENCY 2: Right before the Trophy Ceremony & Penalty Finale, a volunteer spots shattered glass near the goalmouth and a loose crossbar!",
+    opts: [
+      {
+        t: "Delay kick-off 5 minutes to clear every glass shard and secure the crossbar.",
+        pts: 0,
+        fb: "Armed with brooms, gloves, and wrench clamps, your team makes the penalty area spotless and rock-solid. The finale goes ahead safely to roaring applause!",
+        insight: "Thorough pre-match <strong>pitch inspection</strong> and rapid <strong>hazard</strong> removal protect players from preventable injuries."
+      },
+      {
+        t: "Kick the glass into the grass and start immediately so spectators don't wait.",
+        pts: -99,
+        fb: "RED CARD DISMISSAL: During the very first dive, the goalkeeper cuts their hand on hidden glass while the loose crossbar collapses! You are dismissed on the spot for safety negligence.",
+        insight: "Hiding a physical <strong>hazard</strong> instead of fixing it constitutes severe <strong>negligence</strong> and invalidates event insurance."
+      }
+    ]
+  }
+];
+
 let score = 0;
 let step = 0;
 let inEmergency = false;
-
-const DECISIONS = [
-    {
-        q: "1. The Committee is planning the tournament. What is our main goal?",
-        vocab: ["community", "public relations", "budget", "environmentally friendly"],
-        opts: [
-            { t: "A regional tournament for amateur teams from local villages.", pts: 3, fb: "Excellent! This option is affordable, popular, and unites the community." },
-            { t: "A training workshop for students with local schools.", pts: 2, fb: "Good choice. It is great for public relations, although it creates less income." },
-            { t: "An exhibition match featuring a semi-professional league.", pts: 1, fb: "Expensive choice. Insurance costs are too high for a small committee like ours." },
-            { t: "A match with celebrities that requires booking expensive hotels.", pts: -1, fb: "BUDGET OVERSPEND: We cannot afford luxury hotels! Choose a more local plan." }
-        ]
-    },
-    {
-        q: "2. We need a location for the matches. Where should we play?",
-        vocab: ["facility", "parking space", "amenities", "maintenance"],
-        opts: [
-            { t: "The sports fields at the local secondary school.", pts: 3, fb: "Excellent. They have public toilets, parking, and well-maintained grass." },
-            { t: "A farmer's field (after moving the cows away).", pts: 2, fb: "Authentic! The ground is a bit uneven, but the locals love the atmosphere." },
-            { t: "The local public park (an open green space).", pts: 1, fb: "It is completely free, but dog walkers and a lack of fences make it hard to manage." },
-            { t: "A professional stadium in the city (a two-hour drive away).", pts: -1, fb: "LOGISTICAL FAILURE: No one wants to drive that far for a village game. Keep it local!" }
-        ]
-    },
-    {
-        q: "3. How should we handle registration and entry fees?",
-        vocab: ["registration", "volunteer", "income", "cash-only"],
-        opts: [
-            { t: "An online sign-up system with a small card processing fee.", pts: 3, fb: "Smart. This ensures we know the exact number of participants before the event." },
-            { t: "Parent volunteers who collect cash at the entrance gate.", pts: 2, fb: "Traditional and simple, though it makes it harder to track our exact income." },
-            { t: "Paper tickets sold in advance at the local bakery.", pts: 1, fb: "Reliable, but the printing costs reduce our final profit." },
-            { t: "An advanced biometric entry system using technology.", pts: -1, fb: "TOO COMPLICATED: The system does not work without stable internet. Use a simpler method." }
-        ]
-    },
-    {
-        q: "4. Marketing! How do we encourage a high attendance on Saturday?",
-        vocab: ["promotion", "noticeboard", "engagement", "advertising"],
-        opts: [
-            { t: "Local Facebook groups and the community noticeboard.", pts: 3, fb: "The best value for money! Nearly everyone in town now knows about the event." },
-            { t: "Placing posters in the windows of every local shop.", pts: 2, fb: "Effective and personal. Shop owners are happy to support the cause." },
-            { t: "Distributing flyers to commuters at the train station.", pts: 1, fb: "A lot of effort for very little engagement. Most flyers were thrown away immediately." },
-            { t: "Paying for a commercial on a local television channel.", pts: -1, fb: "BUDGET RUINED: You spent the entire trophy fund on a late-night TV advertisement. Focus on local media!" }
-        ]
-    },
-    {
-        q: "5. Half-time! What food and drink options are we serving at the stall?",
-        vocab: ["catering", "stock management", "supplier", "profit margin"],
-        opts: [
-            { t: "Meat pies and hot tea ordered from the local bakery.", pts: 3, fb: "A huge success! Low cost, high profit margins, and the fans love it." },
-            { t: "A traditional barbecue run by committee volunteers.", pts: 2, fb: "Great atmosphere, though managing the raw meat stock was stressful." },
-            { t: "Simple sandwiches and bottles of water.", pts: 1, fb: "Safe, but unexciting. Many people went to the local pub to find a proper meal." },
-            { t: "Premium seafood options like fresh oysters.", pts: -1, fb: "FOOD SPOILED: In the summer heat, the food went bad and people felt unwell. Stick to hot, simple food!" }
-        ]
-    },
-    {
-        q: "6. The sun is setting but the final match is a draw. What is the plan?",
-        vocab: ["schedule", "extra time", "stadium lighting", "safety regulations"],
-        opts: [
-            { t: "Postpone the final match until Sunday morning.", pts: 3, fb: "Professional. The players can rest, and we get a second day of refreshment sales!" },
-            { t: "Proceed immediately to a penalty shootout.", pts: 2, fb: "Exciting! It finishes the tournament quickly while there is still enough daylight." },
-            { t: "Pay the school an extra fee for emergency stadium lighting.", pts: 1, fb: "The late-night fee for using the lights used up all our profits for the day." },
-            { t: "Continue playing in the dark using car headlights to see.", pts: -1, fb: "DANGEROUS: A player crashed into a goalpost they could not see. A total safety nightmare!" }
-        ]
-    },
-    {
-        q: "7. An angry parent is shouting at the referee. How do you respond?",
-        vocab: ["behavior", "conflict resolution", "match official", "etiquette"],
-        opts: [
-            { t: "Politely ask the parent to leave the sideline area.", pts: 3, fb: "Well managed. It sets an excellent example for the children and respects the official." },
-            { t: "Ignore the situation and hope the match ends quickly.", pts: 1, fb: "The referee felt unsupported and threatened to leave before the match finished." },
-            { t: "Allow the referee to argue directly with the parent.", pts: 2, fb: "An awkward situation, but at least you did not have to get involved yourself." },
-            { t: "Cancel the entire tournament immediately.", pts: -1, fb: "OVERREACTION: You ruined the day for a hundred people because of one loud individual." }
-        ]
-    },
-    {
-        q: "8. The event is over. What is our long-term contribution?",
-        vocab: ["contribution", "facilities", "financial surplus", "reinvestment"],
-        opts: [
-            { t: "Donate our surplus financial profits to the local youth club.", pts: 3, fb: "Wonderful! The local council has already approved our date for next year's event." },
-            { t: "Purchase a modern lawnmower for the community pitches.", pts: 2, fb: "Practical choice. The playing surface will be in much better condition next year." },
-            { t: "Keep the cash hidden in a secure box for unexpected emergencies.", pts: 1, fb: "Safe, but community members are starting to wonder where the money went." },
-            { t: "Treat the organizing committee to an expensive dinner.", pts: -1, fb: "UNETHICAL: The parents discovered this and are demanding their donations back!" }
-        ]
-    }
-];
-
-const EMERGENCY = {
-    q: "🚨 EMERGENCY: A severe thunderstorm is expected to hit in ten minutes, right before the trophy ceremony!",
-    opts: [
-        { t: "Quickly guide everyone into the school hall for the presentation.", pts: 6, fb: "Excellent choice! You avoided panic and kept everyone dry. The community praises your quick decision-making." },
-        { t: "Ignore the dark clouds and attempt to finish the presentation on the field.", pts: -99, fb: "GAME OVER: Lightning struck a goalpost. People panicked and ran through the heavy rain. You have been dismissed for negligence. Good luck finding a new job." }
-    ]
-};
+let activeEmergency = null;
 
 /**
  * Fisher-Yates Shuffle Algorithm
- * Randomizes an array in-place with true mathematical randomness.
  */
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+/**
+ * Screen Navigation Helpers
+ */
+function showLanding() {
+  document.getElementById("landingPage").style.display = "block";
+  document.getElementById("warmerPage").style.display = "none";
+  document.getElementById("game-play").style.display = "none";
+  document.getElementById("result-screen").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openWarmer() {
+  document.getElementById("landingPage").style.display = "none";
+  document.getElementById("warmerPage").style.display = "block";
+  document.getElementById("game-play").style.display = "none";
+  document.getElementById("result-screen").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function startGame() {
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('game-play').style.display = 'block';
-    renderStep();
+  score = 0;
+  step = 0;
+  inEmergency = false;
+  activeEmergency = null;
+  SUDDEN_DEATHS.forEach(sd => {
+    sd.done = false;
+  });
+
+  document.getElementById("landingPage").style.display = "none";
+  document.getElementById("warmerPage").style.display = "none";
+  document.getElementById("result-screen").style.display = "none";
+  document.getElementById("game-play").style.display = "block";
+
+  updateScore();
+  renderStep();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/**
+ * Render Current Matchday Phase or Sudden-Death Emergency
+ */
 function renderStep() {
-    const node = inEmergency ? EMERGENCY : DECISIONS[step];
-    document.getElementById('stat-phase').textContent = inEmergency ? "!!!" : step + 1;
-    document.getElementById('vocab').innerHTML = (node.vocab || []).map(v => `<span class="vpill">${v}</span>`).join('');
-    document.getElementById('question').innerHTML = node.q;
-    document.getElementById('feedback').style.display = 'none';
-    
-    const optCont = document.getElementById('options');
-    optCont.innerHTML = '';
+  const node = inEmergency ? activeEmergency : DECISIONS[step];
+  const questionBox = document.getElementById("question");
+  const phaseKicker = document.getElementById("phaseKicker");
 
-    // Use Fisher-Yates to shuffle a copy of the options array
-    const shuffled = shuffleArray([...node.opts]);
+  if (inEmergency) {
+    document.getElementById("stat-phase").textContent = "🚨";
+    phaseKicker.textContent = "Sudden-Death Emergency";
+    questionBox.classList.add("emergency-question");
+  } else {
+    document.getElementById("stat-phase").textContent = step + 1;
+    phaseKicker.textContent = `Matchday Phase ${step + 1} of 10`;
+    questionBox.classList.remove("emergency-question");
+    const pct = (step / DECISIONS.length) * 100;
+    document.getElementById("pitchProgressFill").style.width = `${pct}%`;
+  }
 
-    shuffled.forEach((opt, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'opt-btn';
-        btn.innerHTML = `<span class="opt-letter">${['A','B','C','D'][i]}</span><span>${opt.t}</span>`;
-        btn.onclick = () => handleChoice(opt);
-        optCont.appendChild(btn);
-    });
+  const vocabTerms = node.vocab || [];
+  document.getElementById("vocab").innerHTML =
+    `<span class="vocab-strip-label">Key Terms:</span>` +
+    vocabTerms.map(v => `<span class="vpill">${v}</span>`).join("");
+
+  questionBox.innerHTML = node.q;
+  document.getElementById("feedback").style.display = "none";
+
+  const optCont = document.getElementById("options");
+  optCont.innerHTML = "";
+
+  // Shuffle options using Fisher-Yates so the best answer isn't always in the same slot
+  const shuffled = shuffleArray([...node.opts]);
+  const letters = ["A", "B", "C", "D"];
+
+  shuffled.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt.t}</span>`;
+    btn.onclick = () => handleChoice(opt, btn);
+    optCont.appendChild(btn);
+  });
 }
 
-function handleChoice(opt) {
-    if (opt.pts === -99) {
-        showGameOver(opt.fb);
-        return;
-    }
-    if (opt.pts === -1) {
-        score -= 1;
-        updateScore();
-        const fb = document.getElementById('feedback');
-        fb.style.display = 'block'; fb.className = 'feedback fb-bad';
-        document.getElementById('fb-pts').textContent = "-1 POINT & RETRY";
-        document.getElementById('fb-text').textContent = opt.fb;
-        document.getElementById('next-btn').style.display = 'none';
-        return;
-    }
-    score += opt.pts;
+/**
+ * Handle Player Choice (Standard Phases & Sudden-Death Emergencies)
+ */
+function handleChoice(opt, clickedBtn) {
+  // Sudden-Death Red Card Game Over
+  if (opt.pts === -99) {
+    showGameOver(opt);
+    return;
+  }
+
+  const fb = document.getElementById("feedback");
+  const fbPts = document.getElementById("fb-pts");
+  const fbText = document.getElementById("fb-text");
+  const fbInsight = document.getElementById("fb-insight");
+  const nextBtn = document.getElementById("next-btn");
+
+  // Retry-on-Blunder Mechanic (-1 pt): deduct 1 pt, disable ONLY clicked blunder button
+  if (opt.pts === -1) {
+    score -= 1;
     updateScore();
-    const fb = document.getElementById('feedback');
-    fb.style.display = 'block'; fb.className = 'feedback';
-    document.getElementById('fb-pts').textContent = `${opt.pts} POINTS AWARDED`;
-    document.getElementById('fb-text').textContent = opt.fb;
-    document.getElementById('next-btn').style.display = 'block';
-    document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+
+    fb.style.display = "block";
+    fb.className = "feedback fb-bad";
+    fbPts.textContent = "🟨 YELLOW CARD BLUNDER: -1 POINT & RETRY";
+    fbText.textContent = opt.fb;
+    fbInsight.innerHTML = `<strong>📋 Director's Insight:</strong> ${opt.insight}`;
+    nextBtn.style.display = "none";
+
+    clickedBtn.disabled = true;
+    clickedBtn.classList.add("opt-blunder");
+    return;
+  }
+
+  // Valid Choice (pts 1, 2, or 3, or 0 for surviving Sudden-Death Emergency)
+  score += opt.pts;
+  updateScore();
+
+  fb.style.display = "block";
+  fb.className = "feedback";
+
+  if (inEmergency) {
+    fbPts.textContent = "🛡️ EMERGENCY AVERTED — TOURNAMENT SAVED!";
+    nextBtn.textContent = `CONTINUE TO PHASE ${step + 2} →`;
+  } else {
+    const tierLabel = opt.pts === 3
+      ? "🏆 +3 BUDGET POINTS AWARDED — TOP CHOICE!"
+      : opt.pts === 2
+        ? "⚽ +2 BUDGET POINTS AWARDED — SOLID CALL"
+        : "📋 +1 BUDGET POINT AWARDED — ROOM TO IMPROVE";
+    fbPts.textContent = tierLabel;
+    nextBtn.textContent = step === DECISIONS.length - 1
+      ? "BLOW FINAL WHISTLE & VIEW TROPHY RANK →"
+      : "CONTINUE →";
+  }
+
+  fbText.textContent = opt.fb;
+  fbInsight.innerHTML = `<strong>📋 Director's Insight:</strong> ${opt.insight}`;
+  nextBtn.style.display = "block";
+
+  clickedBtn.classList.add("opt-chosen");
+  document.querySelectorAll(".opt-btn").forEach(b => {
+    b.disabled = true;
+  });
 }
 
 function updateScore() {
-    document.getElementById('stat-score').textContent = `Budget Pts: ${score} / 30`;
+  document.getElementById("stat-score").textContent = `Budget Pts: ${score} / 30`;
 }
 
+/**
+ * Advance Chronologically Through the 10 Phases & 2 Sudden-Death Emergencies
+ */
 function nextStep() {
-    if (inEmergency) { inEmergency = false; step++; renderStep(); }
-    else if (step === 6) { inEmergency = true; renderStep(); }
-    else if (step < DECISIONS.length - 1) { step++; renderStep(); }
-    else { showResults(); }
+  if (inEmergency) {
+    inEmergency = false;
+    activeEmergency = null;
+    step++;
+    renderStep();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+
+  // Check if a Sudden-Death Emergency triggers after the current phase (index 5 = Phase 6, index 8 = Phase 9)
+  const triggeredEmergency = SUDDEN_DEATHS.find(sd => sd.afterIndex === step && !sd.done);
+  if (triggeredEmergency) {
+    triggeredEmergency.done = true;
+    inEmergency = true;
+    activeEmergency = triggeredEmergency;
+    renderStep();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+
+  if (step < DECISIONS.length - 1) {
+    step++;
+    renderStep();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else {
+    showResults();
+  }
 }
 
-function showGameOver(msg) {
-    document.getElementById('game-play').style.display = 'none';
-    document.getElementById('result-screen').style.display = 'block';
-    document.getElementById('res-title').textContent = "❌ COMMITTEE DISMISSED";
-    document.getElementById('res-desc').textContent = msg;
+/**
+ * Red Card Dismissal Screen (-99 Sudden-Death Failure)
+ */
+function showGameOver(opt) {
+  document.getElementById("game-play").style.display = "none";
+  document.getElementById("result-screen").style.display = "block";
+
+  const badge = document.getElementById("trophyBadge");
+  const card = document.getElementById("resultCard");
+  badge.textContent = "🟥 RED CARD • EMERGENCY DISMISSAL";
+  badge.classList.add("red-card-badge");
+  card.classList.add("red-card-panel");
+
+  document.getElementById("res-title").textContent = "🟥 COMMITTEE DISMISSED";
+  document.getElementById("res-desc").textContent = opt.fb;
+  document.getElementById("res-insight").innerHTML = `<strong>📋 Director's Insight:</strong> ${opt.insight}`;
+  document.getElementById("math-box").innerHTML = `
+    <span class="breakdown-pill">Budget Pts at Dismissal: ${score} / 30</span>
+    <span class="breakdown-pill">Status: Red Card Safety Violation</span>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/**
+ * Final Trophy Evaluation Screen
+ */
 function showResults() {
-    document.getElementById('game-play').style.display = 'none';
-    document.getElementById('result-screen').style.display = 'block';
-    const title = document.getElementById('res-title');
-    const desc = document.getElementById('res-desc');
-    if (score >= 26) { title.textContent = "🏆 COMMUNITY LEGEND"; desc.textContent = "Incredible work! A masterclass in organization."; }
-    else if (score >= 18) { title.textContent = "🥈 LOCAL SUCCESS"; desc.textContent = "A solid tournament despite the hurdles."; }
-    else { title.textContent = "🥉 BARELY BROKE EVEN"; desc.textContent = "The event finished, but the logistics were a mess."; }
-    document.getElementById('math-box').textContent = `Final Score: ${score} / 30`;
+  document.getElementById("pitchProgressFill").style.width = "100%";
+  document.getElementById("game-play").style.display = "none";
+  document.getElementById("result-screen").style.display = "block";
+
+  const badge = document.getElementById("trophyBadge");
+  const card = document.getElementById("resultCard");
+  badge.textContent = "Full-Time Whistle • Official Evaluation";
+  badge.classList.remove("red-card-badge");
+  card.classList.remove("red-card-panel");
+
+  const title = document.getElementById("res-title");
+  const desc = document.getElementById("res-desc");
+  const insight = document.getElementById("res-insight");
+  let rankLabel = "";
+
+  if (score >= 26) {
+    title.textContent = "🏆 COMMUNITY LEGEND";
+    rankLabel = "Gold Trophy Tier (26–30 Pts)";
+    desc.textContent = "Incredible work, Director! A masterclass in village sports organization—your budget finished in surplus, every match ran safely, and the whole community is cheering your name!";
+    insight.innerHTML = "<strong>📋 Director's Insight:</strong> You balanced smart budgeting, venue amenities, touchline etiquette, and emergency safety like a true sports management pro.";
+  } else if (score >= 18) {
+    title.textContent = "🥈 LOCAL SUCCESS";
+    rankLabel = "Silver Medal Tier (18–25 Pts)";
+    desc.textContent = "A solid tournament despite a few logistical hurdles! Players and spectators went home smiling, and with a few sharper budget and scheduling calls, you will claim the Gold Trophy next season.";
+    insight.innerHTML = "<strong>📋 Director's Insight:</strong> Strong leadership kept the day on track—review the Director's Insights from any 1- or 2-point phases to maximize your surplus next time.";
+  } else {
+    title.textContent = "🥉 BARELY BROKE EVEN";
+    rankLabel = "Bronze Survival Tier (Under 18 Pts)";
+    desc.textContent = "The final whistle blew and everyone got home safely, but the logistics and budget were a bit of a scramble! Replay the phases to sharpen your tournament planning strategy.";
+    insight.innerHTML = "<strong>📋 Director's Insight:</strong> Great event directors prevent blunders before kick-off by prioritizing affordable local promotion, clear registration, and strong stall profit margins.";
+  }
+
+  const pct = Math.max(0, Math.round((score / 30) * 100));
+  document.getElementById("math-box").innerHTML = `
+    <span class="breakdown-pill">Final Score: ${score} / 30 Budget Pts</span>
+    <span class="breakdown-pill">Efficiency: ${pct}%</span>
+    <span class="breakdown-pill">${rankLabel}</span>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  initWarmer();
+});
 </script>
 </body>
 </html>
